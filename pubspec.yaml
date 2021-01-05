@@ -1,0 +1,41 @@
+name: select_any
+description: A new Flutter package project.
+version: 0.0.1
+author:
+homepage:
+
+environment:
+  sdk: ">=2.7.0 <3.0.0"
+  flutter: ">=1.17.0"
+
+dependencies:
+  diacritic: ^0.1.1
+  bloc_pattern: ^2.5.1
+  mobx: ^0.3.9+3
+  msk_utils:
+    #path: /Users/reni/Downloads/Projetos/MSK/flutter/msk_plugin/msk_utils
+    git:
+      url: git@github.com:ReniDelonzek/msk_utils.git
+      ref: 1ff097b6889f1aa2ed532f88b7f31c2b907699be
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  build_runner: ^1.7.3
+  mobx_codegen: ^0.3.10+1
+  flutter_test:
+    sdk: flutter
+
+# For information on the generic Dart part of this file, see the
+# following page: https://dart.dev/tools/pub/pubspec
+
+# The following section is specific to Flutter.
+flutter:
+  assets:
+    - images/
+
+scripts:
+   build: flutter pub run build_runner build --delete-conflicting-outputs
+   watch: flutter pub run build_runner watch --delete-conflicting-outputs
+   clean: flutter pub run build_runner clean
+    

@@ -128,15 +128,18 @@ abstract class _TableDataControllerBase with Store {
             ? (b) {
                 if (selectModel.tipoSelecao ==
                     SelectAnyPage.TIPO_SELECAO_SIMPLES) {
-                  Navigator?.of(context)?.pop(itemSelect);
-                }
-                if (b) {
-                  selectedList.add(itemSelect);
+                  if (Navigator?.of(context)?.canPop() == true) {
+                    Navigator?.of(context)?.pop(itemSelect);
+                  }
                 } else {
-                  selectedList
-                      .removeWhere((element) => element.id == itemSelect.id);
+                  if (b) {
+                    selectedList.add(itemSelect);
+                  } else {
+                    selectedList
+                        .removeWhere((element) => element.id == itemSelect.id);
+                  }
+                  itemSelect.isSelected = b;
                 }
-                itemSelect.isSelected = b;
               }
             : null,
         selected: itemSelect.isSelected ?? false);

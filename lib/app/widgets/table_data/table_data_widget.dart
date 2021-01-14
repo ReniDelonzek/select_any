@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:msk_utils/models/item_select.dart';
 import 'package:select_any/app/models/models.dart';
+import 'package:select_any/app/modules/select_any/select_any_page.dart';
 import 'package:select_any/app/widgets/falha/falha_widget.dart';
+import 'package:select_any/app/widgets/utils_widget.dart';
 
 import 'table_data_controller.dart';
 
@@ -121,17 +123,39 @@ class TableDataWidget extends StatelessWidget {
                 ));
               }
 
+              List<DataRow> rows = [];
+              int i = 0;
+              for (var element in subList) {
+                rows.add(UtilsWidget.generateDataRow(
+                    controller.selectModel, i, element, context,
+                    (ItemSelect itemSelect, bool b) {
+                  if (controller.selectModel.tipoSelecao ==
+                      SelectAnyPage.TIPO_SELECAO_SIMPLES) {
+                    if (Navigator?.of(context)?.canPop() == true) {
+                      Navigator?.of(context)?.pop(itemSelect);
+                    }
+                  } else {
+                    if (b) {
+                      controller.selectedList.add(itemSelect);
+                    } else {
+                      controller.selectedList.removeWhere(
+                          (element) => element.id == itemSelect.id);
+                    }
+                    itemSelect.isSelected = b;
+                  }
+                }));
+                i++;
+              }
+
               /// Deixa dentro de uma row para deixar como largura máxima
               /// Verificar aborgagens mais eficientes
               return Row(
                 children: [
                   Expanded(
                     child: DataTable(
-                        columns: controller.generateDataColumn(),
-                        rows: subList
-                            .map((element) =>
-                                controller.generateDataRow(element, context))
-                            .toList()),
+                        columns: UtilsWidget.generateDataColumn(
+                            controller.selectModel),
+                        rows: rows),
                   ),
                 ],
               );

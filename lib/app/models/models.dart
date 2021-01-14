@@ -268,5 +268,5 @@ class Acao {
       this.funcaoAtt});
 }
 
-typedef Funcao = void Function({dynamic data});
+typedef Funcao = void Function({dynamic data, int index});
 typedef FuncaoAtt = Future<bool> Function({dynamic data, BuildContext context});

@@ -226,11 +226,11 @@ class ResponseData {
   int total;
   Exception exception;
   List<ItemSelect> data;
-  ResponseData({
-    this.exception,
-    this.data,
-    this.total,
-  });
+
+  /// Campo opcional, indica o filtro aplicado na resposta
+  /// Usado para comparar se a resposta ainda é válida de acordo com o input
+  String filter;
+  ResponseData({this.exception, this.data, this.total, this.filter});
 }
 
 class ItemSelectTable extends ItemSelect {

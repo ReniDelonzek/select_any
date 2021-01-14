@@ -61,11 +61,11 @@ abstract class _TableDataControllerBase with Store {
     String text = ctlSearch.text.trim();
     (await selectModel.fonteDados
             .getListSearch(text, 10, (page - 1) * 10, selectModel))
-        .listen((event) {
+        .listen((ResponseData event) {
       error = null;
 
       /// Só altera se o texto ainda for idêntico ao pesquisado
-      if (ctlSearch.text.trim() == text) {
+      if (ctlSearch.text.trim() == text && text == event.filter) {
         event.data.forEach((item) {
           item.isSelected =
               selectedList.any((element) => element.id == item.id);

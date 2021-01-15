@@ -13,7 +13,8 @@ class UtilsWidget {
       Function(ItemSelect, bool) onSelected) {
     List<DataCell> cells = [];
     for (MapEntry mapEntry in itemSelect.strings.entries) {
-      cells.add(DataCell(getLinha(selectModel, mapEntry, itemSelect.object)));
+      cells.add(DataCell(getLinha(selectModel, mapEntry,
+          itemSelect.object is Map ? itemSelect.object : itemSelect.strings)));
     }
     if (selectModel.acoes?.isNotEmpty == true) {
       List<Widget> widgets = [];

@@ -13,10 +13,10 @@ dependencies:
   bloc_pattern: ^2.5.1
   mobx: ^0.3.9+3
   msk_utils:
-    #path: /Users/reni/Downloads/Projetos/MSK/flutter/msk_plugin/msk_utils
-    git:
-      url: git@github.com:ReniDelonzek/msk_utils.git
-      ref: 89c568e3e55957a76833a67d4bc7fc0bbb61b95d
+    path: /Users/reni/Downloads/Projetos/MSK/flutter/msk_plugin/msk_utils
+    #git:
+      #url: git@github.com:ReniDelonzek/msk_utils.git
+      #ref: 89c568e3e55957a76833a67d4bc7fc0bbb61b95d
   flutter:
     sdk: flutter
 

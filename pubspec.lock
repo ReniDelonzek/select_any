@@ -371,11 +371,9 @@ packages:
   msk_utils:
     dependency: "direct main"
     description:
-      path: "."
-      ref: "89c568e3e55957a76833a67d4bc7fc0bbb61b95d"
-      resolved-ref: "89c568e3e55957a76833a67d4bc7fc0bbb61b95d"
-      url: "git@github.com:ReniDelonzek/msk_utils.git"
-    source: git
+      path: "/Users/reni/Downloads/Projetos/MSK/flutter/msk_plugin/msk_utils"
+      relative: false
+    source: path
     version: "0.0.1"
   node_interop:
     dependency: transitive

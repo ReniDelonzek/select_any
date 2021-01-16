@@ -101,7 +101,16 @@ class TableDataWidget extends StatelessWidget {
             Observer(builder: (_) {
               /// Codigo para armazenar em variáveis partes do conteúdo
               if (controller.loading) {
-                return Center(child: CircularProgressIndicator());
+                return Center(
+                    child: Padding(
+                        padding: const EdgeInsets.all(25),
+                        child: Column(
+                          children: [
+                            CircularProgressIndicator(),
+                            SizedBox(height: 16),
+                            Text('Carregando dados')
+                          ],
+                        )));
               }
               if (controller.error != null) {
                 return FalhaWidget('Houve uma falha ao carregar os dados',

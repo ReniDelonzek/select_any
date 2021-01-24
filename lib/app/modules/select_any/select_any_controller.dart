@@ -18,10 +18,6 @@ abstract class _SelectAnyBase with Store {
   int typeDiplay = 1;
   String searchText = "";
   String title;
-  _SelectAnyBase(this.title) {
-    appBarTitle = Text(title);
-    addFilterListener();
-  }
 
   @observable
   Icon searchIcon = new Icon(Icons.search);
@@ -38,6 +34,12 @@ abstract class _SelectAnyBase with Store {
   /// Cria uma nova variavel, pois se usar a do model,
   /// ela mantém as configurações mesmo depois de sair da tela
   bool confirmarParaCarregarDados = false;
+
+  _SelectAnyBase(this.title) {
+    appBarTitle = Text(title);
+    addFilterListener();
+    tableController = TableDataController();
+  }
 
   addFilterListener() {
     filter.addListener(() {

@@ -238,12 +238,12 @@ packages:
     source: sdk
     version: "0.0.0"
   flutter_mobx:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: flutter_mobx
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.3.4+3"
+    version: "1.1.0+2"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -360,14 +360,14 @@ packages:
       name: mobx
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.3.10"
+    version: "1.2.1+4"
   mobx_codegen:
     dependency: "direct dev"
     description:
       name: mobx_codegen
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.3.11"
+    version: "1.1.2"
   msk_utils:
     dependency: "direct main"
     description:

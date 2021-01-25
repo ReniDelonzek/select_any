@@ -33,6 +33,15 @@ abstract class _TableDataControllerBase with Store {
           (event) {
         error = null;
         if (ctlSearch.text.trim().isEmpty) {
+          /// Remove todos os registros que o id não consta no range retornado
+          list.removeWhere((element) {
+            return element.position <= event.end &&
+                element.position >= event.start &&
+                !event.data.any((e2) {
+                  return e2.id == element.id;
+                });
+          });
+
           event.data.forEach((item) {
             item.isSelected =
                 selectedList.any((element) => element.id == item.id);
@@ -64,6 +73,15 @@ abstract class _TableDataControllerBase with Store {
 
       /// Só altera se o texto ainda for idêntico ao pesquisado
       if (ctlSearch.text.trim() == text && text == event.filter) {
+        /// Remove todos os registros que o id não consta no range retornado
+        list.removeWhere((element) {
+          return element.position <= event.end &&
+              element.position >= event.start &&
+              !event.data.any((e2) {
+                return e2.id == element.id;
+              });
+        });
+
         event.data.forEach((item) {
           item.isSelected =
               selectedList.any((element) => element.id == item.id);

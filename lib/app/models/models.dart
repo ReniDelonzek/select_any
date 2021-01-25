@@ -225,12 +225,23 @@ abstract class _DataSourceBase with Store {
 class ResponseData {
   int total;
   Exception exception;
-  List<ItemSelect> data;
+  List<ItemSelectTable> data;
 
   /// Campo opcional, indica o filtro aplicado na resposta
   /// Usado para comparar se a resposta ainda é válida de acordo com o input
   String filter;
-  ResponseData({this.exception, this.data, this.total, this.filter});
+
+  /// Indica o range que esse retorno atende
+  /// Por ex: 1-10
+  int start;
+  int end;
+  ResponseData(
+      {this.exception,
+      @required this.data,
+      this.total,
+      this.filter,
+      @required this.start,
+      @required this.end});
 }
 
 class ItemSelectTable extends ItemSelect {

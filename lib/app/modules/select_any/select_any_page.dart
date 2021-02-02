@@ -51,6 +51,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
     controller.confirmarParaCarregarDados =
         widget._selectModel.confirmarParaCarregarDados;
     super.initState();
+    controller.tableController = TableDataController(data: widget.data);
   }
 
   @override
@@ -99,16 +100,14 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
                           .where((item) => item.isSelected)
                           .toList());
                 } else {
-                  Navigator.pop(
-                      context,
-                      controller.listaOriginal
-                          .where((item) => item.isSelected)
-                          .toList());
+                  Navigator.pop(context,
+                      controller.tableController.selectedList.toList());
                 }
               },
               items: <BottomNavigationBarItem>[
+                BottomNavigationBarItem(icon: SizedBox(), label: ''),
                 BottomNavigationBarItem(
-                    icon: Icon(Icons.done), title: Text('Concluído')),
+                    icon: Icon(Icons.done), label: 'Concluído'),
               ],
             )
           : null,
@@ -149,7 +148,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
         return _getStreamBody();
       } else {
         return Center(
-            child: FlatButton.icon(
+            child: TextButton.icon(
                 icon: Icon(Icons.sync),
                 label: Text('Carregar dados'),
                 onPressed: () {

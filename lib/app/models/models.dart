@@ -33,7 +33,7 @@ class SelectModel {
   _DataSourceBase fonteDados;
 
   /// Uma lista dos ids que devem iniciar pré-selecionados
-  @deprecated
+  @Deprecated("Use preSelected")
   List<int> itensSelecionados;
 
   /// Uma lista dos ids que devem iniciar pré-selecionados
@@ -173,10 +173,12 @@ abstract class _DataSourceBase with Store {
   _DataSourceBase({this.id, this.searchDelay = 300});
 
   Future<Stream<ResponseData>> getList(
-      int limit, int offset, SelectModel selectModel);
+      int limit, int offset, SelectModel selectModel,
+      {Map data});
 
   Future<Stream<ResponseData>> getListSearch(
-      String text, int limit, int offset, SelectModel selectModel);
+      String text, int limit, int offset, SelectModel selectModel,
+      {Map data});
 
   List<ItemSelectTable> generateList(
       List data, int offset, SelectModel selectModel) {
@@ -185,6 +187,11 @@ abstract class _DataSourceBase with Store {
       bool preSelecionado = selectModel.itensSelecionados != null &&
           selectModel.itensSelecionados
               .any((element) => element == a[selectModel.id]);
+      if (!preSelecionado) {
+        preSelecionado = selectModel.preSelected
+                ?.any((element) => element.id == a[selectModel.id]) ==
+            true;
+      }
       //caso nao seja pré-selecionado ou a regra é exibir os pre-selecionados
       if (preSelecionado == false ||
           selectModel.exibirPreSelecionados == true) {

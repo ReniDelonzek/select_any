@@ -371,9 +371,11 @@ packages:
   msk_utils:
     dependency: "direct main"
     description:
-      path: "/Users/reni/Downloads/Projetos/MSK/flutter/msk_plugin/msk_utils"
-      relative: false
-    source: path
+      path: "."
+      ref: "1ff097b6889f1aa2ed532f88b7f31c2b907699be"
+      resolved-ref: "1ff097b6889f1aa2ed532f88b7f31c2b907699be"
+      url: "git@github.com:ReniDelonzek/msk_utils.git"
+    source: git
     version: "0.0.1"
   node_interop:
     dependency: transitive
@@ -655,4 +657,4 @@ packages:
     version: "2.2.1"
 sdks:
   dart: ">=2.12.0-0.0 <3.0.0"
-  flutter: ">=1.17.0 <2.0.0"
+  flutter: ">=1.17.0"

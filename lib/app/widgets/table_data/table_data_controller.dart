@@ -1,3 +1,4 @@
+import 'package:diacritic/diacritic.dart';
 import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
 import 'package:msk_utils/models/item_select.dart';
@@ -24,55 +25,20 @@ abstract class _TableDataControllerBase with Store {
   /// Necessário para persistir o estado da seleção
   Set<ItemSelect> selectedList = {};
 
+  Map data;
+
+  _TableDataControllerBase({this.data});
+
   setDataSource() async {
     /// Somente busca os dados caso eles ainda não esteja na lista
-    if ((page - 1) * 10 >= list.length) {
-      loading = true;
-      int offset = (page - 1) * 10;
-      (await selectModel.fonteDados.getList(10, offset, selectModel)).listen(
-          (event) {
-        error = null;
-        if (ctlSearch.text.trim().isEmpty) {
-          /// Remove todos os registros que o id não consta no range retornado
-          list.removeWhere((element) {
-            return element.position <= event.end &&
-                element.position >= event.start &&
-                !event.data.any((e2) {
-                  return e2.id == element.id;
-                });
-          });
-
-          event.data.forEach((item) {
-            item.isSelected =
-                selectedList.any((element) => element.id == item.id);
-            int index = list.indexWhere((element) => element.id == item.id);
-            if (index > -1) {
-              list[index] = item;
-            } else {
-              list.add(item);
-            }
-          });
-          loading = false;
-          total = event.total;
-        }
-      }, onError: (error) {
-        print(error);
-        loading = false;
-        this.error = error;
-      });
-    }
-  }
-
-  setDataSourceSearch() async {
+    /// Abordagem com problemas, pois a lista pode conter registros de outros ranges
+    //if ((page - 1) * 10 >= list.length) {
     loading = true;
-    String text = ctlSearch.text.trim();
-    (await selectModel.fonteDados
-            .getListSearch(text, 10, (page - 1) * 10, selectModel))
-        .listen((ResponseData event) {
+    int offset = (page - 1) * 10;
+    (await selectModel.fonteDados.getList(10, offset, selectModel, data: data))
+        .listen((event) {
       error = null;
-
-      /// Só altera se o texto ainda for idêntico ao pesquisado
-      if (ctlSearch.text.trim() == text && text == event.filter) {
+      if (ctlSearch.text.trim().isEmpty) {
         /// Remove todos os registros que o id não consta no range retornado
         list.removeWhere((element) {
           return element.position <= event.end &&
@@ -83,8 +49,64 @@ abstract class _TableDataControllerBase with Store {
         });
 
         event.data.forEach((item) {
-          item.isSelected =
-              selectedList.any((element) => element.id == item.id);
+          bool present = selectedList.any((element) => element.id == item.id);
+          if (item.isSelected == true) {
+            if (!present) {
+              /// Caso o item esteja selecionado e não esteja na lista selectedList
+              selectedList.add(item);
+            }
+          } else {
+            item.isSelected = present;
+          }
+          int index = list.indexWhere((element) => element.id == item.id);
+          if (index > -1) {
+            list[index] = item;
+          } else {
+            list.add(item);
+          }
+        });
+        loading = false;
+        total = event.total;
+      }
+    }, onError: (error) {
+      print(error);
+      loading = false;
+      this.error = error;
+    });
+    //}
+  }
+
+  setDataSourceSearch() async {
+    loading = true;
+    String text = removeDiacritics(ctlSearch.text.trim()).toLowerCase();
+    (await selectModel.fonteDados
+            .getListSearch(text, 10, (page - 1) * 10, selectModel, data: data))
+        .listen((ResponseData event) {
+      error = null;
+
+      /// Só altera se o texto ainda for idêntico ao pesquisado
+      if (removeDiacritics(ctlSearch.text.trim()).toLowerCase() == text &&
+          text == event.filter) {
+        /// Remove todos os registros que o id não consta no range retornado
+        list.removeWhere((element) {
+          return element.position <= event.end &&
+              element.position >= event.start &&
+              !event.data.any((e2) {
+                return e2.id == element.id;
+              });
+        });
+
+        event.data.forEach((item) {
+          bool present = selectedList.any((element) => element.id == item.id);
+          if (item.isSelected == true) {
+            if (!present) {
+              /// Caso o item esteja selecionado e não esteja na lista selectedList
+              selectedList.add(item);
+            }
+          } else {
+            item.isSelected = present;
+          }
+
           int index = list.indexWhere((element) => element.id == item.id);
           if (index > -1) {
             list[index] = item;
@@ -93,7 +115,8 @@ abstract class _TableDataControllerBase with Store {
           }
         });
         total = event.total;
-        loading = !(ctlSearch.text.trim() == text);
+        loading =
+            !(removeDiacritics(ctlSearch.text.trim()).toLowerCase() == text);
       }
     }, onError: (error) {
       print(error);

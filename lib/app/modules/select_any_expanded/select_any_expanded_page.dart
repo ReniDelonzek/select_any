@@ -60,13 +60,6 @@ class _SelectAnyExpandedPageState extends State<SelectAnyExpandedPage> {
       appBar: AppBar(
         centerTitle: true,
         title: Observer(builder: (_) => controller.appBarTitle),
-        actions: _getMenuButtons(),
-        leading: Observer(builder: (_) {
-          return IconButton(
-            icon: controller.searchIcon,
-            onPressed: _searchPressed,
-          );
-        }),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       floatingActionButton: Padding(
@@ -266,20 +259,6 @@ class _SelectAnyExpandedPageState extends State<SelectAnyExpandedPage> {
         }
       }
     }
-  }
-
-  List<Widget> _getMenuButtons() {
-    if ((!kIsWeb) && !Platform.isAndroid) {
-      return <Widget>[
-        IconButton(
-          icon: Icon(Icons.close),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        )
-      ];
-    } else
-      return <Widget>[];
   }
 
   List<Widget> _getFloatingActionButtons() {

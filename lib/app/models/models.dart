@@ -288,3 +288,14 @@ class Acao {
 
 typedef Funcao = void Function({dynamic data, int index});
 typedef FuncaoAtt = Future<bool> Function({dynamic data, BuildContext context});
+
+class ItemSelectExpanded = _ItemSelectExpandedBase with _$ItemSelectExpanded;
+
+abstract class _ItemSelectExpandedBase extends ItemSelect with Store {
+  @observable
+  ObservableList<ItemSelectExpanded> items = ObservableList();
+  @observable
+  bool isExpanded = false;
+
+  _ItemSelectExpandedBase({this.items, this.isExpanded = false});
+}

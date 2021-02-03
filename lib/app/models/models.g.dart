@@ -26,3 +26,39 @@ mixin _$DataSource on _DataSourceBase, Store {
     }, _$listDataAtom, name: '${_$listDataAtom.name}_set');
   }
 }
+
+mixin _$ItemSelectExpanded on _ItemSelectExpandedBase, Store {
+  final _$itensAtom = Atom(name: '_ItemSelectExpandedBase.itens');
+
+  @override
+  ObservableList<ItemSelectExpanded> get items {
+    _$itensAtom.context.enforceReadPolicy(_$itensAtom);
+    _$itensAtom.reportObserved();
+    return super.items;
+  }
+
+  @override
+  set items(ObservableList<ItemSelectExpanded> value) {
+    _$itensAtom.context.conditionallyRunInAction(() {
+      super.items = value;
+      _$itensAtom.reportChanged();
+    }, _$itensAtom, name: '${_$itensAtom.name}_set');
+  }
+
+  final _$isExpandedAtom = Atom(name: '_ItemSelectExpandedBase.isExpanded');
+
+  @override
+  bool get isExpanded {
+    _$isExpandedAtom.context.enforceReadPolicy(_$isExpandedAtom);
+    _$isExpandedAtom.reportObserved();
+    return super.isExpanded;
+  }
+
+  @override
+  set isExpanded(bool value) {
+    _$isExpandedAtom.context.conditionallyRunInAction(() {
+      super.isExpanded = value;
+      _$isExpandedAtom.reportChanged();
+    }, _$isExpandedAtom, name: '${_$isExpandedAtom.name}_set');
+  }
+}

@@ -90,28 +90,6 @@ class _SelectAnyExpandedPageState extends State<SelectAnyExpandedPage> {
       );
   }
 
-  void _searchPressed() {
-    if (controller.searchIcon.icon == Icons.search) {
-      controller.searchIcon = new Icon(Icons.close);
-      controller.appBarTitle = Container(
-        alignment: Alignment.topRight,
-        constraints: BoxConstraints(maxWidth: 300),
-        child: TextField(
-          autofocus: true,
-          controller: controller.filter,
-          decoration: new InputDecoration(
-              prefixIcon: new Icon(Icons.search), hintText: 'Pesquise...'),
-        ),
-      );
-    } else {
-      controller.searchIcon = new Icon(Icons.search);
-      controller.appBarTitle = new Text(widget._selectModel.titulo);
-      controller.listaExibida.clear();
-      controller.listaExibida.addAll(controller.listaOriginal);
-      controller.filter.clear();
-    }
-  }
-
   Widget _getItemList(ItemSelectExpanded itemSelect) {
     return Card(
       child: InkWell(
@@ -310,28 +288,6 @@ class _SelectAnyExpandedPageState extends State<SelectAnyExpandedPage> {
             ),
           );
         });
-  }
-
-  void _tratarOnLongPres(ItemSelect itemSelect) {
-    if (widget._selectModel.acoes != null) {
-      if (widget._selectModel.acoes.length > 1) {
-        _exibirListaAcoes(itemSelect);
-      } else {
-        Acao acao = widget._selectModel.acoes?.first;
-        if (acao != null) {
-          _onAction(itemSelect, acao);
-        }
-      }
-    } else if (widget._selectModel.tipoSelecao ==
-        SelectAnyPage.TIPO_SELECAO_SIMPLES) {
-      Navigator.pop(context, itemSelect.object);
-    } else if (widget._selectModel.tipoSelecao ==
-        SelectAnyPage.TIPO_SELECAO_MULTIPLA) {
-      itemSelect.isSelected = !itemSelect.isSelected;
-    } else {
-      //case seja do tipo acao, mas n tenha nenhuma acao
-      Navigator.pop(context, itemSelect.object);
-    }
   }
 
   void _tratarOnTap(ItemSelect itemSelect) {

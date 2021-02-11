@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:msk_utils/extensions/string.dart';
 import 'package:msk_utils/models/item_select.dart';
-import 'package:msk_utils/utils/navigation.dart';
 import 'package:select_any/app/models/models.dart';
 import 'package:select_any/app/modules/select_any/select_any_page.dart';
 
@@ -133,6 +132,69 @@ class UtilsWidget {
           }
         }
       }
+    }
+  }
+
+  static void exibirListaAcoes(BuildContext context, ItemSelect itemSelect,
+      List<Acao> acoes, Map data, Function reloadData) {
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext bc) {
+          return Container(
+            child: new Wrap(
+              children: acoes
+                  .map((acao) => new ListTile(
+                      title: new Text(acao.descricao),
+                      onTap: () {
+                        Navigator.pop(context);
+                        UtilsWidget.onAction(
+                            context, null, acao, data, reloadData);
+                      }))
+                  .toList(),
+            ),
+          );
+        });
+  }
+
+  static tratarOnTap(BuildContext context, ItemSelect itemSelect,
+      SelectModel selectModel, Map data, Function onDataUpdate) {
+    if (selectModel.tipoSelecao == SelectAnyPage.TIPO_SELECAO_ACAO &&
+        selectModel.acoes != null) {
+      if (selectModel.acoes.length > 1) {
+        UtilsWidget.exibirListaAcoes(
+            context, itemSelect, selectModel.acoes, data, onDataUpdate);
+      } else if (selectModel.acoes.isNotEmpty) {
+        Acao acao = selectModel.acoes?.first;
+        if (acao != null) {
+          UtilsWidget.onAction(context, itemSelect, acao, data, onDataUpdate);
+        }
+      }
+    } else if (selectModel.tipoSelecao == SelectAnyPage.TIPO_SELECAO_SIMPLES) {
+      Navigator.pop(context, itemSelect.object);
+    } else if (selectModel.tipoSelecao == SelectAnyPage.TIPO_SELECAO_MULTIPLA) {
+      itemSelect.isSelected = !itemSelect.isSelected;
+    }
+  }
+
+  static void tratarOnLongPres(BuildContext context, ItemSelect itemSelect,
+      SelectModel selectModel, Map data, Function onDataUpdate) {
+    if (selectModel.acoes != null) {
+      if (selectModel.acoes.length > 1) {
+        UtilsWidget.exibirListaAcoes(
+            context, itemSelect, selectModel.acoes, data, onDataUpdate);
+      } else {
+        Acao acao = selectModel.acoes?.first;
+        if (acao != null) {
+          UtilsWidget.onAction(context, itemSelect, acao, data, onDataUpdate);
+        }
+      }
+    } else if (selectModel.tipoSelecao == SelectAnyPage.TIPO_SELECAO_SIMPLES) {
+      Navigator.pop(context, itemSelect.object);
+    } else if (selectModel.tipoSelecao == SelectAnyPage.TIPO_SELECAO_MULTIPLA) {
+      itemSelect.isSelected = !itemSelect.isSelected;
+    } else {
+      //case seja do tipo acao, mas n tenha nenhuma acao
+      Navigator.pop(context, itemSelect.object);
     }
   }
 }

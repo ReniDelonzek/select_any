@@ -28,21 +28,21 @@ mixin _$DataSource on _DataSourceBase, Store {
 }
 
 mixin _$ItemSelectExpanded on _ItemSelectExpandedBase, Store {
-  final _$itensAtom = Atom(name: '_ItemSelectExpandedBase.itens');
+  final _$itemsAtom = Atom(name: '_ItemSelectExpandedBase.items');
 
   @override
   ObservableList<ItemSelectExpanded> get items {
-    _$itensAtom.context.enforceReadPolicy(_$itensAtom);
-    _$itensAtom.reportObserved();
+    _$itemsAtom.context.enforceReadPolicy(_$itemsAtom);
+    _$itemsAtom.reportObserved();
     return super.items;
   }
 
   @override
   set items(ObservableList<ItemSelectExpanded> value) {
-    _$itensAtom.context.conditionallyRunInAction(() {
+    _$itemsAtom.context.conditionallyRunInAction(() {
       super.items = value;
-      _$itensAtom.reportChanged();
-    }, _$itensAtom, name: '${_$itensAtom.name}_set');
+      _$itemsAtom.reportChanged();
+    }, _$itemsAtom, name: '${_$itemsAtom.name}_set');
   }
 
   final _$isExpandedAtom = Atom(name: '_ItemSelectExpandedBase.isExpanded');

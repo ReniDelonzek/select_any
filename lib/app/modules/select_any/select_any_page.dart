@@ -5,11 +5,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:msk_utils/models/item_select.dart';
-import 'package:msk_utils/utils/utils_platform.dart';
 import 'package:select_any/app/models/models.dart';
 import 'package:select_any/app/modules/select_any/select_any_controller.dart';
 import 'package:select_any/app/widgets/falha/falha_widget.dart';
-import 'package:select_any/app/widgets/table_data/table_data_controller.dart';
 import 'package:select_any/app/widgets/table_data/table_data_widget.dart';
 import 'package:select_any/app/widgets/utils_widget.dart';
 
@@ -29,7 +27,7 @@ class SelectAnyPage extends StatefulWidget {
 
   @override
   _SelectAnyPageState createState() {
-    return _SelectAnyPageState(_selectModel.titulo);
+    return _SelectAnyPageState();
   }
 }
 
@@ -43,27 +41,23 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
   bool fonteAlternativa = false;
   BuildContext buildContext;
 
-  _SelectAnyPageState(String title) {
-    controller = SelectAnyController(title);
-  }
-
   @override
   void initState() {
+    controller = SelectAnyController(
+        widget._selectModel.titulo, widget._selectModel, widget.data);
     controller.confirmarParaCarregarDados =
         widget._selectModel.confirmarParaCarregarDados;
     super.initState();
-    controller.tableController = TableDataController(data: widget.data);
   }
 
   @override
   void dispose() {
-    //widget._selectModel.fonteDados.close();
     super.dispose();
   }
 
   @override
   void didChangeDependencies() {
-    if (!controller.confirmarParaCarregarDados) {
+    if (!controller.confirmarParaCarregarDados && controller.typeDiplay == 1) {
       carregarDados();
     }
     super.didChangeDependencies();
@@ -97,12 +91,15 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
                 if (controller.typeDiplay == 1) {
                   Navigator.pop(
                       context,
-                      controller.listaOriginal
+                      controller.list
                           .where((item) => item.isSelected)
                           .toList());
                 } else {
-                  Navigator.pop(context,
-                      controller.tableController.selectedList.toList());
+                  Navigator.pop(
+                      context,
+                      controller.list
+                          .where((item) => item.isSelected)
+                          .toList());
                 }
               },
               items: <BottomNavigationBarItem>[
@@ -129,22 +126,25 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
 
   /// Retorna o conteúdo principal da tela
   Widget _getBody() {
-    if (!UtilsPlatform.isMobile() &&
-        MediaQuery.of(buildContext).size.width > 800) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        controller.typeDiplay = 2;
-      });
-      return TableDataWidget(widget._selectModel,
-          controller: controller.tableController);
-    } else {
-      if (controller.typeDiplay != 1) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          controller.typeDiplay = 1;
-          loaded = false;
-          carregarDados();
-        });
-      }
+    if (controller.tipoTeladinamica) {
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        if (MediaQuery.of(context).size.width > 800) {
+          if (controller.typeDiplay != 2) {
+            controller.typeDiplay = 2;
 
+            _searchPressed();
+          }
+        } else {
+          if (controller.typeDiplay != 1) {
+            carregarDados();
+            controller.typeDiplay = 1;
+          }
+        }
+      });
+    }
+    if (controller.typeDiplay == 2) {
+      return TableDataWidget(widget._selectModel, controller: controller);
+    } else {
       if (!controller.confirmarParaCarregarDados) {
         return _getStreamBody();
       } else {
@@ -164,72 +164,59 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
   }
 
   Widget _getStreamBody() {
-    return Observer(
-      builder: (_) => StreamBuilder(
-        stream: controller.stream,
-        builder: (_, AsyncSnapshot snap) {
-          return _getListBuilder(context, snap);
-        },
-      ),
-    );
+    return _getListBuilder(context);
   }
 
-  Widget _getListBuilder(BuildContext context, AsyncSnapshot snapshot) {
-    switch (snapshot.connectionState) {
-      case ConnectionState.waiting:
+  Widget _getListBuilder(BuildContext context) {
+    return Observer(builder: (_) {
+      if (controller.loading == true) {
         return new Center(child: new RefreshProgressIndicator());
-      case ConnectionState.none:
-        return new Center(child: new RefreshProgressIndicator());
-      default:
-        if (snapshot.hasError) {
-          if (widget._selectModel.fonteDadosAlternativa != null &&
-              controller.fonteDadoAtual !=
-                  widget._selectModel.fonteDadosAlternativa) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              //usa esse artefato para nao dar problema com o setstate
-              loaded = false;
-              carregarDados();
-              setState(() async {
-                controller.fonteDadoAtual =
-                    widget._selectModel.fonteDadosAlternativa;
-                controller.stream = await controller.fonteDadoAtual
-                    .getList(-1, 0, widget._selectModel);
-
-                // await controller.fonteDadoAtual
-                //     .getMapStream(data: widget.data);
-              });
+      }
+      if (controller.error != null) {
+        if (widget._selectModel.fonteDadosAlternativa != null &&
+            controller.fonteDadoAtual !=
+                widget._selectModel.fonteDadosAlternativa) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            //usa esse artefato para nao dar problema com o setstate
+            loaded = false;
+            carregarDados();
+            setState(() async {
+              controller.fonteDadoAtual =
+                  widget._selectModel.fonteDadosAlternativa;
+              controller.setDataSource();
+              // controller.streamController.addStream((await controller
+              //     .fonteDadoAtual
+              //     .getList(-1, 0, widget._selectModel)));
             });
-            return new Center(child: new RefreshProgressIndicator());
-          }
-          return FalhaWidget(
-            'Houve uma falha ao recuperar os dados',
-            error: snapshot.error,
-          );
-        }
-        if (snapshot.data == null) {
+          });
           return new Center(child: new RefreshProgressIndicator());
         }
-        _gerarLista((snapshot.data as ResponseData).data);
-        return Observer(builder: (_) {
-          if (controller.listaExibida.isEmpty == true)
-            return Center(child: new Text('Nenhum registro encontrado'));
-          else
-            return RefreshIndicator(
-              onRefresh: () async {
-                loaded = false;
-                carregarDados();
-              },
-              key: _refreshIndicatorKey,
-              child: new ListView.builder(
-                  itemCount: controller.listaExibida.length,
-                  itemBuilder: (context, index) {
-                    return Observer(
-                        builder: (_) =>
-                            _getItemList(controller.listaExibida[index]));
-                  }),
-            );
-        });
-    }
+        return FalhaWidget(
+          'Houve uma falha ao recuperar os dados',
+          error: controller.error,
+        );
+      }
+      //_gerarLista((snapshot.data as ResponseData).data);
+      return Observer(builder: (_) {
+        if (controller.listaExibida.isEmpty == true)
+          return Center(child: new Text('Nenhum registro encontrado'));
+        else
+          return RefreshIndicator(
+            onRefresh: () async {
+              loaded = false;
+              carregarDados();
+            },
+            key: _refreshIndicatorKey,
+            child: new ListView.builder(
+                itemCount: controller.listaExibida.length,
+                itemBuilder: (context, index) {
+                  return Observer(
+                      builder: (_) =>
+                          _getItemList(controller.listaExibida[index]));
+                }),
+          );
+      });
+    });
   }
 
   void _searchPressed() {
@@ -249,8 +236,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
     } else {
       controller.searchIcon = new Icon(Icons.search);
       controller.appBarTitle = new Text(widget._selectModel.titulo);
-      controller.listaExibida.clear();
-      controller.listaExibida.addAll(controller.listaOriginal);
+      controller.searchText = '';
       controller.filter.clear();
     }
   }
@@ -275,20 +261,40 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
                     itemSelect.strings.entries.toList()[1], itemSelect.object)
                 : null,
             onTap: () async {
-              _tratarOnTap(itemSelect);
+              UtilsWidget.tratarOnTap(
+                  context, itemSelect, controller.selectModel, controller.data,
+                  () {
+                loaded = false;
+                carregarDados();
+              });
             },
             onLongPress: () {
-              _tratarOnLongPres(itemSelect);
+              UtilsWidget.tratarOnLongPres(
+                  context, itemSelect, controller.selectModel, controller.data,
+                  () {
+                loaded = false;
+                carregarDados();
+              });
             },
           ));
     } else {
       return Card(
         child: InkWell(
           onTap: () {
-            _tratarOnTap(itemSelect);
+            UtilsWidget.tratarOnTap(
+                context, itemSelect, controller.selectModel, controller.data,
+                () {
+              loaded = false;
+              carregarDados();
+            });
           },
           onLongPress: () {
-            _tratarOnLongPres(itemSelect);
+            UtilsWidget.tratarOnLongPres(
+                context, itemSelect, controller.selectModel, controller.data,
+                () {
+              loaded = false;
+              carregarDados();
+            });
           },
           child: Padding(
             padding: const EdgeInsets.all(16.0),
@@ -356,10 +362,8 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
   }
 
   List<ItemSelect> _gerarLista(List<ItemSelectTable> data) {
-    controller.listaOriginal.clear();
-    controller.listaExibida.clear();
-    controller.listaOriginal.addAll(data);
-    controller.listaExibida.addAll(data);
+    controller.list.clear();
+    controller.list.addAll(data);
     return data;
   }
 
@@ -415,77 +419,6 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
     return widgets;
   }
 
-  void _exibirListaAcoes(ItemSelect itemSelect) {
-    showModalBottomSheet(
-        context: context,
-        builder: (BuildContext bc) {
-          return Container(
-            child: new Wrap(
-              children: widget._selectModel.acoes
-                  .map((acao) => new ListTile(
-                      title: new Text(acao.descricao),
-                      onTap: () {
-                        Navigator.pop(context);
-                        UtilsWidget.onAction(context, null, acao, widget.data,
-                            () {
-                          loaded = false;
-                          carregarDados();
-                        });
-                      }))
-                  .toList(),
-            ),
-          );
-        });
-  }
-
-  void _tratarOnLongPres(ItemSelect itemSelect) {
-    if (widget._selectModel.acoes != null) {
-      if (widget._selectModel.acoes.length > 1) {
-        _exibirListaAcoes(itemSelect);
-      } else {
-        Acao acao = widget._selectModel.acoes?.first;
-        if (acao != null) {
-          UtilsWidget.onAction(context, null, acao, widget.data, () {
-            loaded = false;
-            carregarDados();
-          });
-        }
-      }
-    } else if (widget._selectModel.tipoSelecao ==
-        SelectAnyPage.TIPO_SELECAO_SIMPLES) {
-      Navigator.pop(context, itemSelect.object);
-    } else if (widget._selectModel.tipoSelecao ==
-        SelectAnyPage.TIPO_SELECAO_MULTIPLA) {
-      itemSelect.isSelected = !itemSelect.isSelected;
-    } else {
-      //case seja do tipo acao, mas n tenha nenhuma acao
-      Navigator.pop(context, itemSelect.object);
-    }
-  }
-
-  void _tratarOnTap(ItemSelect itemSelect) {
-    if (widget._selectModel.tipoSelecao == SelectAnyPage.TIPO_SELECAO_ACAO &&
-        widget._selectModel.acoes != null) {
-      if (widget._selectModel.acoes.length > 1) {
-        _exibirListaAcoes(itemSelect);
-      } else if (widget._selectModel.acoes.isNotEmpty) {
-        Acao acao = widget._selectModel.acoes?.first;
-        if (acao != null) {
-          UtilsWidget.onAction(context, null, acao, widget.data, () {
-            loaded = false;
-            carregarDados();
-          });
-        }
-      }
-    } else if (widget._selectModel.tipoSelecao ==
-        SelectAnyPage.TIPO_SELECAO_SIMPLES) {
-      Navigator.pop(context, itemSelect.object);
-    } else if (widget._selectModel.tipoSelecao ==
-        SelectAnyPage.TIPO_SELECAO_MULTIPLA) {
-      itemSelect.isSelected = !itemSelect.isSelected;
-    }
-  }
-
   void carregarDados() async {
     if (controller.typeDiplay == 1 && !loaded) {
       final Map args = ModalRoute.of(context).settings.arguments;
@@ -496,8 +429,9 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
         widget.data.addAll(args['data']);
       }
       controller.fonteDadoAtual = widget._selectModel.fonteDados;
-      controller.stream =
-          await controller.fonteDadoAtual.getList(-1, 0, widget._selectModel);
+      controller.setDataSource();
+      // controller.streamController.addStream((await controller.fonteDadoAtual
+      //     .getList(-1, 0, widget._selectModel)));
       loaded = true;
     }
     if (widget._selectModel.abrirPesquisaAutomaticamente == true) {

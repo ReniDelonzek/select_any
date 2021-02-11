@@ -2,14 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:msk_utils/models/item_select.dart';
 import 'package:select_any/app/models/models.dart';
+import 'package:select_any/app/modules/select_any/select_any_controller.dart';
 import 'package:select_any/app/modules/select_any/select_any_page.dart';
 import 'package:select_any/app/widgets/falha/falha_widget.dart';
 import 'package:select_any/app/widgets/utils_widget.dart';
 
-import 'table_data_controller.dart';
-
 class TableDataWidget extends StatelessWidget {
-  final TableDataController controller;
+  final SelectAnyController controller;
 
   final int quantityItems;
 
@@ -64,10 +63,9 @@ class TableDataWidget extends StatelessWidget {
                                 child: TextField(
                                   decoration:
                                       InputDecoration(hintText: 'Pesquisar'),
-                                  controller: controller.ctlSearch,
+                                  controller: controller.filter,
                                   onChanged: (text) {
-                                    String text =
-                                        controller.ctlSearch.text.trim();
+                                    String text = controller.filter.text.trim();
                                     if (text.isEmpty) {
                                       controller.list.clear();
                                       controller.page = 1;
@@ -82,7 +80,7 @@ class TableDataWidget extends StatelessWidget {
                                                   300), () {
                                         /// Só executa a pesquisa se o input não tiver mudado
                                         if (text ==
-                                            controller.ctlSearch.text.trim()) {
+                                            controller.filter.text.trim()) {
                                           controller.list.clear();
                                           controller.page = 1;
                                           controller.setDataSourceSearch();
@@ -194,7 +192,7 @@ class TableDataWidget extends StatelessWidget {
                                       value: controller.page,
                                       onChanged: (item) {
                                         controller.page = item;
-                                        if (controller.ctlSearch.text.isEmpty) {
+                                        if (controller.filter.text.isEmpty) {
                                           controller.setDataSource();
                                         } else {
                                           controller.setDataSourceSearch();
@@ -225,7 +223,7 @@ class TableDataWidget extends StatelessWidget {
                                             controller.page =
                                                 controller.page - 1;
                                             if (controller
-                                                .ctlSearch.text.isEmpty) {
+                                                .filter.text.isEmpty) {
                                               controller.setDataSource();
                                             } else {
                                               controller.setDataSourceSearch();
@@ -241,7 +239,7 @@ class TableDataWidget extends StatelessWidget {
                                             controller.page =
                                                 controller.page + 1;
                                             if (controller
-                                                .ctlSearch.text.isEmpty) {
+                                                .filter.text.isEmpty) {
                                               controller.setDataSource();
                                             } else {
                                               controller.setDataSourceSearch();

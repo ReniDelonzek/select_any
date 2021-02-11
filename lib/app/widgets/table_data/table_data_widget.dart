@@ -136,8 +136,11 @@ class TableDataWidget extends StatelessWidget {
               int i = 0;
               for (var element in subList) {
                 rows.add(UtilsWidget.generateDataRow(
-                    controller.selectModel, i, element, context,
-                    (ItemSelect itemSelect, bool b) {
+                    controller.selectModel,
+                    i,
+                    element,
+                    context,
+                    controller.data, (ItemSelect itemSelect, bool b) {
                   if (controller.selectModel.tipoSelecao ==
                       SelectAnyPage.TIPO_SELECAO_SIMPLES) {
                     if (Navigator?.of(context)?.canPop() == true) {
@@ -152,7 +155,7 @@ class TableDataWidget extends StatelessWidget {
                     }
                     itemSelect.isSelected = b;
                   }
-                }));
+                }, controller.reloadData));
                 i++;
               }
 
@@ -161,10 +164,13 @@ class TableDataWidget extends StatelessWidget {
               return Row(
                 children: [
                   Expanded(
-                    child: DataTable(
-                        columns: UtilsWidget.generateDataColumn(
-                            controller.selectModel),
-                        rows: rows),
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: DataTable(
+                          columns: UtilsWidget.generateDataColumn(
+                              controller.selectModel),
+                          rows: rows),
+                    ),
                   ),
                 ],
               );

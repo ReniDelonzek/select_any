@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:msk_utils/models/item_select.dart';
-import 'package:select_any/app/models/models.dart';
 import 'package:msk_utils/extensions/string.dart';
+import 'package:msk_utils/models/item_select.dart';
+import 'package:msk_utils/utils/navigation.dart';
+import 'package:select_any/app/models/models.dart';
 import 'package:select_any/app/modules/select_any/select_any_page.dart';
 
 class UtilsWidget {
@@ -10,7 +11,9 @@ class UtilsWidget {
       int index,
       ItemSelect itemSelect,
       BuildContext context,
-      Function(ItemSelect, bool) onSelected) {
+      Map data,
+      Function(ItemSelect, bool) onSelected,
+      Function reloadData) {
     List<DataCell> cells = [];
     for (MapEntry mapEntry in itemSelect.strings.entries) {
       cells.add(DataCell(getLinha(selectModel, mapEntry,
@@ -23,9 +26,7 @@ class UtilsWidget {
           tooltip: acao.descricao,
           icon: acao.icon ?? Text(acao.descricao ?? 'Ação'),
           onPressed: () {
-            if (acao.funcao != null) {
-              acao.funcao(data: itemSelect, index: index);
-            }
+            UtilsWidget.onAction(context, itemSelect, acao, data, reloadData);
           },
         ));
       }
@@ -57,19 +58,81 @@ class UtilsWidget {
   static Widget getLinha(SelectModel selectModel, MapEntry item, Map map) {
     Linha linha = selectModel.linhas
         .firstWhere((linha) => linha.chave == item.key, orElse: () => null);
-    if (linha != null &&
-        (linha.involucro != null || linha.personalizacao != null)) {
-      if (linha.personalizacao != null) {
-        return linha.personalizacao(map);
-      }
-
-      /// Não insere o invólucro pois este já vai no header
-      return (SelectableText(linha.involucro.replaceAll('???', '')));
+    if (linha != null && linha.personalizacao != null) {
+      return linha.personalizacao(map);
     } else {
       if (item.value?.toString()?.isNullOrBlank != false) {
-        return SelectableText(linha.valorPadrao ?? '');
+        return SelectableText(
+          linha.valorPadrao ?? '',
+        );
       }
       return SelectableText(item.value?.toString());
+    }
+  }
+
+  static void onAction(BuildContext context, ItemSelect itemSelect, Acao acao,
+      Map data, Function reloadData) async {
+    if (acao.funcao != null) {
+      if (acao.fecharTela) {
+        Navigator.pop(context);
+      }
+      acao.funcao(data: itemSelect);
+    }
+    if (acao.funcaoAtt != null) {
+      if (acao.fecharTela) {
+        Navigator.pop(context);
+      }
+
+      var res = await acao.funcaoAtt(data: itemSelect, context: context);
+      if (res == true) {
+        reloadData();
+      }
+    } else if (acao.route != null || acao.page != null) {
+      Map<String, dynamic> dados = Map();
+      if (acao.chaves?.entries != null) {
+        for (MapEntry dado in acao.chaves.entries) {
+          if (itemSelect != null &&
+              (itemSelect.object as Map).containsKey(dado.key)) {
+            dados.addAll({dado.value: itemSelect.object[dado.key]});
+          } else if (data.containsKey(dado.key)) {
+            dados.addAll({dado.value: data[dado.key]});
+          }
+        }
+      }
+
+      RouteSettings settings = (itemSelect != null || dados.isNotEmpty)
+          ? RouteSettings(arguments: {
+              'cod_obj': itemSelect?.id,
+              'obj': itemSelect?.object,
+              'data': dados,
+              //'fromServer': fromServer
+            })
+
+          ///TODO resolver isso ..addAll({'fromServer': controller.fonteDadoAtual.url != null})
+          : RouteSettings();
+
+      var res = await Navigator.of(context).push(acao.route != null
+          ? acao.route
+          : new MaterialPageRoute(
+              builder: (_) => acao.page, settings: settings));
+      if (acao.fecharTela) {
+        if (res != null) {
+          if (res is Map &&
+              res['dados'] != null &&
+              res['dados'] is Map &&
+              res['dados'].isNotEmpty) {
+            Navigator.pop(context, res['dados']);
+          }
+          if (res is Map &&
+              res['data'] != null &&
+              res['data'] is Map &&
+              res['data'].isNotEmpty) {
+            Navigator.pop(context, res['data']);
+          } else {
+            Navigator.pop(context, res);
+          }
+        }
+      }
     }
   }
 }

@@ -11,6 +11,7 @@ import 'package:select_any/app/modules/select_any/select_any_controller.dart';
 import 'package:select_any/app/widgets/falha/falha_widget.dart';
 import 'package:select_any/app/widgets/table_data/table_data_controller.dart';
 import 'package:select_any/app/widgets/table_data/table_data_widget.dart';
+import 'package:select_any/app/widgets/utils_widget.dart';
 
 class SelectAnyPage extends StatefulWidget {
   /// Retorna Map<String, dynamic>
@@ -362,72 +363,6 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
     return data;
   }
 
-  void _onAction(ItemSelect itemSelect, Acao acao) async {
-    if (acao.funcao != null) {
-      if (acao.fecharTela) {
-        Navigator.pop(context);
-      }
-      acao.funcao(data: itemSelect);
-    }
-    if (acao.funcaoAtt != null) {
-      if (acao.fecharTela) {
-        Navigator.pop(context);
-      }
-
-      var res = await acao.funcaoAtt(data: itemSelect, context: buildContext);
-      if (res == true) {
-        loaded = false;
-        carregarDados();
-      }
-    } else if (acao.route != null || acao.page != null) {
-      Map<String, dynamic> dados = Map();
-      if (acao.chaves?.entries != null) {
-        for (MapEntry dado in acao.chaves.entries) {
-          if (itemSelect != null &&
-              (itemSelect.object as Map).containsKey(dado.key)) {
-            dados.addAll({dado.value: itemSelect.object[dado.key]});
-          } else if (widget.data.containsKey(dado.key)) {
-            dados.addAll({dado.value: widget.data[dado.key]});
-          }
-        }
-      }
-
-      RouteSettings settings = (itemSelect != null || dados.isNotEmpty)
-          ? RouteSettings(arguments: {
-              'cod_obj': itemSelect?.id,
-              'obj': itemSelect?.object,
-              'data': dados,
-              //'fromServer': fromServer
-            })
-
-          ///TODO resolver isso ..addAll({'fromServer': controller.fonteDadoAtual.url != null})
-          : RouteSettings();
-
-      var res = await Navigator.of(context).push(acao.route != null
-          ? acao.route
-          : new MaterialPageRoute(
-              builder: (_) => acao.page, settings: settings));
-      if (acao.fecharTela) {
-        if (res != null) {
-          if (res is Map &&
-              res['dados'] != null &&
-              res['dados'] is Map &&
-              res['dados'].isNotEmpty) {
-            Navigator.pop(context, res['dados']);
-          }
-          if (res is Map &&
-              res['data'] != null &&
-              res['data'] is Map &&
-              res['data'].isNotEmpty) {
-            Navigator.pop(context, res['data']);
-          } else {
-            Navigator.pop(context, res);
-          }
-        }
-      }
-    }
-  }
-
   List<Widget> _getMenuButtons() {
     if ((!kIsWeb) && !Platform.isAndroid) {
       return <Widget>[
@@ -467,7 +402,10 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
           mini: widgets.isNotEmpty,
           tooltip: acao.descricao,
           onPressed: () {
-            _onAction(null, acao);
+            UtilsWidget.onAction(context, null, acao, widget.data, () {
+              loaded = false;
+              carregarDados();
+            });
           },
           child: acao.icon ?? Icon(Icons.add),
         ));
@@ -488,7 +426,11 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
                       title: new Text(acao.descricao),
                       onTap: () {
                         Navigator.pop(context);
-                        _onAction(itemSelect, acao);
+                        UtilsWidget.onAction(context, null, acao, widget.data,
+                            () {
+                          loaded = false;
+                          carregarDados();
+                        });
                       }))
                   .toList(),
             ),
@@ -503,7 +445,10 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
       } else {
         Acao acao = widget._selectModel.acoes?.first;
         if (acao != null) {
-          _onAction(itemSelect, acao);
+          UtilsWidget.onAction(context, null, acao, widget.data, () {
+            loaded = false;
+            carregarDados();
+          });
         }
       }
     } else if (widget._selectModel.tipoSelecao ==
@@ -526,7 +471,10 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
       } else if (widget._selectModel.acoes.isNotEmpty) {
         Acao acao = widget._selectModel.acoes?.first;
         if (acao != null) {
-          _onAction(itemSelect, acao);
+          UtilsWidget.onAction(context, null, acao, widget.data, () {
+            loaded = false;
+            carregarDados();
+          });
         }
       }
     } else if (widget._selectModel.tipoSelecao ==

@@ -372,8 +372,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "1ff097b6889f1aa2ed532f88b7f31c2b907699be"
-      resolved-ref: "1ff097b6889f1aa2ed532f88b7f31c2b907699be"
+      ref: "91ef55c927f10a0442b7a6816f193b151faad1e8"
+      resolved-ref: "91ef55c927f10a0442b7a6816f193b151faad1e8"
       url: "git@github.com:ReniDelonzek/msk_utils.git"
     source: git
     version: "0.0.1"

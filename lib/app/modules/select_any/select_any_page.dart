@@ -57,7 +57,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
 
   @override
   void didChangeDependencies() {
-    if (!controller.confirmarParaCarregarDados && controller.typeDiplay == 1) {
+    if (!controller.confirmarParaCarregarDados) {
       carregarDados();
     }
     super.didChangeDependencies();
@@ -69,17 +69,19 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
       appBar: AppBar(
         centerTitle: true,
         title: Observer(builder: (_) => controller.appBarTitle),
-        actions: _getMenuButtons(),
-        leading: Observer(builder: (_) {
-          if (controller.typeDiplay == 1) {
-            return IconButton(
-              icon: controller.searchIcon,
-              onPressed: _searchPressed,
-            );
-          } else {
-            return SizedBox();
-          }
-        }),
+        actions: [
+          Observer(builder: (_) {
+            if (controller.typeDiplay == 1) {
+              return IconButton(
+                icon: controller.searchIcon,
+                onPressed: _searchPressed,
+              );
+            } else {
+              return SizedBox();
+            }
+          })
+        ],
+        leading: _getMenuButton(),
       ),
       bottomNavigationBar: widget._selectModel.tipoSelecao ==
               SelectAnyPage.TIPO_SELECAO_MULTIPLA
@@ -126,41 +128,44 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
 
   /// Retorna o conteúdo principal da tela
   Widget _getBody() {
-    if (controller.tipoTeladinamica) {
-      WidgetsBinding.instance.addPostFrameCallback((_) async {
-        if (MediaQuery.of(context).size.width > 800) {
-          if (controller.typeDiplay != 2) {
-            controller.typeDiplay = 2;
+    return Observer(builder: (_) {
+      if (controller.tipoTeladinamica) {
+        WidgetsBinding.instance.addPostFrameCallback((_) async {
+          if (MediaQuery.of(context).size.width > 800) {
+            if (controller.typeDiplay != 2) {
+              controller.typeDiplay = 2;
 
-            _searchPressed();
+              _searchPressed();
+            }
+          } else {
+            if (controller.typeDiplay != 1) {
+              carregarDados();
+              controller.typeDiplay = 1;
+            }
           }
-        } else {
-          if (controller.typeDiplay != 1) {
-            carregarDados();
-            controller.typeDiplay = 1;
-          }
-        }
-      });
-    }
-    if (controller.typeDiplay == 2) {
-      return TableDataWidget(widget._selectModel, controller: controller);
-    } else {
-      if (!controller.confirmarParaCarregarDados) {
-        return _getStreamBody();
-      } else {
-        return Center(
-            child: TextButton.icon(
-                icon: Icon(Icons.sync),
-                label: Text('Carregar dados'),
-                onPressed: () {
-                  /// Aqui é vantagem usar o setState, pois toda a tela precisa ser recarregada
-                  setState(() {
-                    controller.confirmarParaCarregarDados = false;
-                    carregarDados();
-                  });
-                }));
+        });
       }
-    }
+      if (controller.typeDiplay == 2) {
+        return TableDataWidget(widget._selectModel,
+            controller: controller, carregarDados: false);
+      } else {
+        if (!controller.confirmarParaCarregarDados) {
+          return _getStreamBody();
+        } else {
+          return Center(
+              child: TextButton.icon(
+                  icon: Icon(Icons.sync),
+                  label: Text('Carregar dados'),
+                  onPressed: () {
+                    /// Aqui é vantagem usar o setState, pois toda a tela precisa ser recarregada
+                    setState(() {
+                      controller.confirmarParaCarregarDados = false;
+                      carregarDados();
+                    });
+                  }));
+        }
+      }
+    });
   }
 
   Widget _getStreamBody() {
@@ -183,7 +188,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
             setState(() async {
               controller.fonteDadoAtual =
                   widget._selectModel.fonteDadosAlternativa;
-              controller.setDataSource();
+              controller.setDataSource(offset: -1);
               // controller.streamController.addStream((await controller
               //     .fonteDadoAtual
               //     .getList(-1, 0, widget._selectModel)));
@@ -361,24 +366,16 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
     return widgets;
   }
 
-  List<ItemSelect> _gerarLista(List<ItemSelectTable> data) {
-    controller.list.clear();
-    controller.list.addAll(data);
-    return data;
-  }
-
-  List<Widget> _getMenuButtons() {
+  Widget _getMenuButton() {
     if ((!kIsWeb) && !Platform.isAndroid) {
-      return <Widget>[
-        IconButton(
-          icon: Icon(Icons.close),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        )
-      ];
+      return IconButton(
+        icon: Icon(Icons.arrow_back_ios),
+        onPressed: () {
+          Navigator.of(context).pop();
+        },
+      );
     } else
-      return <Widget>[];
+      return null;
   }
 
   List<Widget> _getFloatingActionButtons() {
@@ -420,7 +417,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
   }
 
   void carregarDados() async {
-    if (controller.typeDiplay == 1 && !loaded) {
+    if (!loaded) {
       final Map args = ModalRoute.of(context).settings.arguments;
       if (args?.containsKey('data') ?? false) {
         if (widget.data == null) {
@@ -429,9 +426,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
         widget.data.addAll(args['data']);
       }
       controller.fonteDadoAtual = widget._selectModel.fonteDados;
-      controller.setDataSource();
-      // controller.streamController.addStream((await controller.fonteDadoAtual
-      //     .getList(-1, 0, widget._selectModel)));
+      controller.setDataSource(offset: -1);
       loaded = true;
     }
     if (widget._selectModel.abrirPesquisaAutomaticamente == true) {

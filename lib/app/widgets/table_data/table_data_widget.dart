@@ -13,13 +13,19 @@ class TableDataWidget extends StatelessWidget {
   final int quantityItems;
 
   TableDataWidget(SelectModel selectModel,
-      {Key key, @required this.controller, this.quantityItems = 10})
+      {Key key,
+      @required this.controller,
+      this.quantityItems = 10,
+      bool carregarDados = true})
       : super(key: key) {
     controller.selectModel = selectModel;
     if (selectModel.preSelected != null) {
       controller.selectedList = selectModel.preSelected.toSet();
     }
-    controller.setDataSource();
+
+    if (carregarDados) {
+      controller.setDataSource();
+    }
   }
   @override
   Widget build(BuildContext context) {

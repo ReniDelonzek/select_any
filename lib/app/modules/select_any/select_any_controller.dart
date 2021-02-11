@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
 import 'package:msk_utils/models/item_select.dart';
+import 'package:msk_utils/utils/utils_platform.dart';
 import 'package:select_any/app/models/models.dart';
 
 part 'select_any_controller.g.dart';
@@ -16,7 +17,7 @@ abstract class _SelectAnyBase with Store {
   @observable
 
   /// 1 = List, 2 = Table
-  int typeDiplay = 1;
+  int typeDiplay = UtilsPlatform.isMobile() ? 1 : 2;
   @observable
   String searchText = "";
   String title;
@@ -48,11 +49,7 @@ abstract class _SelectAnyBase with Store {
   Icon searchIcon = new Icon(Icons.search);
   @observable
   Widget appBarTitle;
-
   DataSource fonteDadoAtual;
-
-  // ignore: close_sinks
-  //StreamController streamController = StreamController();
 
   /// Cria uma nova variavel, pois se usar a do model,
   /// ela mantém as configurações mesmo depois de sair da tela
@@ -104,12 +101,12 @@ abstract class _SelectAnyBase with Store {
   /// Necessário para persistir o estado da seleção
   Set<ItemSelect> selectedList = {};
 
-  setDataSource() async {
+  setDataSource({int offset}) async {
     /// Somente busca os dados caso eles ainda não esteja na lista
     /// Abordagem com problemas, pois a lista pode conter registros de outros ranges
     //if ((page - 1) * 10 >= list.length) {
     loading = true;
-    int offset = (page - 1) * 10;
+    offset ??= (page - 1) * 10;
     (await fonteDadoAtual.getList(10, offset, selectModel, data: data)).listen(
         (event) {
       error = null;
@@ -151,10 +148,11 @@ abstract class _SelectAnyBase with Store {
     //}
   }
 
-  setDataSourceSearch() async {
+  setDataSourceSearch({int offset}) async {
     loading = true;
     String text = removeDiacritics(filter.text.trim()).toLowerCase();
-    (await fonteDadoAtual.getListSearch(text, 10, (page - 1) * 10, selectModel,
+    (await fonteDadoAtual.getListSearch(
+            text, 10, offset ?? (page - 1) * 10, selectModel,
             data: data))
         .listen((ResponseData event) {
       error = null;

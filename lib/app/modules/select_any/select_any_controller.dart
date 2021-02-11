@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
 import 'package:msk_utils/models/item_select.dart';
 import 'package:msk_utils/utils/utils_platform.dart';
+import 'package:msk_utils/utils/utils_sentry.dart';
 import 'package:select_any/app/models/models.dart';
 
 part 'select_any_controller.g.dart';
@@ -105,96 +106,111 @@ abstract class _SelectAnyBase with Store {
     /// Somente busca os dados caso eles ainda não esteja na lista
     /// Abordagem com problemas, pois a lista pode conter registros de outros ranges
     //if ((page - 1) * 10 >= list.length) {
-    loading = true;
-    offset ??= (page - 1) * 10;
-    (await fonteDadoAtual.getList(10, offset, selectModel, data: data)).listen(
-        (event) {
-      error = null;
-      if (filter.text.trim().isEmpty) {
-        /// Remove todos os registros que o id não consta no range retornado
-        list.removeWhere((element) {
-          return element.position <= event.end &&
-              element.position >= event.start &&
-              !event.data.any((e2) {
-                return e2.id == element.id;
-              });
-        });
+    try {
+      loading = true;
+      offset ??= (page - 1) * 10;
+      (await fonteDadoAtual.getList(10, offset, selectModel, data: data))
+          .listen((event) {
+        error = null;
+        if (filter.text.trim().isEmpty) {
+          /// Remove todos os registros que o id não consta no range retornado
+          list.removeWhere((element) {
+            return element.position <= event.end &&
+                element.position >= event.start &&
+                !event.data.any((e2) {
+                  return e2.id == element.id;
+                });
+          });
 
-        event.data.forEach((item) {
-          bool present = selectedList.any((element) => element.id == item.id);
-          if (item.isSelected == true) {
-            if (!present) {
-              /// Caso o item esteja selecionado e não esteja na lista selectedList
-              selectedList.add(item);
+          event.data.forEach((item) {
+            bool present = selectedList.any((element) => element.id == item.id);
+            if (item.isSelected == true) {
+              if (!present) {
+                /// Caso o item esteja selecionado e não esteja na lista selectedList
+                selectedList.add(item);
+              }
+            } else {
+              item.isSelected = present;
             }
-          } else {
-            item.isSelected = present;
-          }
-          int index = list.indexWhere((element) => element.id == item.id);
-          if (index > -1) {
-            list[index] = item;
-          } else {
-            list.add(item);
-          }
-        });
+            int index = list.indexWhere((element) => element.id == item.id);
+            if (index > -1) {
+              list[index] = item;
+            } else {
+              list.add(item);
+            }
+          });
+          loading = false;
+          total = event.total;
+        }
+      }, onError: (error) {
+        print(error);
         loading = false;
-        total = event.total;
-      }
-    }, onError: (error) {
+        this.error = error;
+      });
+    } catch (error, stackTrace) {
+      UtilsSentry.reportError(error, stackTrace);
       print(error);
       loading = false;
       this.error = error;
-    });
+    }
     //}
   }
 
   setDataSourceSearch({int offset}) async {
-    loading = true;
-    String text = removeDiacritics(filter.text.trim()).toLowerCase();
-    (await fonteDadoAtual.getListSearch(
-            text, 10, offset ?? (page - 1) * 10, selectModel,
-            data: data))
-        .listen((ResponseData event) {
-      error = null;
+    try {
+      loading = true;
+      String text = removeDiacritics(filter.text.trim()).toLowerCase();
+      (await fonteDadoAtual.getListSearch(
+              text, 10, offset ?? (page - 1) * 10, selectModel,
+              data: data))
+          .listen((ResponseData event) {
+        error = null;
 
-      /// Só altera se o texto ainda for idêntico ao pesquisado
-      if (removeDiacritics(filter.text.trim()).toLowerCase() == text &&
-          text == event.filter) {
-        /// Remove todos os registros que o id não consta no range retornado
-        list.removeWhere((element) {
-          return element.position <= event.end &&
-              element.position >= event.start &&
-              !event.data.any((e2) {
-                return e2.id == element.id;
-              });
-        });
+        /// Só altera se o texto ainda for idêntico ao pesquisado
+        if (removeDiacritics(filter.text.trim()).toLowerCase() == text &&
+            text == event.filter) {
+          /// Remove todos os registros que o id não consta no range retornado
+          list.removeWhere((element) {
+            return element.position <= event.end &&
+                element.position >= event.start &&
+                !event.data.any((e2) {
+                  return e2.id == element.id;
+                });
+          });
 
-        event.data.forEach((item) {
-          bool present = selectedList.any((element) => element.id == item.id);
-          if (item.isSelected == true) {
-            if (!present) {
-              /// Caso o item esteja selecionado e não esteja na lista selectedList
-              selectedList.add(item);
+          event.data.forEach((item) {
+            bool present = selectedList.any((element) => element.id == item.id);
+            if (item.isSelected == true) {
+              if (!present) {
+                /// Caso o item esteja selecionado e não esteja na lista selectedList
+                selectedList.add(item);
+              }
+            } else {
+              item.isSelected = present;
             }
-          } else {
-            item.isSelected = present;
-          }
 
-          int index = list.indexWhere((element) => element.id == item.id);
-          if (index > -1) {
-            list[index] = item;
-          } else {
-            list.add(item);
-          }
-        });
-        total = event.total;
-        loading = !(removeDiacritics(filter.text.trim()).toLowerCase() == text);
-      }
-    }, onError: (error) {
+            int index = list.indexWhere((element) => element.id == item.id);
+            if (index > -1) {
+              list[index] = item;
+            } else {
+              list.add(item);
+            }
+          });
+          total = event.total;
+          loading =
+              !(removeDiacritics(filter.text.trim()).toLowerCase() == text);
+        }
+      }, onError: (error) {
+        print(error);
+        loading = false;
+        this.error = error;
+      });
+    } catch (error, stackTrace) {
+      UtilsSentry.reportError(error, stackTrace);
       print(error);
       loading = false;
       this.error = error;
-    });
+    }
   }
 
   reloadData() {

@@ -29,7 +29,8 @@ class UtilsWidget {
           tooltip: acao.descricao,
           icon: acao.icon ?? Text(acao.descricao ?? 'Ação'),
           onPressed: () {
-            UtilsWidget.onAction(context, itemSelect, acao, data, reloadData);
+            UtilsWidget.onAction(
+                context, itemSelect, index, acao, data, reloadData);
           },
         ));
       }
@@ -74,13 +75,13 @@ class UtilsWidget {
     }
   }
 
-  static void onAction(BuildContext context, ItemSelect itemSelect, Acao acao,
-      Map data, Function reloadData) async {
+  static void onAction(BuildContext context, ItemSelect itemSelect, int index,
+      Acao acao, Map data, Function reloadData) async {
     if (acao.funcao != null) {
       if (acao.fecharTela) {
         Navigator.pop(context);
       }
-      acao.funcao(data: itemSelect);
+      acao.funcao(data: itemSelect, index: index);
     }
     if (acao.funcaoAtt != null) {
       if (acao.fecharTela) {
@@ -141,7 +142,7 @@ class UtilsWidget {
   }
 
   static void exibirListaAcoes(BuildContext context, ItemSelect itemSelect,
-      List<Acao> acoes, Map data, Function reloadData) {
+      int index, List<Acao> acoes, Map data, Function reloadData) {
     showModalBottomSheet(
         context: context,
         builder: (BuildContext bc) {
@@ -154,7 +155,7 @@ class UtilsWidget {
                       onTap: () {
                         Navigator.pop(context);
                         UtilsWidget.onAction(
-                            context, itemSelect, acao, data, reloadData);
+                            context, itemSelect, index, acao, data, reloadData);
                       }))
                   .toList(),
             ),
@@ -162,17 +163,18 @@ class UtilsWidget {
         });
   }
 
-  static tratarOnTap(BuildContext context, ItemSelect itemSelect,
+  static tratarOnTap(BuildContext context, ItemSelect itemSelect, int index,
       SelectModel selectModel, Map data, Function onDataUpdate) {
     if (selectModel.tipoSelecao == SelectAnyPage.TIPO_SELECAO_ACAO &&
         selectModel.acoes != null) {
       if (selectModel.acoes.length > 1) {
         UtilsWidget.exibirListaAcoes(
-            context, itemSelect, selectModel.acoes, data, onDataUpdate);
+            context, itemSelect, index, selectModel.acoes, data, onDataUpdate);
       } else if (selectModel.acoes.isNotEmpty) {
         Acao acao = selectModel.acoes?.first;
         if (acao != null) {
-          UtilsWidget.onAction(context, itemSelect, acao, data, onDataUpdate);
+          UtilsWidget.onAction(
+              context, itemSelect, index, acao, data, onDataUpdate);
         }
       }
     } else if (selectModel.tipoSelecao == SelectAnyPage.TIPO_SELECAO_SIMPLES) {
@@ -183,15 +185,16 @@ class UtilsWidget {
   }
 
   static void tratarOnLongPres(BuildContext context, ItemSelect itemSelect,
-      SelectModel selectModel, Map data, Function onDataUpdate) {
+      int index, SelectModel selectModel, Map data, Function onDataUpdate) {
     if (selectModel.acoes != null) {
       if (selectModel.acoes.length > 1) {
         UtilsWidget.exibirListaAcoes(
-            context, itemSelect, selectModel.acoes, data, onDataUpdate);
+            context, itemSelect, index, selectModel.acoes, data, onDataUpdate);
       } else {
         Acao acao = selectModel.acoes?.first;
         if (acao != null) {
-          UtilsWidget.onAction(context, itemSelect, acao, data, onDataUpdate);
+          UtilsWidget.onAction(
+              context, itemSelect, index, acao, data, onDataUpdate);
         }
       }
     } else if (selectModel.tipoSelecao == SelectAnyPage.TIPO_SELECAO_SIMPLES) {

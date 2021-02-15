@@ -236,7 +236,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
                     itemBuilder: (context, index) {
                       return Observer(
                           builder: (_) => _getItemList(
-                              widget.controller.listaExibida[index]));
+                              widget.controller.listaExibida[index], index));
                     })),
           );
       });
@@ -265,7 +265,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
     }
   }
 
-  Widget _getItemList(ItemSelect itemSelect) {
+  Widget _getItemList(ItemSelect itemSelect, int index) {
     if (itemSelect.strings.length <= 2) {
       return new Padding(
           padding: EdgeInsets.only(left: 5, right: 5),
@@ -285,14 +285,14 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
                     itemSelect.strings.entries.toList()[1], itemSelect.object)
                 : null,
             onTap: () async {
-              UtilsWidget.tratarOnTap(context, itemSelect,
+              UtilsWidget.tratarOnTap(context, itemSelect, index,
                   widget.controller.selectModel, widget.controller.data, () {
                 widget.controller.loaded = false;
                 carregarDados();
               });
             },
             onLongPress: () {
-              UtilsWidget.tratarOnLongPres(context, itemSelect,
+              UtilsWidget.tratarOnLongPres(context, itemSelect, index,
                   widget.controller.selectModel, widget.controller.data, () {
                 widget.controller.loaded = false;
                 carregarDados();
@@ -303,14 +303,14 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
       return Card(
         child: InkWell(
           onTap: () {
-            UtilsWidget.tratarOnTap(context, itemSelect,
+            UtilsWidget.tratarOnTap(context, itemSelect, index,
                 widget.controller.selectModel, widget.controller.data, () {
               widget.controller.loaded = false;
               carregarDados();
             });
           },
           onLongPress: () {
-            UtilsWidget.tratarOnLongPres(context, itemSelect,
+            UtilsWidget.tratarOnLongPres(context, itemSelect, index,
                 widget.controller.selectModel, widget.controller.data, () {
               widget.controller.loaded = false;
               carregarDados();
@@ -421,7 +421,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
           mini: widgets.isNotEmpty,
           tooltip: acao.descricao,
           onPressed: () {
-            UtilsWidget.onAction(context, null, acao, widget.data, () {
+            UtilsWidget.onAction(context, null, null, acao, widget.data, () {
               widget.controller.loaded = false;
               carregarDados();
             });

@@ -12,11 +12,15 @@ class UtilsWidget {
       BuildContext context,
       Map data,
       Function(ItemSelect, bool) onSelected,
-      Function reloadData) {
+      Function reloadData,
+      int typeScreen) {
     List<DataCell> cells = [];
     for (MapEntry mapEntry in itemSelect.strings.entries) {
-      cells.add(DataCell(getLinha(selectModel, mapEntry,
-          itemSelect.object is Map ? itemSelect.object : itemSelect.strings)));
+      cells.add(DataCell(getLinha(
+          selectModel,
+          mapEntry,
+          itemSelect.object is Map ? itemSelect.object : itemSelect.strings,
+          typeScreen)));
     }
     if (selectModel.acoes?.isNotEmpty == true) {
       List<Widget> widgets = [];
@@ -54,11 +58,12 @@ class UtilsWidget {
               : []);
   }
 
-  static Widget getLinha(SelectModel selectModel, MapEntry item, Map map) {
+  static Widget getLinha(
+      SelectModel selectModel, MapEntry item, Map map, int typeScreen) {
     Linha linha = selectModel.linhas
         .firstWhere((linha) => linha.chave == item.key, orElse: () => null);
     if (linha != null && linha.personalizacao != null) {
-      return linha.personalizacao(map);
+      return linha.personalizacao(map, typeScreen: typeScreen);
     } else {
       if (item.value?.toString()?.isNullOrBlank != false) {
         return SelectableText(
@@ -144,11 +149,12 @@ class UtilsWidget {
             child: new Wrap(
               children: acoes
                   .map((acao) => new ListTile(
+                      leading: acao.icon,
                       title: new Text(acao.descricao),
                       onTap: () {
                         Navigator.pop(context);
                         UtilsWidget.onAction(
-                            context, null, acao, data, reloadData);
+                            context, itemSelect, acao, data, reloadData);
                       }))
                   .toList(),
             ),

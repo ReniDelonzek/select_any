@@ -22,8 +22,18 @@ class SelectAnyPage extends StatefulWidget {
 
   final SelectModel _selectModel;
   Map data;
+  SelectAnyController controller;
+  final bool showBackButton;
 
-  SelectAnyPage(this._selectModel, {this.data});
+  SelectAnyPage(this._selectModel,
+      {this.data, this.controller, this.showBackButton = true}) {
+    if (controller == null) {
+      controller = SelectAnyController();
+    }
+    controller.init(_selectModel.titulo, _selectModel, data);
+    controller.confirmarParaCarregarDados =
+        _selectModel.confirmarParaCarregarDados;
+  }
 
   @override
   _SelectAnyPageState createState() {
@@ -32,10 +42,8 @@ class SelectAnyPage extends StatefulWidget {
 }
 
 class _SelectAnyPageState extends State<SelectAnyPage> {
-  SelectAnyController controller;
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
       new GlobalKey<RefreshIndicatorState>();
-  bool loaded = false;
 
   // indica se está sendo usada a fonte alternativa ou nao
   bool fonteAlternativa = false;
@@ -43,10 +51,6 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
 
   @override
   void initState() {
-    controller = SelectAnyController(
-        widget._selectModel.titulo, widget._selectModel, widget.data);
-    controller.confirmarParaCarregarDados =
-        widget._selectModel.confirmarParaCarregarDados;
     super.initState();
   }
 
@@ -57,23 +61,23 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
 
   @override
   void didChangeDependencies() {
-    if (!controller.confirmarParaCarregarDados) {
-      carregarDados();
-    }
     super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
+    if (!widget.controller.confirmarParaCarregarDados) {
+      carregarDados();
+    }
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Observer(builder: (_) => controller.appBarTitle),
+        title: Observer(builder: (_) => widget.controller.appBarTitle),
         actions: [
           Observer(builder: (_) {
-            if (controller.typeDiplay == 1) {
+            if (widget.controller.typeDiplay == 1) {
               return IconButton(
-                icon: controller.searchIcon,
+                icon: widget.controller.searchIcon,
                 onPressed: _searchPressed,
               );
             } else {
@@ -90,16 +94,16 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
                   ? Colors.white
                   : Colors.black,
               onTap: (pos) {
-                if (controller.typeDiplay == 1) {
+                if (widget.controller.typeDiplay == 1) {
                   Navigator.pop(
                       context,
-                      controller.list
+                      widget.controller.list
                           .where((item) => item.isSelected)
                           .toList());
                 } else {
                   Navigator.pop(
                       context,
-                      controller.list
+                      widget.controller.list
                           .where((item) => item.isSelected)
                           .toList());
                 }
@@ -129,27 +133,27 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
   /// Retorna o conteúdo principal da tela
   Widget _getBody() {
     return Observer(builder: (_) {
-      if (controller.tipoTeladinamica) {
+      if (widget.controller.tipoTeladinamica) {
         WidgetsBinding.instance.addPostFrameCallback((_) async {
           if (MediaQuery.of(context).size.width > 800) {
-            if (controller.typeDiplay != 2) {
-              controller.typeDiplay = 2;
+            if (widget.controller.typeDiplay != 2) {
+              widget.controller.typeDiplay = 2;
 
               _searchPressed();
             }
           } else {
-            if (controller.typeDiplay != 1) {
+            if (widget.controller.typeDiplay != 1) {
               carregarDados();
-              controller.typeDiplay = 1;
+              widget.controller.typeDiplay = 1;
             }
           }
         });
       }
-      if (controller.typeDiplay == 2) {
+      if (widget.controller.typeDiplay == 2) {
         return TableDataWidget(widget._selectModel,
-            controller: controller, carregarDados: false);
+            controller: widget.controller, carregarDados: false);
       } else {
-        if (!controller.confirmarParaCarregarDados) {
+        if (!widget.controller.confirmarParaCarregarDados) {
           return _getStreamBody();
         } else {
           return Center(
@@ -159,7 +163,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
                   onPressed: () {
                     /// Aqui é vantagem usar o setState, pois toda a tela precisa ser recarregada
                     setState(() {
-                      controller.confirmarParaCarregarDados = false;
+                      widget.controller.confirmarParaCarregarDados = false;
                       carregarDados();
                     });
                   }));
@@ -174,22 +178,23 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
 
   Widget _getListBuilder(BuildContext context) {
     return Observer(builder: (_) {
-      if (controller.loading == true) {
+      if (widget.controller.loading == true) {
         return new Center(child: new RefreshProgressIndicator());
       }
-      if (controller.error != null) {
+      if (widget.controller.error != null) {
         if (widget._selectModel.fonteDadosAlternativa != null &&
-            controller.fonteDadoAtual !=
+            widget.controller.fonteDadoAtual !=
                 widget._selectModel.fonteDadosAlternativa) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             //usa esse artefato para nao dar problema com o setstate
-            loaded = false;
+            widget.controller.loaded = false;
             carregarDados();
             setState(() async {
-              controller.fonteDadoAtual =
+              widget.controller.fonteDadoAtual =
                   widget._selectModel.fonteDadosAlternativa;
-              controller.setDataSource(offset: -1);
-              // controller.streamController.addStream((await controller
+              widget.controller.setDataSource(
+                  offset: widget.controller.typeDiplay == 1 ? -1 : 0);
+              // widget.controller.streamController.addStream((await widget.controller
               //     .fonteDadoAtual
               //     .getList(-1, 0, widget._selectModel)));
             });
@@ -198,51 +203,65 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
         }
         return FalhaWidget(
           'Houve uma falha ao recuperar os dados',
-          error: controller.error,
+          error: widget.controller.error,
         );
       }
       //_gerarLista((snapshot.data as ResponseData).data);
       return Observer(builder: (_) {
-        if (controller.listaExibida.isEmpty == true)
+        if (widget.controller.listaExibida.isEmpty == true)
           return Center(child: new Text('Nenhum registro encontrado'));
         else
           return RefreshIndicator(
             onRefresh: () async {
-              loaded = false;
+              widget.controller.loaded = false;
               carregarDados();
             },
             key: _refreshIndicatorKey,
-            child: new ListView.builder(
-                itemCount: controller.listaExibida.length,
-                itemBuilder: (context, index) {
-                  return Observer(
-                      builder: (_) =>
-                          _getItemList(controller.listaExibida[index]));
-                }),
+            child: NotificationListener<ScrollNotification>(
+                onNotification: (ScrollNotification scrollInfo) {
+                  if (scrollInfo is ScrollEndNotification &&
+                      scrollInfo.metrics.extentAfter == 0) {
+                    print('Carregar mais dados');
+                    if (widget.controller.total == 0 ||
+                        widget.controller.page * 10 <=
+                            widget.controller.total) {
+                      widget.controller.page++;
+                      widget.controller.setDataSource();
+                    }
+                  }
+                  return true;
+                },
+                child: ListView.builder(
+                    itemCount: widget.controller.listaExibida.length,
+                    itemBuilder: (context, index) {
+                      return Observer(
+                          builder: (_) => _getItemList(
+                              widget.controller.listaExibida[index]));
+                    })),
           );
       });
     });
   }
 
   void _searchPressed() {
-    if (controller.searchIcon.icon == Icons.search &&
-        controller.typeDiplay == 1) {
-      controller.searchIcon = new Icon(Icons.close);
-      controller.appBarTitle = Container(
+    if (widget.controller.searchIcon.icon == Icons.search &&
+        widget.controller.typeDiplay == 1) {
+      widget.controller.searchIcon = new Icon(Icons.close);
+      widget.controller.appBarTitle = Container(
         alignment: Alignment.topRight,
         constraints: BoxConstraints(maxWidth: 300),
         child: TextField(
           autofocus: true,
-          controller: controller.filter,
+          controller: widget.controller.filter,
           decoration: new InputDecoration(
               prefixIcon: new Icon(Icons.search), hintText: 'Pesquise...'),
         ),
       );
     } else {
-      controller.searchIcon = new Icon(Icons.search);
-      controller.appBarTitle = new Text(widget._selectModel.titulo);
-      controller.searchText = '';
-      controller.filter.clear();
+      widget.controller.searchIcon = new Icon(Icons.search);
+      widget.controller.appBarTitle = new Text(widget._selectModel.titulo);
+      widget.controller.searchText = '';
+      widget.controller.filter.clear();
     }
   }
 
@@ -266,18 +285,16 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
                     itemSelect.strings.entries.toList()[1], itemSelect.object)
                 : null,
             onTap: () async {
-              UtilsWidget.tratarOnTap(
-                  context, itemSelect, controller.selectModel, controller.data,
-                  () {
-                loaded = false;
+              UtilsWidget.tratarOnTap(context, itemSelect,
+                  widget.controller.selectModel, widget.controller.data, () {
+                widget.controller.loaded = false;
                 carregarDados();
               });
             },
             onLongPress: () {
-              UtilsWidget.tratarOnLongPres(
-                  context, itemSelect, controller.selectModel, controller.data,
-                  () {
-                loaded = false;
+              UtilsWidget.tratarOnLongPres(context, itemSelect,
+                  widget.controller.selectModel, widget.controller.data, () {
+                widget.controller.loaded = false;
                 carregarDados();
               });
             },
@@ -286,18 +303,16 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
       return Card(
         child: InkWell(
           onTap: () {
-            UtilsWidget.tratarOnTap(
-                context, itemSelect, controller.selectModel, controller.data,
-                () {
-              loaded = false;
+            UtilsWidget.tratarOnTap(context, itemSelect,
+                widget.controller.selectModel, widget.controller.data, () {
+              widget.controller.loaded = false;
               carregarDados();
             });
           },
           onLongPress: () {
-            UtilsWidget.tratarOnLongPres(
-                context, itemSelect, controller.selectModel, controller.data,
-                () {
-              loaded = false;
+            UtilsWidget.tratarOnLongPres(context, itemSelect,
+                widget.controller.selectModel, widget.controller.data, () {
+              widget.controller.loaded = false;
               carregarDados();
             });
           },
@@ -307,7 +322,9 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
                 ? Row(
                     children: [
                       Checkbox(
-                        onChanged: (valor) {},
+                        onChanged: (valor) {
+                          itemSelect.isSelected = valor;
+                        },
                         value: itemSelect.isSelected,
                       ),
                       SizedBox(
@@ -346,7 +363,8 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
     if (linha != null &&
         (linha.involucro != null || linha.personalizacao != null)) {
       if (linha.personalizacao != null) {
-        return linha.personalizacao(map);
+        return linha.personalizacao(map,
+            typeScreen: widget.controller.typeDiplay);
       }
       return Text(linha.involucro.replaceAll('???', valor),
           style: linha.estiloTexto);
@@ -367,7 +385,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
   }
 
   Widget _getMenuButton() {
-    if ((!kIsWeb) && !Platform.isAndroid) {
+    if (widget.showBackButton && (!kIsWeb) && !Platform.isAndroid) {
       return IconButton(
         icon: Icon(Icons.arrow_back_ios),
         onPressed: () {
@@ -375,7 +393,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
         },
       );
     } else
-      return null;
+      return SizedBox();
   }
 
   List<Widget> _getFloatingActionButtons() {
@@ -404,7 +422,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
           tooltip: acao.descricao,
           onPressed: () {
             UtilsWidget.onAction(context, null, acao, widget.data, () {
-              loaded = false;
+              widget.controller.loaded = false;
               carregarDados();
             });
           },
@@ -417,7 +435,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
   }
 
   void carregarDados() async {
-    if (!loaded) {
+    if (!widget.controller.loaded) {
       final Map args = ModalRoute.of(context).settings.arguments;
       if (args?.containsKey('data') ?? false) {
         if (widget.data == null) {
@@ -425,9 +443,11 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
         }
         widget.data.addAll(args['data']);
       }
-      controller.fonteDadoAtual = widget._selectModel.fonteDados;
-      controller.setDataSource(offset: -1);
-      loaded = true;
+      widget.controller.data = widget.data;
+      widget.controller.fonteDadoAtual = widget._selectModel.fonteDados;
+      widget.controller
+          .setDataSource(offset: widget.controller.typeDiplay == 1 ? -1 : 0);
+      widget.controller.loaded = true;
     }
     if (widget._selectModel.abrirPesquisaAutomaticamente == true) {
       _searchPressed();

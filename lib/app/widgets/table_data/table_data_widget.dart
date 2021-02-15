@@ -24,6 +24,7 @@ class TableDataWidget extends StatelessWidget {
     }
 
     if (carregarDados) {
+      controller.fonteDadoAtual = selectModel.fonteDados;
       controller.setDataSource();
     }
   }
@@ -159,7 +160,7 @@ class TableDataWidget extends StatelessWidget {
                     }
                     itemSelect.isSelected = b;
                   }
-                }, controller.reloadData));
+                }, controller.reloadData, 2));
                 i++;
               }
 

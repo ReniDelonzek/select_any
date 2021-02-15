@@ -100,7 +100,7 @@ class Linha {
       this.formatacaoDados});
 }
 
-typedef LinhaPersonalizada = Widget Function(dynamic dados);
+typedef LinhaPersonalizada = Widget Function(dynamic dados, {int typeScreen});
 
 typedef ValorPadrao = String Function(dynamic dados);
 
@@ -282,7 +282,7 @@ class Acao {
       this.funcao,
       this.icon,
       this.page,
-      this.fecharTela = true,
+      this.fecharTela = false,
       this.funcaoAtt});
 }
 

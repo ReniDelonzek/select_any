@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:diacritic/diacritic.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -59,8 +57,11 @@ abstract class _SelectAnyBase with Store {
   /// Indica se a o tipo de tela deve ser trocado de acordo com o tamanho de tela ou não
   final bool tipoTeladinamica;
 
-  _SelectAnyBase(this.title, this.selectModel, this.data,
-      {this.tipoTeladinamica = true}) {
+  _SelectAnyBase({this.tipoTeladinamica = true});
+
+  init(String title, SelectModel selectModel, Map data) {
+    this.selectModel = selectModel;
+    this.data = data;
     appBarTitle = Text(title);
     addFilterListener();
   }
@@ -97,6 +98,7 @@ abstract class _SelectAnyBase with Store {
   var error;
   @observable
   bool loading = false;
+  bool loaded = false;
 
   /// Guarda os ids de todos os registros selecionados
   /// Necessário para persistir o estado da seleção

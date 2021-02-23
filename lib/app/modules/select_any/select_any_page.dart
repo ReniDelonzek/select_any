@@ -118,9 +118,13 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 16.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: _getFloatingActionButtons(),
+        child: Observer(
+          builder: (_) => (widget.controller.typeDiplay == 2)
+              ? SizedBox()
+              : Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: _getFloatingActionButtons(),
+                ),
         ),
       ),
       body: Builder(builder: (buildContext) {

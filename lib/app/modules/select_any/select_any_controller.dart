@@ -100,18 +100,23 @@ abstract class _SelectAnyBase with Store {
   bool loading = false;
   bool loaded = false;
 
+  /// Guarda o time do ultimo clique da acao
+  /// Gambi para contornar caso o usuário clique em selecionar todos na tabela
+  int lastClick = 0;
+
   /// Guarda os ids de todos os registros selecionados
   /// Necessário para persistir o estado da seleção
   Set<ItemSelect> selectedList = {};
 
-  setDataSource({int offset}) async {
+  setDataSource({int offset, bool refresh = false}) async {
     /// Somente busca os dados caso eles ainda não esteja na lista
     /// Abordagem com problemas, pois a lista pode conter registros de outros ranges
     //if ((page - 1) * 10 >= list.length) {
     try {
       loading = true;
       offset ??= (page - 1) * 10;
-      (await fonteDadoAtual.getList(10, offset, selectModel, data: data))
+      (await fonteDadoAtual.getList(10, offset, selectModel,
+              data: data, refresh: refresh))
           .listen((event) {
         error = null;
         if (filter.text.trim().isEmpty) {
@@ -158,13 +163,13 @@ abstract class _SelectAnyBase with Store {
     //}
   }
 
-  setDataSourceSearch({int offset}) async {
+  setDataSourceSearch({int offset, bool refresh = false}) async {
     try {
       loading = true;
       String text = removeDiacritics(filter.text.trim()).toLowerCase();
       (await fonteDadoAtual.getListSearch(
               text, 10, offset ?? (page - 1) * 10, selectModel,
-              data: data))
+              data: data, refresh: refresh))
           .listen((ResponseData event) {
         error = null;
 
@@ -218,9 +223,9 @@ abstract class _SelectAnyBase with Store {
   reloadData() {
     list.clear();
     if (filter.text.trim().isEmpty) {
-      setDataSource();
+      setDataSource(refresh: true);
     } else {
-      setDataSourceSearch();
+      setDataSourceSearch(refresh: true);
     }
   }
 

@@ -188,12 +188,13 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             //usa esse artefato para nao dar problema com o setstate
             widget.controller.loaded = false;
-            carregarDados();
+
             setState(() async {
               widget.controller.fonteDadoAtual =
                   widget._selectModel.fonteDadosAlternativa;
               widget.controller.setDataSource(
                   offset: widget.controller.typeDiplay == 1 ? -1 : 0);
+              carregarDados();
               // widget.controller.streamController.addStream((await widget.controller
               //     .fonteDadoAtual
               //     .getList(-1, 0, widget._selectModel)));
@@ -213,8 +214,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
         else
           return RefreshIndicator(
             onRefresh: () async {
-              widget.controller.loaded = false;
-              carregarDados();
+              widget.controller.reloadData();
             },
             key: _refreshIndicatorKey,
             child: NotificationListener<ScrollNotification>(
@@ -285,36 +285,44 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
                     itemSelect.strings.entries.toList()[1], itemSelect.object)
                 : null,
             onTap: () async {
-              UtilsWidget.tratarOnTap(context, itemSelect, index,
-                  widget.controller.selectModel, widget.controller.data, () {
-                widget.controller.loaded = false;
-                carregarDados();
-              });
+              UtilsWidget.tratarOnTap(
+                  context,
+                  itemSelect,
+                  index,
+                  widget.controller.selectModel,
+                  widget.controller.data,
+                  widget.controller.reloadData);
             },
             onLongPress: () {
-              UtilsWidget.tratarOnLongPres(context, itemSelect, index,
-                  widget.controller.selectModel, widget.controller.data, () {
-                widget.controller.loaded = false;
-                carregarDados();
-              });
+              UtilsWidget.tratarOnLongPres(
+                  context,
+                  itemSelect,
+                  index,
+                  widget.controller.selectModel,
+                  widget.controller.data,
+                  widget.controller.reloadData);
             },
           ));
     } else {
       return Card(
         child: InkWell(
           onTap: () {
-            UtilsWidget.tratarOnTap(context, itemSelect, index,
-                widget.controller.selectModel, widget.controller.data, () {
-              widget.controller.loaded = false;
-              carregarDados();
-            });
+            UtilsWidget.tratarOnTap(
+                context,
+                itemSelect,
+                index,
+                widget.controller.selectModel,
+                widget.controller.data,
+                widget.controller.reloadData);
           },
           onLongPress: () {
-            UtilsWidget.tratarOnLongPres(context, itemSelect, index,
-                widget.controller.selectModel, widget.controller.data, () {
-              widget.controller.loaded = false;
-              carregarDados();
-            });
+            UtilsWidget.tratarOnLongPres(
+                context,
+                itemSelect,
+                index,
+                widget.controller.selectModel,
+                widget.controller.data,
+                widget.controller.reloadData);
           },
           child: Padding(
             padding: const EdgeInsets.all(16.0),
@@ -363,8 +371,8 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
     if (linha != null &&
         (linha.involucro != null || linha.personalizacao != null)) {
       if (linha.personalizacao != null) {
-        return linha.personalizacao(map,
-            typeScreen: widget.controller.typeDiplay);
+        return linha.personalizacao(CustomLineData(
+            data: map, typeScreen: widget.controller.typeDiplay));
       }
       return Text(linha.involucro.replaceAll('???', valor),
           style: linha.estiloTexto);
@@ -421,10 +429,8 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
           mini: widgets.isNotEmpty,
           tooltip: acao.descricao,
           onPressed: () {
-            UtilsWidget.onAction(context, null, null, acao, widget.data, () {
-              widget.controller.loaded = false;
-              carregarDados();
-            });
+            UtilsWidget.onAction(context, null, null, acao, widget.data,
+                widget.controller.reloadData);
           },
           child: acao.icon ?? Icon(Icons.add),
         ));

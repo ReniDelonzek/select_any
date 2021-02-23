@@ -1,10 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:mobx/mobx.dart';
+import 'package:msk_utils/extensions/date.dart';
+import 'package:msk_utils/extensions/map.dart';
+import 'package:msk_utils/extensions/string.dart';
 import 'package:msk_utils/models/item_select.dart';
 import 'package:msk_utils/utils/utils_platform.dart';
-import 'package:msk_utils/extensions/string.dart';
-import 'package:msk_utils/extensions/map.dart';
-import 'package:msk_utils/extensions/date.dart';
 
 part 'models.g.dart';
 
@@ -30,7 +30,7 @@ class SelectModel {
   List<String> legendas;
 
   /// Indica a fonte dos dados a ser exibidos
-  _DataSourceBase fonteDados;
+  DataSource fonteDados;
 
   /// Uma lista dos ids que devem iniciar pré-selecionados
   @Deprecated("Use preSelected")
@@ -44,13 +44,16 @@ class SelectModel {
   bool exibirPreSelecionados;
 
   /// Caso a fonte de daos principal falhe, tenta buscar os dados da segunda fonte
-  _DataSourceBase fonteDadosAlternativa;
+  DataSource fonteDadosAlternativa;
 
   /// Caso seja true, abre a pesquisa automaticamente
   bool abrirPesquisaAutomaticamente;
 
   /// caso true, não carrega os dados automaticamente, exibindo um botão na tela para fazer isso
   bool confirmarParaCarregarDados;
+
+  /// Indica se o botão de selecionar todos ficará visível ou não
+  bool permitirSelecionarTodos;
 
   SelectModel(
       this.titulo, this.id, this.linhas, this.fonteDados, this.tipoSelecao,
@@ -63,7 +66,8 @@ class SelectModel {
       this.legendas,
       this.abrirPesquisaAutomaticamente,
       this.preSelected,
-      this.confirmarParaCarregarDados = false}) {
+      this.confirmarParaCarregarDados = false,
+      this.permitirSelecionarTodos}) {
     if (abrirPesquisaAutomaticamente == null) {
       abrirPesquisaAutomaticamente = !UtilsPlatform.isMobile();
     }
@@ -94,13 +98,22 @@ class Linha {
       this.involucro,
       this.personalizacao,
       this.valorPadrao,
-      this.nome,
+      @required this.nome,
       this.chavesLista,
       this.estiloTexto,
       this.formatacaoDados});
 }
 
-typedef LinhaPersonalizada = Widget Function(dynamic dados, {int typeScreen});
+typedef LinhaPersonalizada = Widget Function(CustomLineData);
+
+class CustomLineData {
+  dynamic data;
+  int typeScreen;
+  CustomLineData({
+    this.data,
+    this.typeScreen,
+  });
+}
 
 typedef ValorPadrao = String Function(dynamic dados);
 
@@ -174,11 +187,11 @@ abstract class _DataSourceBase with Store {
 
   Future<Stream<ResponseData>> getList(
       int limit, int offset, SelectModel selectModel,
-      {Map data});
+      {Map data, bool refresh = false});
 
   Future<Stream<ResponseData>> getListSearch(
       String text, int limit, int offset, SelectModel selectModel,
-      {Map data});
+      {Map data, bool refresh});
 
   List<ItemSelectTable> generateList(
       List data, int offset, SelectModel selectModel) {
@@ -286,10 +299,17 @@ class Acao {
       this.funcaoAtt});
 }
 
-typedef Funcao = void Function({dynamic data, int index});
+typedef Funcao = void Function(DataFunction);
 typedef FuncaoAtt = Future<bool> Function({dynamic data, BuildContext context});
 
 class ItemSelectExpanded = _ItemSelectExpandedBase with _$ItemSelectExpanded;
+
+class DataFunction {
+  dynamic data;
+  int index;
+  BuildContext context;
+  DataFunction({this.data, this.index, this.context});
+}
 
 abstract class _ItemSelectExpandedBase extends ItemSelect with Store {
   @observable

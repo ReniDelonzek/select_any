@@ -36,15 +36,16 @@ class UtilsWidget {
       }
       cells.add(DataCell(Row(children: widgets)));
     }
-    DataRow dataRow = DataRow(
+    DataRow dataRow = DataRow.byIndex(
+        index: index,
         cells: cells,
-        onSelectChanged: selectModel.tipoSelecao ==
-                    SelectAnyPage.TIPO_SELECAO_SIMPLES ||
-                selectModel.tipoSelecao == SelectAnyPage.TIPO_SELECAO_MULTIPLA
-            ? (b) {
-                onSelected(itemSelect, b);
-              }
-            : null,
+        onSelectChanged:
+            //  selectModel.tipoSelecao ==
+            //             SelectAnyPage.TIPO_SELECAO_SIMPLES ||
+            //         selectModel.tipoSelecao == SelectAnyPage.TIPO_SELECAO_MULTIPLA
+            (b) {
+          onSelected(itemSelect, b);
+        },
         selected: itemSelect.isSelected ?? false);
     return dataRow;
   }
@@ -64,11 +65,12 @@ class UtilsWidget {
     Linha linha = selectModel.linhas
         .firstWhere((linha) => linha.chave == item.key, orElse: () => null);
     if (linha != null && linha.personalizacao != null) {
-      return linha.personalizacao(map, typeScreen: typeScreen);
+      return linha
+          .personalizacao(CustomLineData(data: map, typeScreen: typeScreen));
     } else {
       if (item.value?.toString()?.isNullOrBlank != false) {
         return SelectableText(
-          linha.valorPadrao ?? '',
+          linha.valorPadrao?.call(map) ?? '',
         );
       }
       return SelectableText(item.value?.toString());
@@ -81,7 +83,8 @@ class UtilsWidget {
       if (acao.fecharTela) {
         Navigator.pop(context);
       }
-      acao.funcao(data: itemSelect, index: index);
+      acao.funcao(
+          DataFunction(data: itemSelect, index: index, context: context));
     }
     if (acao.funcaoAtt != null) {
       if (acao.fecharTela) {
@@ -120,8 +123,9 @@ class UtilsWidget {
           ? acao.route
           : new MaterialPageRoute(
               builder: (_) => acao.page, settings: settings));
-      if (acao.fecharTela) {
-        if (res != null) {
+
+      if (res != null) {
+        if (acao.fecharTela) {
           if (res is Map &&
               res['dados'] != null &&
               res['dados'] is Map &&
@@ -136,6 +140,8 @@ class UtilsWidget {
           } else {
             Navigator.pop(context, res);
           }
+        } else {
+          reloadData();
         }
       }
     }

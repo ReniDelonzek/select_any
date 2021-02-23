@@ -37,9 +37,8 @@ class TableDataWidget extends StatelessWidget {
                 icon: e.icon ?? Icon(Icons.add),
                 tooltip: e.descricao,
                 onPressed: () {
-                  if (e.funcao != null) {
-                    e.funcao();
-                  }
+                  UtilsWidget.onAction(context, null, null, e, controller.data,
+                      controller.reloadData);
                 },
               ))
           .toList());
@@ -148,9 +147,26 @@ class TableDataWidget extends StatelessWidget {
                     controller.data, (ItemSelect itemSelect, bool b) {
                   if (controller.selectModel.tipoSelecao ==
                       SelectAnyPage.TIPO_SELECAO_SIMPLES) {
-                    if (Navigator?.of(context)?.canPop() == true) {
-                      Navigator?.of(context)?.pop(itemSelect);
+                    if (Navigator?.maybeOf(context)?.canPop() == true) {
+                      Navigator?.maybeOf(context)?.pop(itemSelect.object);
                     }
+                  }
+                  if (controller.selectModel.tipoSelecao ==
+                      SelectAnyPage.TIPO_SELECAO_ACAO) {
+                    /// Gambi para evitar problemas ao usuário clicar em selecionar todos
+                    if ((controller.lastClick + 1000) <
+                        (DateTime.now().millisecondsSinceEpoch)) {
+                      controller.lastClick =
+                          DateTime.now().millisecondsSinceEpoch;
+                      UtilsWidget.tratarOnTap(
+                          context,
+                          itemSelect,
+                          i,
+                          controller.selectModel,
+                          controller.data,
+                          controller.reloadData);
+                    }
+                    //UtilsWidget.exibirListaAcoes()
                   } else {
                     if (b) {
                       controller.selectedList.add(itemSelect);

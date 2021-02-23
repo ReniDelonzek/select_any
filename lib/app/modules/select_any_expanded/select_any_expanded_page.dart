@@ -151,7 +151,7 @@ class _SelectAnyExpandedPageState extends State<SelectAnyExpandedPage> {
     if (linha != null &&
         (linha.involucro != null || linha.personalizacao != null)) {
       if (linha.personalizacao != null) {
-        return linha.personalizacao(map);
+        return linha.personalizacao(CustomLineData(data: map));
       }
       return Text(linha.involucro.replaceAll('???', valor),
           style: linha.estiloTexto);
@@ -176,7 +176,7 @@ class _SelectAnyExpandedPageState extends State<SelectAnyExpandedPage> {
       if (acao.fecharTela) {
         Navigator.pop(context);
       }
-      acao.funcao(data: itemSelect);
+      acao.funcao(DataFunction(data: itemSelect, context: context));
     }
     if (acao.funcaoAtt != null) {
       if (acao.fecharTela) {

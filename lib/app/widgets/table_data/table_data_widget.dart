@@ -96,6 +96,18 @@ class TableDataWidget extends StatelessWidget {
                                   },
                                 )),
                             Icon(Icons.search),
+                            if (controller.fonteDadoAtual.allowExport == true)
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  SizedBox(width: 8),
+                                  IconButton(
+                                      icon: Icon(Icons.file_download),
+                                      onPressed: () {
+                                        controller.export();
+                                      })
+                                ],
+                              )
                           ],
                         )),
                   ),

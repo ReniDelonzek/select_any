@@ -11,6 +11,7 @@ import 'package:select_any/app/widgets/falha/falha_widget.dart';
 import 'package:select_any/app/widgets/table_data/table_data_widget.dart';
 import 'package:select_any/app/widgets/utils_widget.dart';
 
+// ignore: must_be_immutable
 class SelectAnyPage extends StatefulWidget {
   /// Retorna Map<String, dynamic>
   static const int TIPO_SELECAO_SIMPLES = 0;

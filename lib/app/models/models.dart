@@ -180,10 +180,13 @@ abstract class _DataSourceBase with Store {
   /// É util para econimizar banda
   final int searchDelay;
 
+  /// Indica se será permitido exportar dessa fonte ou não
+  final bool allowExport;
+
   @observable
   ObservableList<ItemSelect> listData = ObservableList();
 
-  _DataSourceBase({this.id, this.searchDelay = 300});
+  _DataSourceBase({this.id, this.searchDelay = 300, this.allowExport = false});
 
   Future<Stream<ResponseData>> getList(
       int limit, int offset, SelectModel selectModel,
@@ -240,6 +243,8 @@ abstract class _DataSourceBase with Store {
     }
     return lista;
   }
+
+  Future exportData(SelectModel selectModel);
 }
 
 class ResponseData {

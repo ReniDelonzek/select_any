@@ -57,6 +57,26 @@ abstract class _SelectAnyBase with Store {
   /// Indica se a o tipo de tela deve ser trocado de acordo com o tamanho de tela ou não
   final bool tipoTeladinamica;
 
+  SelectModel selectModel;
+  @observable
+  int page = 1;
+  @observable
+  int total = 0;
+  @observable
+  ObservableList<ItemSelectTable> list = ObservableList();
+  var error;
+  @observable
+  bool loading = false;
+  bool loaded = false;
+
+  /// Guarda o time do ultimo clique da acao
+  /// Gambi para contornar caso o usuário clique em selecionar todos na tabela
+  int lastClick = 0;
+
+  /// Guarda os ids de todos os registros selecionados
+  /// Necessário para persistir o estado da seleção
+  Set<ItemSelect> selectedList = {};
+
   _SelectAnyBase({this.tipoTeladinamica = true});
 
   init(String title, SelectModel selectModel, Map data) {
@@ -83,30 +103,6 @@ abstract class _SelectAnyBase with Store {
     list.clear();
     filter.clear();
   }
-
-  /***
-   * Table controlller
-   */
-
-  SelectModel selectModel;
-  @observable
-  int page = 1;
-  @observable
-  int total = 0;
-  @observable
-  ObservableList<ItemSelectTable> list = ObservableList();
-  var error;
-  @observable
-  bool loading = false;
-  bool loaded = false;
-
-  /// Guarda o time do ultimo clique da acao
-  /// Gambi para contornar caso o usuário clique em selecionar todos na tabela
-  int lastClick = 0;
-
-  /// Guarda os ids de todos os registros selecionados
-  /// Necessário para persistir o estado da seleção
-  Set<ItemSelect> selectedList = {};
 
   setDataSource({int offset, bool refresh = false}) async {
     /// Somente busca os dados caso eles ainda não esteja na lista
@@ -232,5 +228,9 @@ abstract class _SelectAnyBase with Store {
   removeItem(int id) {
     list.removeWhere((element) => element.id == id);
     --total;
+  }
+
+  export() {
+    fonteDadoAtual.exportData(selectModel);
   }
 }

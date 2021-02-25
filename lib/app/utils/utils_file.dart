@@ -4,10 +4,14 @@ import 'package:msk_utils/utils/utils_platform.dart';
 import 'dart:io' as io;
 
 import 'package:path_provider/path_provider.dart';
+import 'package:share_extend/share_extend.dart';
 
 class UtilsFile {
   static saveFileString(String s,
-      {String fileName, String extensionFile, String dirComplementar}) async {
+      {String fileName,
+      String extensionFile,
+      String dirComplementar,
+      String contentExport}) async {
     String diretorio;
     String separator = "/";
     if (UtilsPlatform.isWindows()) {
@@ -41,6 +45,10 @@ class UtilsFile {
       await UtilsPlatform.openProcess('explorer.exe', args: ['${dir.path}']);
     } else if (Platform.isMacOS) {
       await UtilsPlatform.openProcess('open', args: ['${dir.path}']);
+    } else if (UtilsPlatform.isMobile()) {
+      ShareExtend.share(file.path, "file",
+          sharePanelTitle: 'Selecione por onde deseja enviar seu arquivo',
+          subject: contentExport ?? 'Segue em anexo seu relatório');
     }
   }
 }

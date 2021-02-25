@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:msk_utils/models/item_select.dart';
+import 'package:msk_utils/utils/utils_platform.dart';
 import 'package:select_any/app/models/models.dart';
 import 'package:select_any/app/modules/select_any/select_any_controller.dart';
 import 'package:select_any/app/widgets/falha/falha_widget.dart';
@@ -34,6 +35,7 @@ class SelectAnyPage extends StatefulWidget {
     controller.init(_selectModel.titulo, _selectModel, data);
     controller.confirmarParaCarregarDados =
         _selectModel.confirmarParaCarregarDados;
+    controller.typeDiplay = UtilsPlatform.isMobile() ? 1 : 2;
   }
 
   @override
@@ -67,6 +69,23 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.controller.tipoTeladinamica) {
+      //WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (MediaQuery.of(context).size.width > 800) {
+        if (widget.controller.typeDiplay != 2) {
+          widget.controller.typeDiplay = 2;
+          _searchPressed();
+        }
+      } else {
+        if (widget.controller.typeDiplay != 1) {
+          widget.controller.typeDiplay = 1;
+          // WidgetsBinding.instance.addPostFrameCallback((_) async {
+          //   carregarDados();
+          // });
+        }
+      }
+      //});
+    }
     if (!widget.controller.confirmarParaCarregarDados) {
       carregarDados();
     }
@@ -138,22 +157,6 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
   /// Retorna o conteúdo principal da tela
   Widget _getBody() {
     return Observer(builder: (_) {
-      if (widget.controller.tipoTeladinamica) {
-        WidgetsBinding.instance.addPostFrameCallback((_) async {
-          if (MediaQuery.of(context).size.width > 800) {
-            if (widget.controller.typeDiplay != 2) {
-              widget.controller.typeDiplay = 2;
-
-              _searchPressed();
-            }
-          } else {
-            if (widget.controller.typeDiplay != 1) {
-              carregarDados();
-              widget.controller.typeDiplay = 1;
-            }
-          }
-        });
-      }
       if (widget.controller.typeDiplay == 2) {
         return TableDataWidget(widget._selectModel,
             controller: widget.controller, carregarDados: false);
@@ -226,12 +229,15 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
                 onNotification: (ScrollNotification scrollInfo) {
                   if (scrollInfo is ScrollEndNotification &&
                       scrollInfo.metrics.extentAfter == 0) {
-                    print('Carregar mais dados');
                     if (widget.controller.total == 0 ||
                         widget.controller.page * 10 <=
                             widget.controller.total) {
                       widget.controller.page++;
                       widget.controller.setDataSource();
+                      print('Carregar mais dados');
+                    } else {
+                      print('Não carregar mais');
+                      print(widget.controller.list.length);
                     }
                   }
                   return true;

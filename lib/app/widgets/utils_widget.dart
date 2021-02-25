@@ -131,8 +131,7 @@ class UtilsWidget {
               res['dados'] is Map &&
               res['dados'].isNotEmpty) {
             Navigator.pop(context, res['dados']);
-          }
-          if (res is Map &&
+          } else if (res is Map &&
               res['data'] != null &&
               res['data'] is Map &&
               res['data'].isNotEmpty) {

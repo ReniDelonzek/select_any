@@ -7,6 +7,7 @@ import 'package:select_any/app/models/models.dart';
 import 'package:select_any/app/modules/select_any/select_any_page.dart';
 import 'package:select_any/app/modules/select_any_expanded/select_any_expanded_controller.dart';
 
+// ignore: must_be_immutable
 class SelectAnyExpandedPage extends StatefulWidget {
   final SelectModel _selectModel;
   final ObservableList<ItemSelectExpanded> itens;

@@ -245,6 +245,8 @@ abstract class _DataSourceBase with Store {
   }
 
   Future exportData(SelectModel selectModel);
+
+  Future clear();
 }
 
 class ResponseData {

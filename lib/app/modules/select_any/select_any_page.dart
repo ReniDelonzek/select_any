@@ -59,6 +59,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
 
   @override
   void dispose() {
+    widget.controller.dispose();
     super.dispose();
   }
 

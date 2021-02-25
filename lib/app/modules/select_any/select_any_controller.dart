@@ -102,6 +102,8 @@ abstract class _SelectAnyBase with Store {
   void dispose() {
     list.clear();
     filter.clear();
+    fonteDadoAtual.listData.clear();
+    fonteDadoAtual.clear();
   }
 
   setDataSource({int offset, bool refresh = false}) async {

@@ -124,7 +124,7 @@ class UtilsWidget {
           : new MaterialPageRoute(
               builder: (_) => acao.page, settings: settings));
 
-      if (res != null) {
+      if (res != null && res != false) {
         if (acao.fecharTela) {
           if (res is Map &&
               res['dados'] != null &&

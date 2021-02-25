@@ -10,6 +10,7 @@ environment:
   flutter: ">=1.17.0"
 
 dependencies:
+  path_provider: ^1.6.5
   diacritic: ^0.1.1
   bloc_pattern: ^2.5.1
   mobx: ^0.3.9+3

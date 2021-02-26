@@ -194,18 +194,12 @@ class TableDataWidget extends StatelessWidget {
 
               /// Deixa dentro de uma row para deixar como largura máxima
               /// Verificar aborgagens mais eficientes
-              return Row(
-                children: [
-                  Expanded(
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: DataTable(
-                          columns: UtilsWidget.generateDataColumn(
-                              controller.selectModel),
-                          rows: rows),
-                    ),
-                  ),
-                ],
+              return SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: DataTable(
+                    columns:
+                        UtilsWidget.generateDataColumn(controller.selectModel),
+                    rows: rows),
               );
             }),
             Container(

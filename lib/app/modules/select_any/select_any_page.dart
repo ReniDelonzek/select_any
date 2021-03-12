@@ -3,6 +3,7 @@ import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:msk_utils/models/item_select.dart';
 import 'package:msk_utils/utils/utils_platform.dart';
@@ -11,6 +12,10 @@ import 'package:select_any/app/modules/select_any/select_any_controller.dart';
 import 'package:select_any/app/widgets/falha/falha_widget.dart';
 import 'package:select_any/app/widgets/table_data/table_data_widget.dart';
 import 'package:select_any/app/widgets/utils_widget.dart';
+
+class InsertIntent extends Intent {
+  const InsertIntent();
+}
 
 // ignore: must_be_immutable
 class SelectAnyPage extends StatefulWidget {
@@ -90,69 +95,103 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
     if (!widget.controller.confirmarParaCarregarDados) {
       carregarDados();
     }
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: Observer(builder: (_) => widget.controller.appBarTitle),
-        actions: [
-          Observer(builder: (_) {
-            if (widget.controller.typeDiplay == 1) {
-              return IconButton(
-                icon: widget.controller.searchIcon,
-                onPressed: _searchPressed,
-              );
-            } else {
-              return SizedBox();
-            }
-          })
-        ],
-        leading: _getMenuButton(),
-      ),
-      bottomNavigationBar: widget._selectModel.tipoSelecao ==
-              SelectAnyPage.TIPO_SELECAO_MULTIPLA
-          ? BottomNavigationBar(
-              selectedItemColor: Theme.of(context).brightness == Brightness.dark
-                  ? Colors.white
-                  : Colors.black,
-              onTap: (pos) {
-                if (widget.controller.typeDiplay == 1) {
-                  Navigator.pop(
+    return Shortcuts(
+        shortcuts: <LogicalKeySet, Intent>{
+          LogicalKeySet(LogicalKeyboardKey.escape): const DismissIntent(),
+          LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.keyS):
+              const InsertIntent(),
+          LogicalKeySet(LogicalKeyboardKey.insert): const InsertIntent(),
+        },
+        child: Actions(
+            actions: <Type, Action<Intent>>{
+              DismissIntent: CallbackAction<DismissIntent>(
+                  onInvoke: (DismissIntent intent) {
+                Navigator.pop(context);
+                return;
+              }),
+              InsertIntent:
+                  CallbackAction<InsertIntent>(onInvoke: (InsertIntent intent) {
+                if (widget._selectModel.botoes?.isNotEmpty == true) {
+                  UtilsWidget.onAction(
                       context,
-                      widget.controller.list
-                          .where((item) => item.isSelected)
-                          .toList());
-                } else {
-                  Navigator.pop(
-                      context,
-                      widget.controller.list
-                          .where((item) => item.isSelected)
-                          .toList());
+                      null,
+                      null,
+                      widget._selectModel.botoes.first,
+                      widget.data,
+                      widget.controller.reloadData);
                 }
-              },
-              items: <BottomNavigationBarItem>[
-                BottomNavigationBarItem(icon: SizedBox(), label: ''),
-                BottomNavigationBarItem(
-                    icon: Icon(Icons.done), label: 'Concluído'),
-              ],
-            )
-          : null,
-      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 16.0),
-        child: Observer(
-          builder: (_) => (widget.controller.typeDiplay == 2)
-              ? SizedBox()
-              : Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: _getFloatingActionButtons(),
-                ),
-        ),
-      ),
-      body: Builder(builder: (buildContext) {
-        this.buildContext = buildContext;
-        return _getBody();
-      }),
-    );
+                return;
+              }),
+            },
+            child: Focus(
+                autofocus: true,
+                child: Scaffold(
+                  appBar: AppBar(
+                    centerTitle: true,
+                    title:
+                        Observer(builder: (_) => widget.controller.appBarTitle),
+                    actions: [
+                      Observer(builder: (_) {
+                        if (widget.controller.typeDiplay == 1) {
+                          return IconButton(
+                            icon: widget.controller.searchIcon,
+                            onPressed: _searchPressed,
+                          );
+                        } else {
+                          return SizedBox();
+                        }
+                      })
+                    ],
+                    leading: _getMenuButton(),
+                  ),
+                  bottomNavigationBar: widget._selectModel.tipoSelecao ==
+                          SelectAnyPage.TIPO_SELECAO_MULTIPLA
+                      ? BottomNavigationBar(
+                          selectedItemColor:
+                              Theme.of(context).brightness == Brightness.dark
+                                  ? Colors.white
+                                  : Colors.black,
+                          onTap: (pos) {
+                            if (widget.controller.typeDiplay == 1) {
+                              Navigator.pop(
+                                  context,
+                                  widget.controller.list
+                                      .where((item) => item.isSelected)
+                                      .toList());
+                            } else {
+                              Navigator.pop(
+                                  context,
+                                  widget.controller.list
+                                      .where((item) => item.isSelected)
+                                      .toList());
+                            }
+                          },
+                          items: <BottomNavigationBarItem>[
+                            BottomNavigationBarItem(
+                                icon: SizedBox(), label: ''),
+                            BottomNavigationBarItem(
+                                icon: Icon(Icons.done), label: 'Concluído'),
+                          ],
+                        )
+                      : null,
+                  floatingActionButtonLocation:
+                      FloatingActionButtonLocation.endDocked,
+                  floatingActionButton: Padding(
+                    padding: const EdgeInsets.only(bottom: 16.0),
+                    child: Observer(
+                      builder: (_) => (widget.controller.typeDiplay == 2)
+                          ? SizedBox()
+                          : Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: _getFloatingActionButtons(),
+                            ),
+                    ),
+                  ),
+                  body: Builder(builder: (buildContext) {
+                    this.buildContext = buildContext;
+                    return _getBody();
+                  }),
+                ))));
   }
 
   /// Retorna o conteúdo principal da tela

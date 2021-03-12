@@ -234,7 +234,13 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
                         widget.controller.page * 10 <=
                             widget.controller.total) {
                       widget.controller.page++;
-                      widget.controller.setDataSource();
+                      if (widget.controller.searchText.isEmpty) {
+                        widget.controller.setDataSource(
+                            offset: widget.controller.typeDiplay == 1 ? -1 : 0);
+                      } else {
+                        widget.controller.setDataSourceSearch(
+                            offset: widget.controller.typeDiplay == 1 ? -1 : 0);
+                      }
                       print('Carregar mais dados');
                     } else {
                       print('Não carregar mais');

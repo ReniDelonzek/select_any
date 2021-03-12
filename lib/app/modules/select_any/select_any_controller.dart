@@ -118,14 +118,17 @@ abstract class _SelectAnyBase with Store {
           .listen((event) {
         error = null;
         if (filter.text.trim().isEmpty) {
-          /// Remove todos os registros que o id não consta no range retornado
-          list.removeWhere((element) {
-            return element.position <= event.end &&
-                element.position >= event.start &&
-                !event.data.any((e2) {
-                  return e2.id == element.id;
-                });
-          });
+          /// Caso seja -1, não remove nada pois ela deve retornar todos os registros
+          if (offset > -1) {
+            /// Remove todos os registros que o id não consta no range retornado
+            list.removeWhere((element) {
+              return element.position <= event.end &&
+                  element.position >= event.start &&
+                  !event.data.any((e2) {
+                    return e2.id == element.id;
+                  });
+            });
+          }
 
           event.data.forEach((item) {
             bool present = selectedList.any((element) => element.id == item.id);

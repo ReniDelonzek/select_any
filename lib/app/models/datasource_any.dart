@@ -59,8 +59,10 @@ abstract class DataSourceAny extends DataSource {
       subList = listAll;
     } else if (limit > 0 && limit + offset < tempList.length) {
       subList = tempList.sublist(offset, limit + offset);
-    } else {
+    } else if (offset < tempList.length) {
       subList = tempList.sublist(offset);
+    } else {
+      subList = tempList;
     }
     return Stream.value(ResponseData(
         total: tempList.length,

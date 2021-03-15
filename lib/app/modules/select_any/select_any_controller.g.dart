@@ -85,6 +85,26 @@ mixin _$SelectAnyController on _SelectAnyBase, Store {
     }, _$appBarTitleAtom, name: '${_$appBarTitleAtom.name}_set');
   }
 
+  final _$confirmarParaCarregarDadosAtom =
+      Atom(name: '_SelectAnyBase.confirmarParaCarregarDados');
+
+  @override
+  bool get confirmarParaCarregarDados {
+    _$confirmarParaCarregarDadosAtom.context
+        .enforceReadPolicy(_$confirmarParaCarregarDadosAtom);
+    _$confirmarParaCarregarDadosAtom.reportObserved();
+    return super.confirmarParaCarregarDados;
+  }
+
+  @override
+  set confirmarParaCarregarDados(bool value) {
+    _$confirmarParaCarregarDadosAtom.context.conditionallyRunInAction(() {
+      super.confirmarParaCarregarDados = value;
+      _$confirmarParaCarregarDadosAtom.reportChanged();
+    }, _$confirmarParaCarregarDadosAtom,
+        name: '${_$confirmarParaCarregarDadosAtom.name}_set');
+  }
+
   final _$pageAtom = Atom(name: '_SelectAnyBase.page');
 
   @override

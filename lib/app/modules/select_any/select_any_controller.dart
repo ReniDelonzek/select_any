@@ -52,6 +52,7 @@ abstract class _SelectAnyBase with Store {
 
   /// Cria uma nova variavel, pois se usar a do model,
   /// ela mantém as configurações mesmo depois de sair da tela
+  @observable
   bool confirmarParaCarregarDados = false;
 
   /// Indica se a o tipo de tela deve ser trocado de acordo com o tamanho de tela ou não
@@ -102,8 +103,8 @@ abstract class _SelectAnyBase with Store {
   void dispose() {
     list.clear();
     filter.clear();
-    fonteDadoAtual.listData.clear();
-    fonteDadoAtual.clear();
+    fonteDadoAtual?.listData?.clear();
+    fonteDadoAtual?.clear();
   }
 
   setDataSource({int offset, bool refresh = false}) async {

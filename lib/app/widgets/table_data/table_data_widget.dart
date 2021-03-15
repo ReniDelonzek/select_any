@@ -38,7 +38,7 @@ class TableDataWidget extends StatelessWidget {
                 tooltip: e.descricao,
                 onPressed: () {
                   UtilsWidget.onAction(context, null, null, e, controller.data,
-                      controller.reloadData);
+                      controller.reloadData, controller.fonteDadoAtual);
                 },
               ))
           .toList());
@@ -176,7 +176,8 @@ class TableDataWidget extends StatelessWidget {
                           i,
                           controller.selectModel,
                           controller.data,
-                          controller.reloadData);
+                          controller.reloadData,
+                          controller.fonteDadoAtual);
                     }
                     //UtilsWidget.exibirListaAcoes()
                   } else {
@@ -188,7 +189,7 @@ class TableDataWidget extends StatelessWidget {
                     }
                     itemSelect.isSelected = b;
                   }
-                }, controller.reloadData, 2));
+                }, controller.reloadData, 2, controller.fonteDadoAtual));
                 i++;
               }
 

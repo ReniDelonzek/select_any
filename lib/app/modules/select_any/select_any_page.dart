@@ -118,7 +118,8 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
                       null,
                       widget._selectModel.botoes.first,
                       widget.data,
-                      widget.controller.reloadData);
+                      widget.controller.reloadData,
+                      widget.controller.fonteDadoAtual);
                 }
                 return;
               }),
@@ -348,7 +349,8 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
                   index,
                   widget.controller.selectModel,
                   widget.controller.data,
-                  widget.controller.reloadData);
+                  widget.controller.reloadData,
+                  widget.controller.fonteDadoAtual);
             },
             onLongPress: () {
               UtilsWidget.tratarOnLongPres(
@@ -357,7 +359,8 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
                   index,
                   widget.controller.selectModel,
                   widget.controller.data,
-                  widget.controller.reloadData);
+                  widget.controller.reloadData,
+                  widget.controller.fonteDadoAtual);
             },
           ));
     } else {
@@ -370,7 +373,8 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
                 index,
                 widget.controller.selectModel,
                 widget.controller.data,
-                widget.controller.reloadData);
+                widget.controller.reloadData,
+                widget.controller.fonteDadoAtual);
           },
           onLongPress: () {
             UtilsWidget.tratarOnLongPres(
@@ -379,7 +383,8 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
                 index,
                 widget.controller.selectModel,
                 widget.controller.data,
-                widget.controller.reloadData);
+                widget.controller.reloadData,
+                widget.controller.fonteDadoAtual);
           },
           child: Padding(
             padding: const EdgeInsets.all(16.0),
@@ -487,7 +492,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
           tooltip: acao.descricao,
           onPressed: () {
             UtilsWidget.onAction(context, null, null, acao, widget.data,
-                widget.controller.reloadData);
+                widget.controller.reloadData, widget.controller.fonteDadoAtual);
           },
           child: acao.icon ?? Icon(Icons.add),
         ));

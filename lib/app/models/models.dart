@@ -199,6 +199,7 @@ abstract class _DataSourceBase with Store {
   List<ItemSelectTable> generateList(
       List data, int offset, SelectModel selectModel) {
     ObservableList<ItemSelectTable> lista = ObservableList();
+    offset = offset.abs();
     for (Map a in data) {
       bool preSelecionado = selectModel.itensSelecionados != null &&
           selectModel.itensSelecionados
@@ -233,8 +234,11 @@ abstract class _DataSourceBase with Store {
         }
 
         /// Caso a fonte indique um id, pega dela, se não, pega do modelo
-        /// TODO revisar
-        itemSelect.id = a[selectModel.id];
+        if (a[this.id ?? selectModel.id] == null &&
+            !UtilsPlatform.isRelease()) {
+          throw ('Id null');
+        }
+        itemSelect.id = a[this.id ?? selectModel.id];
         itemSelect.isSelected = preSelecionado;
         itemSelect.object = a;
         itemSelect.position = offset++;

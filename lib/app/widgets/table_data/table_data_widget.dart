@@ -219,6 +219,25 @@ class TableDataWidget extends StatelessWidget {
                         UtilsWidget.generateDataColumn(controller.selectModel),
                     rows: rows),
               );
+              // return LayoutBuilder(builder: (context, constraint) {
+              //   return SizedBox(
+              //       //height: constraint.maxHeight - 60,
+              //       width: constraint.maxWidth,
+              //       child: SingleChildScrollView(
+              //           scrollDirection: Axis.horizontal,
+              //           child: DataTable(
+              //               columns: UtilsWidget.generateDataColumn(
+              //                   controller.selectModel),
+              //               rows: rows)));
+              //   // return SizedBox(
+              //   //   height: constraint.maxHeight - 60,
+              //   //   width: constraint.maxWidth,
+              //   //   child: DataTable(
+              //   //       columns:
+              //   //           UtilsWidget.generateDataColumn(controller.selectModel),
+              //   //       rows: rows),
+              //   // );
+              // });
             }),
             Container(
                 alignment: Alignment.bottomRight,

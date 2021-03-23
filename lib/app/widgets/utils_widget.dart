@@ -70,11 +70,11 @@ class UtilsWidget {
           .personalizacao(CustomLineData(data: map, typeScreen: typeScreen));
     } else {
       if (item.value?.toString()?.isNullOrBlank != false) {
-        return SelectableText(
+        return Text(
           linha.valorPadrao?.call(map) ?? '',
         );
       }
-      return SelectableText(item.value?.toString());
+      return Text(item.value?.toString());
     }
   }
 

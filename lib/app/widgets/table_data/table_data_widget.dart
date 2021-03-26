@@ -257,6 +257,20 @@ class TableDataWidget extends StatelessWidget {
                                         value: controller.quantityItensPage,
                                         onChanged: (item) {
                                           controller.quantityItensPage = item;
+
+                                          /// Caso o total de paginas seja menor do que a pagina atuali
+                                          if (((controller.total ?? 0) /
+                                                      controller
+                                                          .quantityItensPage)
+                                                  .ceil() <
+                                              controller.page) {
+                                            /// Seta a ultima pagina como pagina atual
+                                            controller.page =
+                                                ((controller.total ?? 0) /
+                                                        controller
+                                                            .quantityItensPage)
+                                                    .ceil();
+                                          }
                                           if (controller.filter.text.isEmpty) {
                                             controller.setDataSource();
                                           } else {

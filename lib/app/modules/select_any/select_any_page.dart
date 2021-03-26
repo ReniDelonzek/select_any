@@ -260,43 +260,76 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
       return Observer(builder: (_) {
         if (widget.controller.listaExibida.isEmpty == true)
           return Center(child: new Text('Nenhum registro encontrado'));
-        else
-          return RefreshIndicator(
-            onRefresh: () async {
-              widget.controller.reloadData();
-            },
-            key: _refreshIndicatorKey,
-            child: NotificationListener<ScrollNotification>(
-                onNotification: (ScrollNotification scrollInfo) {
-                  if (scrollInfo is ScrollEndNotification &&
-                      scrollInfo.metrics.extentAfter == 0) {
-                    if (widget.controller.total == 0 ||
-                        widget.controller.page * 10 <=
-                            widget.controller.total) {
-                      widget.controller.page++;
-                      if (widget.controller.searchText.isEmpty) {
-                        widget.controller.setDataSource(
-                            offset: widget.controller.typeDiplay == 1 ? -1 : 0);
-                      } else {
-                        widget.controller.setDataSourceSearch(
-                            offset: widget.controller.typeDiplay == 1 ? -1 : 0);
-                      }
-                      print('Carregar mais dados');
-                    } else {
-                      print('Não carregar mais');
-                      print(widget.controller.list.length);
-                    }
-                  }
-                  return true;
-                },
-                child: ListView.builder(
-                    itemCount: widget.controller.listaExibida.length,
-                    itemBuilder: (context, index) {
-                      return Observer(
-                          builder: (_) => _getItemList(
-                              widget.controller.listaExibida[index], index));
-                    })),
+        else {
+          return Column(
+            children: [
+              Expanded(
+                child: RefreshIndicator(
+                  onRefresh: () async {
+                    widget.controller.reloadData();
+                  },
+                  key: _refreshIndicatorKey,
+                  child: NotificationListener<ScrollNotification>(
+                      onNotification: (ScrollNotification scrollInfo) {
+                        if (scrollInfo is ScrollEndNotification &&
+                            scrollInfo.metrics.extentAfter == 0) {
+                          if (widget.controller.total == 0 ||
+                              widget.controller.page *
+                                      widget.controller.quantityItensPage <=
+                                  widget.controller.total) {
+                            widget.controller.loadingMore = true;
+                            widget.controller.page++;
+                            if (widget.controller.searchText.isEmpty) {
+                              if (widget
+                                  .controller.fonteDadoAtual.suportPaginate) {
+                                widget.controller.setDataSource();
+                              } else {
+                                widget.controller.setDataSource(
+                                    offset: widget.controller.typeDiplay == 1
+                                        ? -1
+                                        : 0);
+                              }
+                            } else {
+                              if (widget
+                                  .controller.fonteDadoAtual.suportPaginate) {
+                                widget.controller.setDataSourceSearch();
+                              } else {
+                                widget.controller.setDataSourceSearch(
+                                    offset: widget.controller.typeDiplay == 1
+                                        ? -1
+                                        : 0);
+                              }
+                            }
+                            print('Carregar mais dados');
+                          } else {
+                            print('Não carregar mais');
+                            print(widget.controller.list.length);
+                          }
+                        }
+                        return true;
+                      },
+                      child: ListView.builder(
+                          itemCount: widget.controller.listaExibida.length,
+                          itemBuilder: (context, index) {
+                            return Observer(
+                                builder: (_) => _getItemList(
+                                    widget.controller.listaExibida[index],
+                                    index));
+                          })),
+                ),
+              ),
+              Observer(builder: (_) {
+                if (widget.controller.loadingMore) {
+                  return Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: CircularProgressIndicator(),
+                  );
+                }
+                return SizedBox();
+              }),
+            ],
           );
+        }
       });
     });
   }

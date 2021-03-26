@@ -173,6 +173,41 @@ mixin _$SelectAnyController on _SelectAnyBase, Store {
     }, _$loadingAtom, name: '${_$loadingAtom.name}_set');
   }
 
+  final _$quantityItensPageAtom =
+      Atom(name: '_SelectAnyBase.quantityItensPage');
+
+  @override
+  int get quantityItensPage {
+    _$quantityItensPageAtom.context.enforceReadPolicy(_$quantityItensPageAtom);
+    _$quantityItensPageAtom.reportObserved();
+    return super.quantityItensPage;
+  }
+
+  @override
+  set quantityItensPage(int value) {
+    _$quantityItensPageAtom.context.conditionallyRunInAction(() {
+      super.quantityItensPage = value;
+      _$quantityItensPageAtom.reportChanged();
+    }, _$quantityItensPageAtom, name: '${_$quantityItensPageAtom.name}_set');
+  }
+
+  final _$loadingMoreAtom = Atom(name: '_SelectAnyBase.loadingMore');
+
+  @override
+  bool get loadingMore {
+    _$loadingMoreAtom.context.enforceReadPolicy(_$loadingMoreAtom);
+    _$loadingMoreAtom.reportObserved();
+    return super.loadingMore;
+  }
+
+  @override
+  set loadingMore(bool value) {
+    _$loadingMoreAtom.context.conditionallyRunInAction(() {
+      super.loadingMore = value;
+      _$loadingMoreAtom.reportChanged();
+    }, _$loadingMoreAtom, name: '${_$loadingMoreAtom.name}_set');
+  }
+
   final _$_SelectAnyBaseActionController =
       ActionController(name: '_SelectAnyBase');
 

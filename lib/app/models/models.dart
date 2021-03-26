@@ -183,10 +183,17 @@ abstract class _DataSourceBase with Store {
   /// Indica se será permitido exportar dessa fonte ou não
   final bool allowExport;
 
+  /// Indica se a fonte suporta paginação
+  bool suportPaginate;
+
   @observable
   ObservableList<ItemSelect> listData = ObservableList();
 
-  _DataSourceBase({this.id, this.searchDelay = 300, this.allowExport = false});
+  _DataSourceBase(
+      {this.id,
+      this.searchDelay = 300,
+      this.allowExport = false,
+      this.suportPaginate = false});
 
   Future<Stream<ResponseData>> getList(
       int limit, int offset, SelectModel selectModel,

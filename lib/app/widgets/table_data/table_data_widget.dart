@@ -10,13 +10,8 @@ import 'package:select_any/app/widgets/utils_widget.dart';
 class TableDataWidget extends StatelessWidget {
   final SelectAnyController controller;
 
-  final int quantityItems;
-
   TableDataWidget(SelectModel selectModel,
-      {Key key,
-      @required this.controller,
-      this.quantityItems = 10,
-      bool carregarDados = true})
+      {Key key, @required this.controller, bool carregarDados = true})
       : super(key: key) {
     controller.selectModel = selectModel;
     if (selectModel.preSelected != null) {
@@ -149,8 +144,9 @@ class TableDataWidget extends StatelessWidget {
                 return FalhaWidget('Houve uma falha ao carregar os dados',
                     error: controller.error);
               }
-              int start = (controller.page - 1).abs() * 10;
-              int end = controller.page * 10;
+              int start =
+                  (controller.page - 1).abs() * controller.quantityItensPage;
+              int end = controller.page * controller.quantityItensPage;
 
               List<ItemSelect> subList = controller.list
                   .where((element) =>
@@ -245,11 +241,40 @@ class TableDataWidget extends StatelessWidget {
                   padding: const EdgeInsets.all(16),
                   child: Observer(builder: (_) {
                     int total =
-                        ((controller.total ?? 0) / quantityItems).ceil();
+                        ((controller.total ?? 0) / controller.quantityItensPage)
+                            .ceil();
                     return Container(
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
+                          total > 0
+                              ? Row(
+                                  children: [
+                                    Text('Itens por Pag.'),
+                                    SizedBox(width: 8),
+                                    DropdownButton<int>(
+                                        underline: SizedBox(),
+                                        value: controller.quantityItensPage,
+                                        onChanged: (item) {
+                                          controller.quantityItensPage = item;
+                                          if (controller.filter.text.isEmpty) {
+                                            controller.setDataSource();
+                                          } else {
+                                            controller.setDataSourceSearch();
+                                          }
+                                        },
+                                        items: [
+                                          DropdownMenuItem(
+                                              value: 10, child: Text('10')),
+                                          DropdownMenuItem(
+                                              value: 15, child: Text('15')),
+                                          DropdownMenuItem(
+                                              value: 20, child: Text('20'))
+                                        ]),
+                                    SizedBox(width: 16)
+                                  ],
+                                )
+                              : SizedBox(),
                           Row(
                             children: [
                               total > 0
@@ -273,7 +298,7 @@ class TableDataWidget extends StatelessWidget {
                                                       (index + 1).toString()))))
                                   : SizedBox(),
                               Text(
-                                  'de ${((controller.total ?? 0) / quantityItems).ceil()}'),
+                                  'de ${((controller.total ?? 0) / controller.quantityItensPage).ceil()}'),
                             ],
                           ),
                           if (total > 1)

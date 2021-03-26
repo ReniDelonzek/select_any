@@ -78,6 +78,14 @@ abstract class _SelectAnyBase with Store {
   /// Necessário para persistir o estado da seleção
   Set<ItemSelect> selectedList = {};
 
+  /// Indica a quantidade de itens que estaram disponíveis na página
+  @observable
+  int quantityItensPage = 10;
+
+  /// Indica que mais dados estão sendo carregados
+  @observable
+  bool loadingMore = false;
+
   _SelectAnyBase({this.tipoTeladinamica = true});
 
   init(String title, SelectModel selectModel, Map data) {
@@ -110,11 +118,11 @@ abstract class _SelectAnyBase with Store {
   setDataSource({int offset, bool refresh = false}) async {
     /// Somente busca os dados caso eles ainda não esteja na lista
     /// Abordagem com problemas, pois a lista pode conter registros de outros ranges
-    //if ((page - 1) * 10 >= list.length) {
+    //if ((page - 1) * quantityItensPage >= list.length) {
     try {
       loading = true;
-      offset ??= (page - 1) * 10;
-      (await fonteDadoAtual.getList(10, offset, selectModel,
+      offset ??= (page - 1) * quantityItensPage;
+      (await fonteDadoAtual.getList(quantityItensPage, offset, selectModel,
               data: data, refresh: refresh))
           .listen((event) {
         error = null;
@@ -149,17 +157,20 @@ abstract class _SelectAnyBase with Store {
             }
           });
           loading = false;
+          loadingMore = false;
           total = event.total;
         }
       }, onError: (error) {
         print(error);
         loading = false;
+        loadingMore = false;
         this.error = error;
       });
     } catch (error, stackTrace) {
       UtilsSentry.reportError(error, stackTrace);
       print(error);
       loading = false;
+      loadingMore = false;
       this.error = error;
     }
     //}
@@ -169,8 +180,8 @@ abstract class _SelectAnyBase with Store {
     try {
       loading = true;
       String text = removeDiacritics(filter.text.trim()).toLowerCase();
-      (await fonteDadoAtual.getListSearch(
-              text, 10, offset ?? (page - 1) * 10, selectModel,
+      (await fonteDadoAtual.getListSearch(text, quantityItensPage,
+              offset ?? (page - 1) * quantityItensPage, selectModel,
               data: data, refresh: refresh))
           .listen((ResponseData event) {
         error = null;
@@ -212,12 +223,14 @@ abstract class _SelectAnyBase with Store {
       }, onError: (error) {
         print(error);
         loading = false;
+        loadingMore = false;
         this.error = error;
       });
     } catch (error, stackTrace) {
       UtilsSentry.reportError(error, stackTrace);
       print(error);
       loading = false;
+      loadingMore = false;
       this.error = error;
     }
   }

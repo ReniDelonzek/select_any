@@ -44,6 +44,46 @@ class UtilsFile {
         contentExport: contentExport);
   }
 
+  static saveFileBytes(List<int> bytes,
+      {String fileName,
+      String extensionFile,
+      String dirComplementar,
+      String contentExport}) async {
+    String diretorio;
+    String separator = "/";
+    if (UtilsPlatform.isWindows()) {
+      separator = "\\";
+    }
+    if (UtilsPlatform.isDesktop()) {
+      diretorio = '${io.Directory.current.path}${separator}Files';
+    } else {
+      diretorio = (await getExternalStorageDirectory()).absolute.path;
+    }
+    if (dirComplementar != null) {
+      diretorio += '$separator$dirComplementar';
+    }
+    io.File file =
+        io.File('$diretorio$separator${DateTime.now().millisecondsSinceEpoch}');
+    io.Directory dir = io.Directory('$diretorio');
+    if ((await dir.exists()) == false) {
+      dir = await dir.create(recursive: true);
+    }
+    if (fileName == null) {
+      fileName =
+          '${DateTime.now().millisecondsSinceEpoch}${extensionFile != null ? extensionFile : ''}';
+    }
+    file = io.File('${dir.path}$separator$fileName');
+    if ((await file.exists()) == false) {
+      file = await file.create(recursive: true);
+    }
+    // ignore: close_sinks
+    var open = file.openWrite();
+    open.add(bytes);
+    await open.flush();
+    await openFileOrDirectory(file.path, dir.path,
+        contentExport: contentExport);
+  }
+
   static openFileOrDirectory(String filePath, String directoryPath,
       {String contentExport}) async {
     if (UtilsPlatform.isWindows()) {

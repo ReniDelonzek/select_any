@@ -40,13 +40,18 @@ class UtilsFile {
       file = await file.create(recursive: true);
     }
     await file.writeAsString(s);
+    await openFileOrDirectory(file.path, dir.path,
+        contentExport: contentExport);
+  }
 
+  static openFileOrDirectory(String filePath, String directoryPath,
+      {String contentExport}) async {
     if (UtilsPlatform.isWindows()) {
-      await UtilsPlatform.openProcess('explorer.exe', args: ['${dir.path}']);
+      await UtilsPlatform.openProcess('explorer.exe', args: ['$directoryPath']);
     } else if (Platform.isMacOS) {
-      await UtilsPlatform.openProcess('open', args: ['${dir.path}']);
+      await UtilsPlatform.openProcess('open', args: ['$directoryPath']);
     } else if (UtilsPlatform.isMobile()) {
-      ShareExtend.share(file.path, "file",
+      ShareExtend.share(filePath, "file",
           sharePanelTitle: 'Selecione por onde deseja enviar seu arquivo',
           subject: contentExport ?? 'Segue em anexo seu relatório');
     }

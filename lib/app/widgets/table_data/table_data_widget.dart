@@ -206,19 +206,34 @@ class TableDataWidget extends StatelessWidget {
                 i++;
               }
 
-              /// Deixa dentro de uma row para deixar como largura máxima
-              /// Verificar aborgagens mais eficientes
-
               if (controller.selectModel.showFullScreen) {
-                return Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Expanded(
+                return LayoutBuilder(builder: (context, constraint) {
+                  print(constraint.maxWidth);
+                  return Scrollbar(
+                    child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Container(
+                          constraints:
+                              BoxConstraints(minWidth: constraint.maxWidth),
                           child: DataTable(
                               columns: UtilsWidget.generateDataColumn(
                                   controller.selectModel),
-                              rows: rows))
-                    ]);
+                              rows: rows),
+                        )),
+                  );
+                });
+                // final Size size = MediaQuery.of(context).size;
+                // return Scrollbar(
+                //   child: SingleChildScrollView(
+                //       scrollDirection: Axis.horizontal,
+                //       child: Container(
+                //         constraints: BoxConstraints(minWidth: size.width - 100),
+                //         child: DataTable(
+                //             columns: UtilsWidget.generateDataColumn(
+                //                 controller.selectModel),
+                //             rows: rows),
+                //       )),
+                // );
               } else {
                 return SingleChildScrollView(
                   scrollDirection: Axis.horizontal,

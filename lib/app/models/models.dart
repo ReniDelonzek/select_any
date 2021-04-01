@@ -55,6 +55,9 @@ class SelectModel {
   /// Indica se o botão de selecionar todos ficará visível ou não
   bool permitirSelecionarTodos;
 
+  /// Indica que a tabela vai ocupar a tela toda, NÃO sendo possível rolar para o lado
+  bool showFullScreen;
+
   SelectModel(
       this.titulo, this.id, this.linhas, this.fonteDados, this.tipoSelecao,
       {this.filtros,
@@ -67,7 +70,8 @@ class SelectModel {
       this.abrirPesquisaAutomaticamente,
       this.preSelected,
       this.confirmarParaCarregarDados = false,
-      this.permitirSelecionarTodos}) {
+      this.permitirSelecionarTodos,
+      this.showFullScreen = false}) {
     if (abrirPesquisaAutomaticamente == null) {
       abrirPesquisaAutomaticamente = !UtilsPlatform.isMobile();
     }

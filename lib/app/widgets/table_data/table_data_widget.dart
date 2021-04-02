@@ -208,7 +208,6 @@ class TableDataWidget extends StatelessWidget {
 
               if (controller.selectModel.showFullScreen) {
                 return LayoutBuilder(builder: (context, constraint) {
-                  print(constraint.maxWidth);
                   return Scrollbar(
                     child: SingleChildScrollView(
                         scrollDirection: Axis.horizontal,

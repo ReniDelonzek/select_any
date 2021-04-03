@@ -19,7 +19,7 @@ dependencies:
     #path: /Users/reni/Downloads/Projetos/MSK/flutter/msk_plugin/msk_utils
     git:
       url: git@github.com:ReniDelonzek/msk_utils.git
-      ref: 91ef55c927f10a0442b7a6816f193b151faad1e8
+      ref: b46c38755be0efa8539df58e231f09c7ac13d52c
   flutter:
     sdk: flutter
 

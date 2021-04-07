@@ -236,11 +236,14 @@ abstract class _SelectAnyBase with Store {
   }
 
   reloadData() {
-    list.clear();
-    if (filter.text.trim().isEmpty) {
-      setDataSource(refresh: true);
-    } else {
-      setDataSourceSearch(refresh: true);
+    /// Não recarrega os dados caso precise de confirmação
+    if (!confirmarParaCarregarDados) {
+      list.clear();
+      if (filter.text.trim().isEmpty) {
+        setDataSource(refresh: true);
+      } else {
+        setDataSourceSearch(refresh: true);
+      }
     }
   }
 

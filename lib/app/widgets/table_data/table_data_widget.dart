@@ -206,7 +206,6 @@ class TableDataWidget extends StatelessWidget {
                 i++;
               }
 
-              //if (controller.selectModel.showFullScreen) {
               return LayoutBuilder(builder: (context, constraint) {
                 return Scrollbar(
                   child: SingleChildScrollView(
@@ -221,19 +220,6 @@ class TableDataWidget extends StatelessWidget {
                       )),
                 );
               });
-              // final Size size = MediaQuery.of(context).size;
-              // return Scrollbar(
-              //   child: SingleChildScrollView(
-              //       scrollDirection: Axis.horizontal,
-              //       child: Container(
-              //         constraints: BoxConstraints(minWidth: size.width - 100),
-              //         child: DataTable(
-              //             columns: UtilsWidget.generateDataColumn(
-              //                 controller.selectModel),
-              //             rows: rows),
-              //       )),
-              // );
-              // } else {
               //   return SingleChildScrollView(
               //     scrollDirection: Axis.horizontal,
               //     child: DataTable(
@@ -242,25 +228,6 @@ class TableDataWidget extends StatelessWidget {
               //         rows: rows),
               //   );
               // }
-              // return LayoutBuilder(builder: (context, constraint) {
-              //   return SizedBox(
-              //       //height: constraint.maxHeight - 60,
-              //       width: constraint.maxWidth,
-              //       child: SingleChildScrollView(
-              //           scrollDirection: Axis.horizontal,
-              //           child: DataTable(
-              //               columns: UtilsWidget.generateDataColumn(
-              //                   controller.selectModel),
-              //               rows: rows)));
-              //   // return SizedBox(
-              //   //   height: constraint.maxHeight - 60,
-              //   //   width: constraint.maxWidth,
-              //   //   child: DataTable(
-              //   //       columns:
-              //   //           UtilsWidget.generateDataColumn(controller.selectModel),
-              //   //       rows: rows),
-              //   // );
-              // });
             }),
             Container(
                 alignment: Alignment.bottomRight,

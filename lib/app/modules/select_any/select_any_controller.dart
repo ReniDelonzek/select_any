@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
 import 'package:msk_utils/models/item_select.dart';
+import 'package:msk_utils/utils/utils_hive.dart';
 import 'package:msk_utils/utils/utils_platform.dart';
 import 'package:msk_utils/utils/utils_sentry.dart';
 import 'package:select_any/app/models/models.dart';
@@ -93,6 +94,15 @@ abstract class _SelectAnyBase with Store {
     this.data = data;
     appBarTitle = Text(title);
     addFilterListener();
+
+    UtilsHive.getInstance().getBox('select_utils').then((value) async {
+      int newValue =
+          (await value.get('quantityItensPage')) ?? quantityItensPage;
+      if (newValue != quantityItensPage) {
+        quantityItensPage = newValue;
+        setDataSource();
+      }
+    });
   }
 
   addFilterListener() {

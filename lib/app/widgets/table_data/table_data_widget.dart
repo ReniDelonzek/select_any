@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:msk_utils/models/item_select.dart';
+import 'package:msk_utils/utils/utils_hive.dart';
 import 'package:select_any/app/models/models.dart';
 import 'package:select_any/app/modules/select_any/select_any_controller.dart';
 import 'package:select_any/app/modules/select_any/select_any_page.dart';
@@ -270,6 +271,14 @@ class TableDataWidget extends StatelessWidget {
                                           } else {
                                             controller.setDataSourceSearch();
                                           }
+
+                                          /// Salva isso no banco
+                                          UtilsHive.getInstance()
+                                              .getBox('select_utils')
+                                              .then((value) {
+                                            value.put(
+                                                'quantityItensPage', item);
+                                          });
                                         },
                                         items: [
                                           DropdownMenuItem(

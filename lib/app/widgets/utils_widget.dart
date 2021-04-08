@@ -115,10 +115,7 @@ class UtilsWidget {
               'obj': itemSelect?.object,
               'data': dados,
               'dataSource': dataSource
-              //'fromServer': fromServer
             })
-
-          ///TODO resolver isso ..addAll({'fromServer': controller.fonteDadoAtual.url != null})
           : RouteSettings();
 
       var res = await Navigator.of(context).push(acao.route != null

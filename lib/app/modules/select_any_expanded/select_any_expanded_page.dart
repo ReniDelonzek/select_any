@@ -206,10 +206,7 @@ class _SelectAnyExpandedPageState extends State<SelectAnyExpandedPage> {
               'cod_obj': itemSelect?.id,
               'obj': itemSelect?.object,
               'data': dados,
-              //'fromServer': fromServer
             })
-
-          ///TODO resolver isso ..addAll({'fromServer': controller.fonteDadoAtual.url != null})
           : RouteSettings();
 
       var res = await Navigator.of(context).push(acao.route != null

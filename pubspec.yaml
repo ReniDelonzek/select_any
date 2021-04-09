@@ -11,7 +11,7 @@ environment:
 
 dependencies:
   share_extend: ^1.1.9
-  path_provider: ^1.6.5
+  path_provider: ^2.0.1 
   diacritic: ^0.1.1
   bloc_pattern: ^2.5.1
   mobx: ^0.3.9+3
@@ -19,7 +19,7 @@ dependencies:
     #path: /Users/reni/Downloads/Projetos/MSK/flutter/msk_plugin/msk_utils
     git:
       url: git@github.com:ReniDelonzek/msk_utils.git
-      ref: b46c38755be0efa8539df58e231f09c7ac13d52c
+      ref: 0a70e6870ab44034fdbe1ca8e3dea3ba1a324ef3
   flutter:
     sdk: flutter
 

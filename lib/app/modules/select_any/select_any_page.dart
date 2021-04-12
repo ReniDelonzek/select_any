@@ -346,6 +346,9 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
           controller: widget.controller.filter,
           decoration: new InputDecoration(
               prefixIcon: new Icon(Icons.search), hintText: 'Pesquise...'),
+          onChanged: (text) {
+            widget.controller.filtroPesquisaModificado();
+          },
         ),
       );
     } else {

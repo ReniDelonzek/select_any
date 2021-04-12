@@ -67,28 +67,7 @@ class TableDataWidget extends StatelessWidget {
                                       InputDecoration(hintText: 'Pesquisar'),
                                   controller: controller.filter,
                                   onChanged: (text) {
-                                    String text = controller.filter.text.trim();
-                                    if (text.isEmpty) {
-                                      controller.list.clear();
-                                      controller.page = 1;
-                                      controller.setDataSource();
-                                    } else {
-                                      Future.delayed(
-                                          Duration(
-                                              milliseconds: controller
-                                                      .selectModel
-                                                      .fonteDados
-                                                      .searchDelay ??
-                                                  300), () {
-                                        /// Só executa a pesquisa se o input não tiver mudado
-                                        if (text ==
-                                            controller.filter.text.trim()) {
-                                          controller.list.clear();
-                                          controller.page = 1;
-                                          controller.setDataSourceSearch();
-                                        }
-                                      });
-                                    }
+                                    controller.filtroPesquisaModificado();
                                   },
                                 )),
                             Icon(Icons.search),

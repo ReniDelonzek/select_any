@@ -53,11 +53,16 @@ class UtilsWidget {
 
   static List<DataColumn> generateDataColumn(SelectModel selectModel) {
     return selectModel.linhas
-        .map((e) =>
-            DataColumn(label: Text(e.nome ?? e.chave.upperCaseFirstLower())))
+        .map((e) => DataColumn(
+            label: Text(e.nome ?? e.chave.upperCaseFirstLower(),
+                style: TextStyle(fontWeight: FontWeight.bold))))
         .toList()
           ..addAll(selectModel.acoes?.isNotEmpty == true
-              ? [DataColumn(label: Text('Ações'))]
+              ? [
+                  DataColumn(
+                      label: Text('Ações',
+                          style: TextStyle(fontWeight: FontWeight.bold)))
+                ]
               : []);
   }
 

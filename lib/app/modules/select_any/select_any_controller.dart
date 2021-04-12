@@ -93,22 +93,15 @@ abstract class _SelectAnyBase with Store {
     this.selectModel = selectModel;
     this.data = data;
     appBarTitle = Text(title);
-    addFilterListener();
 
     UtilsHive.getInstance().getBox('select_utils').then((value) async {
       int newValue =
           (await value.get('quantityItensPage')) ?? quantityItensPage;
       if (newValue != quantityItensPage) {
         quantityItensPage = newValue;
-        setDataSource();
-      }
-    });
-  }
-
-  addFilterListener() {
-    filter.addListener(() {
-      if (filter.text != searchText) {
-        searchText = filter.text;
+        if (!confirmarParaCarregarDados) {
+          setDataSource();
+        }
       }
     });
   }
@@ -188,6 +181,7 @@ abstract class _SelectAnyBase with Store {
 
   setDataSourceSearch({int offset, bool refresh = false}) async {
     try {
+      inicializarFonteDados();
       loading = true;
       String text = removeDiacritics(filter.text.trim()).toLowerCase();
       (await fonteDadoAtual.getListSearch(text, quantityItensPage,
@@ -245,6 +239,14 @@ abstract class _SelectAnyBase with Store {
     }
   }
 
+  /// Caso confirmarParaCarregarDados seja true, inicializada a var fonteDadoAtual com a fonte padrão
+  inicializarFonteDados() {
+    if (confirmarParaCarregarDados) {
+      confirmarParaCarregarDados = false;
+      fonteDadoAtual = selectModel.fonteDados;
+    }
+  }
+
   reloadData() {
     /// Não recarrega os dados caso precise de confirmação
     if (!confirmarParaCarregarDados) {
@@ -264,5 +266,27 @@ abstract class _SelectAnyBase with Store {
 
   export() {
     fonteDadoAtual.exportData(selectModel);
+  }
+
+  filtroPesquisaModificado() {
+    String text = filter.text.trim();
+    if (text.isEmpty) {
+      if (!confirmarParaCarregarDados) {
+        list.clear();
+        page = 1;
+        setDataSource();
+      }
+    } else {
+      Future.delayed(
+          Duration(milliseconds: selectModel.fonteDados.searchDelay ?? 300),
+          () {
+        /// Só executa a pesquisa se o input não tiver mudado
+        if (text == filter.text.trim()) {
+          list.clear();
+          page = 1;
+          setDataSourceSearch();
+        }
+      });
+    }
   }
 }

@@ -194,6 +194,10 @@ class TableDataWidget extends StatelessWidget {
                         constraints:
                             BoxConstraints(minWidth: constraint.maxWidth),
                         child: DataTable(
+                            headingRowColor:
+                                MaterialStateColor.resolveWith((states) {
+                              return Color(0xFF00823A);
+                            }),
                             columns: UtilsWidget.generateDataColumn(
                                 controller.selectModel),
                             rows: rows),

@@ -271,39 +271,29 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
                   key: _refreshIndicatorKey,
                   child: NotificationListener<ScrollNotification>(
                       onNotification: (ScrollNotification scrollInfo) {
-                        if (scrollInfo is ScrollEndNotification &&
-                            scrollInfo.metrics.extentAfter == 0) {
-                          if (widget.controller.total == 0 ||
-                              widget.controller.page *
-                                      widget.controller.quantityItensPage <=
-                                  widget.controller.total) {
-                            widget.controller.loadingMore = true;
-                            widget.controller.page++;
-                            if (widget.controller.searchText.isEmpty) {
-                              if (widget
-                                  .controller.fonteDadoAtual.suportPaginate) {
+                        /// não é necessário nenhuma ação caso não suporte paginação, pois os dados já estaram completos na tela
+                        if (widget.controller.fonteDadoAtual.suportPaginate) {
+                          if (scrollInfo is ScrollEndNotification &&
+                              scrollInfo.metrics.extentAfter == 0) {
+                            if (widget.controller.total == 0 ||
+                                widget.controller.page *
+                                        widget.controller.quantityItensPage <=
+                                    widget.controller.total) {
+                              if (widget.controller.searchText.isEmpty) {
+                                widget.controller.loadingMore = true;
+                                widget.controller.page++;
                                 widget.controller.setDataSource();
                               } else {
-                                widget.controller.setDataSource(
-                                    offset: widget.controller.typeDiplay == 1
-                                        ? -1
-                                        : 0);
-                              }
-                            } else {
-                              if (widget
-                                  .controller.fonteDadoAtual.suportPaginate) {
+                                widget.controller.loadingMore = true;
+                                widget.controller.page++;
                                 widget.controller.setDataSourceSearch();
-                              } else {
-                                widget.controller.setDataSourceSearch(
-                                    offset: widget.controller.typeDiplay == 1
-                                        ? -1
-                                        : 0);
                               }
+                              print('Carregar mais dados');
+                            } else {
+                              widget.controller.loadingMore = false;
+                              print('Não carregar mais');
+                              print(widget.controller.list.length);
                             }
-                            print('Carregar mais dados');
-                          } else {
-                            print('Não carregar mais');
-                            print(widget.controller.list.length);
                           }
                         }
                         return true;

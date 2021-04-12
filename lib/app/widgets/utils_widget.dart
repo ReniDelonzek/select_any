@@ -55,13 +55,18 @@ class UtilsWidget {
     return selectModel.linhas
         .map((e) => DataColumn(
             label: Text(e.nome ?? e.chave.upperCaseFirstLower(),
-                style: TextStyle(fontWeight: FontWeight.bold))))
+                style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white))))
         .toList()
           ..addAll(selectModel.acoes?.isNotEmpty == true
               ? [
                   DataColumn(
                       label: Text('Ações',
-                          style: TextStyle(fontWeight: FontWeight.bold)))
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white)))
                 ]
               : []);
   }

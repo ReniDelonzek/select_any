@@ -269,24 +269,26 @@ abstract class _SelectAnyBase with Store {
   }
 
   filtroPesquisaModificado() {
-    String text = filter.text.trim();
-    if (text.isEmpty) {
-      if (!confirmarParaCarregarDados) {
-        list.clear();
-        page = 1;
-        setDataSource();
-      }
-    } else {
-      Future.delayed(
-          Duration(milliseconds: selectModel.fonteDados.searchDelay ?? 300),
-          () {
-        /// Só executa a pesquisa se o input não tiver mudado
-        if (text == filter.text.trim()) {
+    if (filter.text.trim() != searchText) {
+      searchText = filter.text.trim();
+      if (searchText.isEmpty) {
+        if (!confirmarParaCarregarDados) {
           list.clear();
           page = 1;
-          setDataSourceSearch();
+          setDataSource();
         }
-      });
+      } else {
+        Future.delayed(
+            Duration(milliseconds: selectModel.fonteDados.searchDelay ?? 300),
+            () {
+          /// Só executa a pesquisa se o input não tiver mudado
+          if (searchText == filter.text.trim()) {
+            list.clear();
+            page = 1;
+            setDataSourceSearch();
+          }
+        });
+      }
     }
   }
 }

@@ -17,6 +17,18 @@ class InsertIntent extends Intent {
   const InsertIntent();
 }
 
+class SearchIntent extends Intent {
+  const SearchIntent();
+}
+
+class ExportIntent extends Intent {
+  const ExportIntent();
+}
+
+class DoneIntent extends Intent {
+  const DoneIntent();
+}
+
 // ignore: must_be_immutable
 class SelectAnyPage extends StatefulWidget {
   /// Retorna Map<String, dynamic>
@@ -98,9 +110,17 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
     return Shortcuts(
         shortcuts: <LogicalKeySet, Intent>{
           LogicalKeySet(LogicalKeyboardKey.escape): const DismissIntent(),
-          LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.keyS):
+          LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.keyI):
               const InsertIntent(),
           LogicalKeySet(LogicalKeyboardKey.insert): const InsertIntent(),
+          LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.keyF):
+              const SearchIntent(),
+          LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.keyL):
+              const SearchIntent(),
+          LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.keyD):
+              const ExportIntent(),
+          LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.keyS):
+              const DoneIntent()
         },
         child: Actions(
             actions: <Type, Action<Intent>>{
@@ -123,6 +143,27 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
                 }
                 return;
               }),
+              SearchIntent:
+                  CallbackAction<SearchIntent>(onInvoke: (SearchIntent intent) {
+                if (widget.controller.typeDiplay == 1) {
+                  _searchPressed();
+                }
+                widget.controller.focusNodeSearch.requestFocus();
+
+                return;
+              }),
+              ExportIntent:
+                  CallbackAction<ExportIntent>(onInvoke: (ExportIntent intent) {
+                if (widget.controller.fonteDadoAtual?.allowExport == true) {
+                  widget.controller.export();
+                }
+                return;
+              }),
+              DoneIntent:
+                  CallbackAction<DoneIntent>(onInvoke: (DoneIntent intent) {
+                onDone();
+                return;
+              })
             },
             child: Focus(
                 autofocus: true,
@@ -153,19 +194,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
                                   ? Colors.white
                                   : Colors.black,
                           onTap: (pos) {
-                            if (widget.controller.typeDiplay == 1) {
-                              Navigator.pop(
-                                  context,
-                                  widget.controller.list
-                                      .where((item) => item.isSelected)
-                                      .toList());
-                            } else {
-                              Navigator.pop(
-                                  context,
-                                  widget.controller.list
-                                      .where((item) => item.isSelected)
-                                      .toList());
-                            }
+                            onDone();
                           },
                           items: <BottomNavigationBarItem>[
                             BottomNavigationBarItem(
@@ -193,6 +222,16 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
                     return _getBody();
                   }),
                 ))));
+  }
+
+  void onDone() {
+    if (widget.controller.typeDiplay == 1) {
+      Navigator.pop(context,
+          widget.controller.list.where((item) => item.isSelected).toList());
+    } else {
+      Navigator.pop(context,
+          widget.controller.list.where((item) => item.isSelected).toList());
+    }
   }
 
   /// Retorna o conteúdo principal da tela
@@ -332,7 +371,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
         alignment: Alignment.topRight,
         constraints: BoxConstraints(maxWidth: 300),
         child: TextField(
-          focusNode: FocusNode()..requestFocus(),
+          focusNode: widget.controller.focusNodeSearch..requestFocus(),
           controller: widget.controller.filter,
           decoration: new InputDecoration(
               prefixIcon: new Icon(Icons.search), hintText: 'Pesquise...'),

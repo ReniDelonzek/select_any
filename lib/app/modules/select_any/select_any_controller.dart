@@ -70,6 +70,7 @@ abstract class _SelectAnyBase with Store {
   @observable
   bool loading = false;
   bool loaded = false;
+  FocusNode focusNodeSearch = FocusNode();
 
   /// Guarda o time do ultimo clique da acao
   /// Gambi para contornar caso o usuário clique em selecionar todos na tabela

@@ -238,18 +238,22 @@ class TableDataWidget extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: List.generate(rows.length + 1, (index) {
                           if (index == 0) {
-                            return Container(
-                              // padding: const EdgeInsets.only(top: 6),
-                              height: 57,
-                              constraints: BoxConstraints(minWidth: 60),
-                              width: widgets.length * 50.0,
-                              color: Color(0xFF00823A),
-                              alignment: Alignment.center,
-                              child: Text('Ações',
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
-                                      color: Colors.white)),
+                            return Column(
+                              children: [
+                                Container(
+                                  height: 56,
+                                  decoration:
+                                      BoxDecoration(color: Color(0xFF00823A)),
+                                  constraints: BoxConstraints(minWidth: 60),
+                                  width: widgets.length * 50.0,
+                                  alignment: Alignment.center,
+                                  child: Text('Ações',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                          color: Colors.white)),
+                                ),
+                              ],
                             );
                           } else {
                             return Row(children: widgets);

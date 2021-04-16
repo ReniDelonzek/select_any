@@ -184,28 +184,80 @@ class TableDataWidget extends StatelessWidget {
                     }
                     itemSelect.isSelected = b;
                   }
-                }, controller.reloadData, 2, controller.fonteDadoAtual));
+                }, controller.reloadData, 2, controller.fonteDadoAtual,
+                    generateActions: false));
                 i++;
               }
+              List<Widget> widgets = [];
+              if (controller.selectModel.acoes?.isNotEmpty == true) {
+                int i = 0;
+                for (Acao acao in controller.selectModel.acoes) {
+                  widgets.add(Container(
+                    height: 48,
+                    child: IconButton(
+                      tooltip: acao.descricao,
+                      icon: acao.icon ?? Text(acao.descricao ?? 'Ação'),
+                      onPressed: () {
+                        UtilsWidget.onAction(
+                            context,
+                            subList[i],
+                            i,
+                            acao,
+                            controller.data,
+                            controller.reloadData,
+                            controller.fonteDadoAtual);
+                      },
+                    ),
+                  ));
+                }
+              }
 
-              return LayoutBuilder(builder: (context, constraint) {
-                return Scrollbar(
-                  child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Container(
-                        constraints:
-                            BoxConstraints(minWidth: constraint.maxWidth),
-                        child: DataTable(
-                            headingRowColor:
-                                MaterialStateColor.resolveWith((states) {
-                              return Color(0xFF00823A);
-                            }),
-                            columns: UtilsWidget.generateDataColumn(
-                                controller.selectModel),
-                            rows: rows),
-                      )),
-                );
-              });
+              return Row(children: [
+                Expanded(child: LayoutBuilder(builder: (context, constraint) {
+                  return Scrollbar(
+                    child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Container(
+                          constraints:
+                              BoxConstraints(minWidth: constraint.maxWidth),
+                          child: DataTable(
+                              headingRowColor:
+                                  MaterialStateColor.resolveWith((states) {
+                                return Color(0xFF00823A);
+                              }),
+                              columns: UtilsWidget.generateDataColumn(
+                                  controller.selectModel,
+                                  generateActions: false),
+                              rows: rows),
+                        )),
+                  );
+                })),
+                if (widgets.isNotEmpty)
+                  Container(
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: List.generate(rows.length + 1, (index) {
+                          if (index == 0) {
+                            return Container(
+                              // padding: const EdgeInsets.only(top: 6),
+                              height: 57,
+                              constraints: BoxConstraints(minWidth: 60),
+                              width: widgets.length * 50.0,
+                              color: Color(0xFF00823A),
+                              alignment: Alignment.center,
+                              child: Text('Ações',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                      color: Colors.white)),
+                            );
+                          } else {
+                            return Row(children: widgets);
+                          }
+                        })),
+                  )
+              ]);
+
               //   return SingleChildScrollView(
               //     scrollDirection: Axis.horizontal,
               //     child: DataTable(

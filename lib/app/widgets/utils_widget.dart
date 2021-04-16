@@ -14,7 +14,8 @@ class UtilsWidget {
       Function(ItemSelect, bool) onSelected,
       Function reloadData,
       int typeScreen,
-      DataSource dataSource) {
+      DataSource dataSource,
+      {bool generateActions = true}) {
     List<DataCell> cells = [];
     for (MapEntry mapEntry in itemSelect.strings.entries) {
       cells.add(DataCell(getLinha(
@@ -23,7 +24,7 @@ class UtilsWidget {
           itemSelect.object is Map ? itemSelect.object : itemSelect.strings,
           typeScreen)));
     }
-    if (selectModel.acoes?.isNotEmpty == true) {
+    if (generateActions && selectModel.acoes?.isNotEmpty == true) {
       List<Widget> widgets = [];
       for (Acao acao in selectModel.acoes) {
         widgets.add(IconButton(
@@ -51,7 +52,8 @@ class UtilsWidget {
     return dataRow;
   }
 
-  static List<DataColumn> generateDataColumn(SelectModel selectModel) {
+  static List<DataColumn> generateDataColumn(SelectModel selectModel,
+      {bool generateActions = true}) {
     return selectModel.linhas
         .map((e) => DataColumn(
             label: Text(e.nome ?? e.chave.upperCaseFirstLower(),
@@ -60,7 +62,7 @@ class UtilsWidget {
                     fontWeight: FontWeight.bold,
                     color: Colors.white))))
         .toList()
-          ..addAll(selectModel.acoes?.isNotEmpty == true
+          ..addAll(generateActions && selectModel.acoes?.isNotEmpty == true
               ? [
                   DataColumn(
                       label: Text('Ações',

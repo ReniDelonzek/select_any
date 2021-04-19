@@ -81,6 +81,7 @@ class TableDataWidget extends StatelessWidget {
                                 children: [
                                   SizedBox(width: 8),
                                   IconButton(
+                                      tooltip: 'Exportar',
                                       icon: Icon(Icons.file_download),
                                       onPressed: () {
                                         controller.export();

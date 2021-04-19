@@ -276,7 +276,7 @@ abstract class _SelectAnyBase with Store {
         if (!confirmarParaCarregarDados) {
           list.clear();
           page = 1;
-          setDataSource();
+          setDataSource(offset: typeDiplay == 1 ? -1 : 0);
         }
       } else {
         Future.delayed(
@@ -286,7 +286,7 @@ abstract class _SelectAnyBase with Store {
           if (searchText == filter.text.trim()) {
             list.clear();
             page = 1;
-            setDataSourceSearch();
+            setDataSourceSearch(offset: typeDiplay == 1 ? -1 : 0);
           }
         });
       }

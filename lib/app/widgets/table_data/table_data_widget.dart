@@ -189,29 +189,6 @@ class TableDataWidget extends StatelessWidget {
                     generateActions: false));
                 i++;
               }
-              List<Widget> widgets = [];
-              if (controller.selectModel.acoes?.isNotEmpty == true) {
-                int i = 0;
-                for (Acao acao in controller.selectModel.acoes) {
-                  widgets.add(Container(
-                    height: 48,
-                    child: IconButton(
-                      tooltip: acao.descricao,
-                      icon: acao.icon ?? Text(acao.descricao ?? 'Ação'),
-                      onPressed: () {
-                        UtilsWidget.onAction(
-                            context,
-                            subList[i],
-                            i,
-                            acao,
-                            controller.data,
-                            controller.reloadData,
-                            controller.fonteDadoAtual);
-                      },
-                    ),
-                  ));
-                }
-              }
 
               return Row(children: [
                 Expanded(child: LayoutBuilder(builder: (context, constraint) {
@@ -233,7 +210,7 @@ class TableDataWidget extends StatelessWidget {
                         )),
                   );
                 })),
-                if (widgets.isNotEmpty)
+                if (controller.selectModel.acoes?.isNotEmpty == true)
                   Container(
                     child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
@@ -246,7 +223,8 @@ class TableDataWidget extends StatelessWidget {
                                   decoration:
                                       BoxDecoration(color: Color(0xFF00823A)),
                                   constraints: BoxConstraints(minWidth: 60),
-                                  width: widgets.length * 50.0,
+                                  width: controller.selectModel.acoes.length *
+                                      50.0,
                                   alignment: Alignment.center,
                                   child: Text('Ações',
                                       style: TextStyle(
@@ -257,7 +235,30 @@ class TableDataWidget extends StatelessWidget {
                               ],
                             );
                           } else {
-                            return Row(children: widgets);
+                            return Row(
+                                children:
+                                    controller.selectModel.acoes.map((acao) {
+                              return Container(
+                                height: 48,
+                                child: IconButton(
+                                  tooltip: acao.descricao,
+                                  icon: acao.icon ??
+                                      Text(acao.descricao ?? 'Ação'),
+                                  onPressed: () {
+                                    UtilsWidget.onAction(
+                                        context,
+
+                                        /// Tira 1 do index pois o index 0 é o do header
+                                        subList[index - 1],
+                                        index - 1,
+                                        acao,
+                                        controller.data,
+                                        controller.reloadData,
+                                        controller.fonteDadoAtual);
+                                  },
+                                ),
+                              );
+                            }).toList());
                           }
                         })),
                   )

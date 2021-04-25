@@ -44,11 +44,12 @@ class UtilsFile {
         contentExport: contentExport);
   }
 
-  static saveFileBytes(List<int> bytes,
+  static Future<File> saveFileBytes(List<int> bytes,
       {String fileName,
       String extensionFile,
       String dirComplementar,
-      String contentExport}) async {
+      String contentExport,
+      bool openExplorer = true}) async {
     String diretorio;
     String separator = "/";
     if (UtilsPlatform.isWindows()) {
@@ -80,12 +81,18 @@ class UtilsFile {
     var open = file.openWrite();
     open.add(bytes);
     await open.flush();
-    await openFileOrDirectory(file.path, dir.path,
-        contentExport: contentExport);
+    if (openExplorer) {
+      await openFileOrDirectory(file.path, dir.path,
+          contentExport: contentExport);
+    }
+    return file;
   }
 
   static openFileOrDirectory(String filePath, String directoryPath,
       {String contentExport}) async {
+    if (UtilsPlatform.isWeb()) {
+      return;
+    }
     if (UtilsPlatform.isWindows()) {
       await UtilsPlatform.openProcess('explorer.exe', args: ['$directoryPath']);
     } else if (Platform.isMacOS) {

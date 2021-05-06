@@ -6,7 +6,9 @@ import 'package:msk_utils/models/item_select.dart';
 import 'package:msk_utils/utils/utils_hive.dart';
 import 'package:msk_utils/utils/utils_platform.dart';
 import 'package:msk_utils/utils/utils_sentry.dart';
+
 import 'package:select_any/app/models/models.dart';
+import 'package:select_any/app/widgets/selecionar_range_data/selecionar_range_data_widget.dart';
 
 part 'select_any_controller.g.dart';
 
@@ -88,6 +90,16 @@ abstract class _SelectAnyBase with Store {
   @observable
   bool loadingMore = false;
 
+  List<int> get getNumberItemsPerPage => [10, 15, 25, 50];
+
+  TypeSearch typeSearch = TypeSearch.CONTAINS;
+
+  Map<String, Widget> filterControllers = Map();
+
+  /// Indica se o input de pesquisa geral deve ser exibido ou não
+  @observable
+  bool showSearch = true;
+
   _SelectAnyBase({this.tipoTeladinamica = true});
 
   init(String title, SelectModel selectModel, Map data) {
@@ -98,13 +110,18 @@ abstract class _SelectAnyBase with Store {
     UtilsHive.getInstance().getBox('select_utils').then((value) async {
       int newValue =
           (await value.get('quantityItensPage')) ?? quantityItensPage;
-      if (newValue != quantityItensPage) {
+      if (newValue != quantityItensPage &&
+          inList(getNumberItemsPerPage, newValue)) {
         quantityItensPage = newValue;
         if (!confirmarParaCarregarDados) {
           setDataSource();
         }
       }
     });
+  }
+
+  bool inList(List values, value) {
+    return values.any((element) => element == value);
   }
 
   @action
@@ -120,9 +137,7 @@ abstract class _SelectAnyBase with Store {
   }
 
   setDataSource({int offset, bool refresh = false}) async {
-    /// Somente busca os dados caso eles ainda não esteja na lista
-    /// Abordagem com problemas, pois a lista pode conter registros de outros ranges
-    //if ((page - 1) * quantityItensPage >= list.length) {
+    showSearch = true;
     try {
       loading = true;
       offset ??= (page - 1) * quantityItensPage;
@@ -177,17 +192,17 @@ abstract class _SelectAnyBase with Store {
       loadingMore = false;
       this.error = error;
     }
-    //}
   }
 
   setDataSourceSearch({int offset, bool refresh = false}) async {
+    showSearch = true;
     try {
       inicializarFonteDados();
       loading = true;
       String text = removeDiacritics(filter.text.trim()).toLowerCase();
       (await fonteDadoAtual.getListSearch(text, quantityItensPage,
               offset ?? (page - 1) * quantityItensPage, selectModel,
-              data: data, refresh: refresh))
+              data: data, refresh: refresh, typeSearch: typeSearch))
           .listen((ResponseData event) {
         error = null;
 
@@ -240,11 +255,74 @@ abstract class _SelectAnyBase with Store {
     }
   }
 
+  setDataSourceFilter({int offset, bool refresh = false}) async {
+    showSearch = false;
+    try {
+      loading = true;
+      offset ??= (page - 1) * quantityItensPage;
+      (await fonteDadoAtual.getListFilter(
+              buildFilterExpression(), quantityItensPage, offset, selectModel,
+              data: data, refresh: refresh))
+          .listen((ResponseData event) {
+        error = null;
+        if (buildFilterExpression().filterExps.isNotEmpty) {
+          /// Caso seja -1, não remove nada pois ela deve retornar todos os registros
+          if (offset > -1) {
+            /// Remove todos os registros que o id não consta no range retornado
+            list.removeWhere((element) {
+              return element.position <= event.end &&
+                  element.position >= event.start &&
+                  !event.data.any((e2) {
+                    return e2.id == element.id;
+                  });
+            });
+          }
+
+          event.data.forEach((item) {
+            bool present = selectedList.any((element) => element.id == item.id);
+            if (item.isSelected == true) {
+              if (!present) {
+                /// Caso o item esteja selecionado e não esteja na lista selectedList
+                selectedList.add(item);
+              }
+            } else {
+              item.isSelected = present;
+            }
+            int index = list.indexWhere((element) => element.id == item.id);
+            if (index > -1) {
+              list[index] = item;
+            } else {
+              list.add(item);
+            }
+          });
+          loading = false;
+          loadingMore = false;
+          total = event.total;
+        } else {
+          showSearch = true;
+        }
+      }, onError: (error) {
+        print(error);
+        loading = false;
+        loadingMore = false;
+        this.error = error;
+      });
+    } catch (error, stackTrace) {
+      UtilsSentry.reportError(error, stackTrace);
+      print(error);
+      loading = false;
+      loadingMore = false;
+      this.error = error;
+    }
+  }
+
   /// Caso confirmarParaCarregarDados seja true, inicializada a var fonteDadoAtual com a fonte padrão
   inicializarFonteDados() {
     if (confirmarParaCarregarDados) {
       confirmarParaCarregarDados = false;
-      fonteDadoAtual = selectModel.fonteDados;
+      if (fonteDadoAtual == null) {
+        fonteDadoAtual = selectModel.fonteDados;
+      }
     }
   }
 
@@ -269,8 +347,9 @@ abstract class _SelectAnyBase with Store {
     fonteDadoAtual.exportData(selectModel);
   }
 
-  filtroPesquisaModificado() {
-    if (filter.text.trim() != searchText) {
+  /// Executa a pesquisa caso o texto seja diferente ou reload seja true
+  filtroPesquisaModificado({bool reload = false}) {
+    if (filter.text.trim() != searchText || reload) {
       searchText = filter.text.trim();
       if (searchText.isEmpty) {
         if (!confirmarParaCarregarDados) {
@@ -291,5 +370,75 @@ abstract class _SelectAnyBase with Store {
         });
       }
     }
+  }
+
+  updateTypeSearch(TypeSearch newType) {
+    if (newType != null && newType != typeSearch) {
+      typeSearch = newType;
+      if (filter.text.trim().isNotEmpty) {
+        filtroPesquisaModificado(reload: true);
+      } else if (buildFilterExpression().filterExps.isNotEmpty) {
+        setDataSourceFilter();
+      }
+    }
+  }
+
+  GroupFilterExp buildFilterExpression() {
+    List<FilterExp> exps = [];
+    filterControllers.forEach((key, value) {
+      Linha line = selectModel.linhas
+          .firstWhere((element) => element.chave == key, orElse: () => null);
+      if (line == null) {
+        return;
+      }
+      if (line.filter != null) {
+        if (line.filter is FilterRangeDate &&
+            ((value as SelecionarRangeDataWidget).controller.dataInicial !=
+                    null ||
+                (value as SelecionarRangeDataWidget).controller.dataFinal !=
+                    null)) {
+          exps.add(FilterExpRangeCollun(
+              line: line,
+              dateStart:
+                  (value as SelecionarRangeDataWidget).controller.dataInicial,
+              dateEnd:
+                  (value as SelecionarRangeDataWidget).controller.dataFinal));
+        }
+      } else {
+        if (value is TextFormField) {
+          if (value.controller.text.trim().isNotEmpty) {
+            exps.add(FilterExpCollun(
+                line: line,
+                value: value.controller.text.trim(),
+                typeSearch: typeSearch));
+          }
+        }
+      }
+    });
+    return GroupFilterExp(filterExps: exps, operatorEx: OperatorFilterEx.AND);
+  }
+
+  setCorretDataSource() {
+    filter.clear();
+    if (buildFilterExpression().filterExps.isNotEmpty) {
+      setDataSourceFilter();
+    } else {
+      if (filter.text.isEmpty) {
+        setDataSource();
+      } else {
+        setDataSourceSearch();
+      }
+    }
+  }
+
+  clearFilters() {
+    filterControllers.forEach((key, value) {
+      if (value is SelecionarRangeDataWidget) {
+        value.controller.clear();
+      } else if (value is TextFormField) {
+        value.controller.clear();
+      }
+    });
+    setCorretDataSource();
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:msk_utils/extensions/date.dart';
 import 'package:msk_utils/extensions/string.dart';
 import 'package:msk_utils/models/item_select.dart';
 import 'package:select_any/app/models/models.dart';
@@ -56,6 +57,9 @@ class UtilsWidget {
       {bool generateActions = true}) {
     return selectModel.linhas
         .map((e) => DataColumn(
+            onSort: (int i, bool b) {
+              print('$i, $b');
+            },
             label: Text(e.nome ?? e.chave.upperCaseFirstLower(),
                 style: TextStyle(
                     fontSize: 16,
@@ -85,6 +89,10 @@ class UtilsWidget {
         return Text(
           linha.valorPadrao?.call(map) ?? '',
         );
+      }
+      if (linha.typeData is TDDateTimestamp) {
+        return Text(DateTime.fromMillisecondsSinceEpoch(item.value)
+            .string((linha.typeData as TDDateTimestamp).outputFormat));
       }
       return Text(item.value?.toString());
     }
@@ -240,4 +248,50 @@ class UtilsWidget {
       Navigator.pop(context, itemSelect.object);
     }
   }
+
+  static Future<TypeSearch> showDialogChangeTypeSearch(
+      BuildContext context, TypeSearch actualType) async {
+    return await showDialog(
+        context: context,
+        builder: (alertContext) => AlertDialog(
+              title: Text('Seleciona um tipo de pesquisa'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ListTile(
+                    title: Text('Contém'),
+                    trailing: actualType == TypeSearch.CONTAINS
+                        ? Icon(Icons.done)
+                        : null,
+                    onTap: () {
+                      Navigator.pop(alertContext, TypeSearch.CONTAINS);
+                    },
+                  ),
+                  ListTile(
+                    title: Text('Inicia com'),
+                    trailing: actualType == TypeSearch.BEGINSWITH
+                        ? Icon(Icons.done)
+                        : null,
+                    onTap: () {
+                      Navigator.pop(alertContext, TypeSearch.BEGINSWITH);
+                    },
+                  ),
+                  ListTile(
+                    title: Text('Termina com'),
+                    trailing: actualType == TypeSearch.ENDSWITH
+                        ? Icon(Icons.done)
+                        : null,
+                    onTap: () {
+                      Navigator.pop(alertContext, TypeSearch.ENDSWITH);
+                    },
+                  )
+                ],
+              ),
+            ));
+  }
+}
+
+showSnackMessage(BuildContext context, String message) {
+  ScaffoldMessenger.maybeOf(context)
+      .showSnackBar(SnackBar(content: Text(message)));
 }

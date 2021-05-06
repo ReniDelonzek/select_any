@@ -6,6 +6,8 @@ import 'package:select_any/app/models/models.dart';
 import 'package:select_any/app/modules/select_any/select_any_controller.dart';
 import 'package:select_any/app/modules/select_any/select_any_page.dart';
 import 'package:select_any/app/widgets/falha/falha_widget.dart';
+import 'package:select_any/app/widgets/selecionar_range_data/selecionar_range_data_controller.dart';
+import 'package:select_any/app/widgets/selecionar_range_data/selecionar_range_data_widget.dart';
 import 'package:select_any/app/widgets/utils_widget.dart';
 
 class TableDataWidget extends StatelessWidget {
@@ -60,19 +62,39 @@ class TableDataWidget extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Container(
-                                width: 300,
-                                child: TextField(
-                                  focusNode: controller.focusNodeSearch
-                                    ..requestFocus(),
-                                  decoration:
-                                      InputDecoration(hintText: 'Pesquisar'),
-                                  controller: controller.filter,
-                                  onChanged: (text) {
-                                    controller.filtroPesquisaModificado();
-                                  },
-                                )),
-                            Icon(Icons.search),
+                            IconButton(
+                                tooltip: 'Opções de pesquisa',
+                                onPressed: () async {
+                                  var newType = await UtilsWidget
+                                      .showDialogChangeTypeSearch(
+                                          context, controller.typeSearch);
+                                  controller.updateTypeSearch(newType);
+                                },
+                                icon: Icon(Icons.saved_search)),
+                            Observer(builder: (_) {
+                              if (!controller.showSearch) {
+                                return SizedBox();
+                              }
+                              return Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    SizedBox(width: 8),
+                                    Container(
+                                        width: 300,
+                                        child: TextField(
+                                          focusNode: controller.focusNodeSearch
+                                            ..requestFocus(),
+                                          decoration: InputDecoration(
+                                              hintText: 'Pesquisar'),
+                                          controller: controller.filter,
+                                          onChanged: (text) {
+                                            controller
+                                                .filtroPesquisaModificado();
+                                          },
+                                        )),
+                                    Icon(Icons.search),
+                                  ]);
+                            }),
 
                             /// fonteDadoAtual pode ser null caso o carregarDados seja false
                             if (controller.fonteDadoAtual?.allowExport == true)
@@ -136,16 +158,42 @@ class TableDataWidget extends StatelessWidget {
                       element.position >= start && element.position <= end)
                   .toList();
 
-              if (subList.isEmpty) {
-                return Center(
-                    child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Text('Nenhum item encontrado'),
-                ));
-              }
-
+              // if (subList.isEmpty) {
+              //   return Center(
+              //       child: Padding(
+              //     padding: const EdgeInsets.all(16),
+              //     child: Text('Nenhum item encontrado'),
+              //   ));
+              // }
               List<DataRow> rows = [];
               int i = 0;
+              rows.add(DataRow(
+                  cells: controller.selectModel.linhas.map((e) {
+                if (!controller.filterControllers.containsKey(e.chave)) {
+                  if (e.filter != null) {
+                    if (e.filter is FilterRangeDate) {
+                      controller.filterControllers[e.chave] =
+                          SelecionarRangeDataWidget(
+                              SelecionarRangeDataController(),
+                              (dateMin, dateMax) {
+                        controller.setCorretDataSource();
+                      });
+                    }
+                  } else {
+                    controller.filterControllers[e.chave] = TextFormField(
+                      controller: TextEditingController(),
+                      decoration: InputDecoration(hintText: 'Filtro'),
+                      onChanged: (text) {
+                        controller.setCorretDataSource();
+                      },
+                    );
+                  }
+                }
+                return DataCell(Padding(
+                  padding: const EdgeInsets.all(4.0),
+                  child: controller.filterControllers[e.chave],
+                ));
+              }).toList()));
               for (var element in subList) {
                 rows.add(UtilsWidget.generateDataRow(
                     controller.selectModel,
@@ -234,6 +282,20 @@ class TableDataWidget extends StatelessWidget {
                                 ),
                               ],
                             );
+                          } else if (index == 1) {
+                            /// Coluna de filtros
+                            return SizedBox(
+                              height: 48,
+                              child: IconButton(
+                                onPressed: () {
+                                  controller.clearFilters();
+
+                                  showSnackMessage(
+                                      context, 'Os filtros foram limpos');
+                                },
+                                icon: Icon(Icons.clear),
+                              ),
+                            );
                           } else {
                             return Row(
                                 children:
@@ -263,15 +325,6 @@ class TableDataWidget extends StatelessWidget {
                         })),
                   )
               ]);
-
-              //   return SingleChildScrollView(
-              //     scrollDirection: Axis.horizontal,
-              //     child: DataTable(
-              //         columns: UtilsWidget.generateDataColumn(
-              //             controller.selectModel),
-              //         rows: rows),
-              //   );
-              // }
             }),
             Container(
                 alignment: Alignment.bottomRight,
@@ -309,11 +362,7 @@ class TableDataWidget extends StatelessWidget {
                                                             .quantityItensPage)
                                                     .ceil();
                                           }
-                                          if (controller.filter.text.isEmpty) {
-                                            controller.setDataSource();
-                                          } else {
-                                            controller.setDataSourceSearch();
-                                          }
+                                          controller.setCorretDataSource();
 
                                           /// Salva isso no banco
                                           UtilsHive.getInstance()
@@ -323,14 +372,10 @@ class TableDataWidget extends StatelessWidget {
                                                 'quantityItensPage', item);
                                           });
                                         },
-                                        items: [
-                                          DropdownMenuItem(
-                                              value: 10, child: Text('10')),
-                                          DropdownMenuItem(
-                                              value: 15, child: Text('15')),
-                                          DropdownMenuItem(
-                                              value: 20, child: Text('20'))
-                                        ]),
+                                        items: controller.getNumberItemsPerPage
+                                            .map((e) => DropdownMenuItem(
+                                                value: e, child: Text('$e')))
+                                            .toList()),
                                     SizedBox(width: 16)
                                   ],
                                 )
@@ -343,11 +388,7 @@ class TableDataWidget extends StatelessWidget {
                                       value: controller.page,
                                       onChanged: (item) {
                                         controller.page = item;
-                                        if (controller.filter.text.isEmpty) {
-                                          controller.setDataSource();
-                                        } else {
-                                          controller.setDataSourceSearch();
-                                        }
+                                        controller.setCorretDataSource();
                                       },
                                       items:
                                           List<DropdownMenuItem<int>>.generate(
@@ -373,12 +414,7 @@ class TableDataWidget extends StatelessWidget {
                                         ? () {
                                             controller.page =
                                                 controller.page - 1;
-                                            if (controller
-                                                .filter.text.isEmpty) {
-                                              controller.setDataSource();
-                                            } else {
-                                              controller.setDataSourceSearch();
-                                            }
+                                            controller.setCorretDataSource();
                                           }
                                         : null),
                                 IconButton(
@@ -389,12 +425,7 @@ class TableDataWidget extends StatelessWidget {
                                         ? () {
                                             controller.page =
                                                 controller.page + 1;
-                                            if (controller
-                                                .filter.text.isEmpty) {
-                                              controller.setDataSource();
-                                            } else {
-                                              controller.setDataSourceSearch();
-                                            }
+                                            controller.setCorretDataSource();
                                           }
                                         : null)
                               ],

@@ -12,22 +12,26 @@ class UtilsFile {
       String extensionFile,
       String dirComplementar,
       String contentExport}) async {
-    String diretorio;
+    String directory;
     String separator = "/";
     if (UtilsPlatform.isWindows()) {
       separator = "\\";
     }
     if (UtilsPlatform.isDesktop()) {
-      diretorio = '${io.Directory.current.path}${separator}Files';
+      directory = '${io.Directory.current.path}${separator}Files';
     } else {
-      diretorio = (await getExternalStorageDirectory()).absolute.path;
+      if (UtilsPlatform.isIOS()) {
+        directory = (await getTemporaryDirectory()).absolute.path;
+      } else {
+        directory = (await getExternalStorageDirectory()).absolute.path;
+      }
     }
     if (dirComplementar != null) {
-      diretorio += '$separator$dirComplementar';
+      directory += '$separator$dirComplementar';
     }
     io.File file =
-        io.File('$diretorio$separator${DateTime.now().millisecondsSinceEpoch}');
-    io.Directory dir = io.Directory('$diretorio');
+        io.File('$directory$separator${DateTime.now().millisecondsSinceEpoch}');
+    io.Directory dir = io.Directory('$directory');
     if ((await dir.exists()) == false) {
       dir = await dir.create(recursive: true);
     }
@@ -47,25 +51,29 @@ class UtilsFile {
   static Future<File> saveFileBytes(List<int> bytes,
       {String fileName,
       String extensionFile,
-      String dirComplementar,
+      String dirExtra,
       String contentExport,
       bool openExplorer = true}) async {
-    String diretorio;
+    String directory;
     String separator = "/";
     if (UtilsPlatform.isWindows()) {
       separator = "\\";
     }
     if (UtilsPlatform.isDesktop()) {
-      diretorio = '${io.Directory.current.path}${separator}Files';
+      directory = '${io.Directory.current.path}${separator}Files';
     } else {
-      diretorio = (await getExternalStorageDirectory()).absolute.path;
+      if (UtilsPlatform.isIOS()) {
+        directory = (await getTemporaryDirectory()).absolute.path;
+      } else {
+        directory = (await getExternalStorageDirectory()).absolute.path;
+      }
     }
-    if (dirComplementar != null) {
-      diretorio += '$separator$dirComplementar';
+    if (dirExtra != null) {
+      directory += '$separator$dirExtra';
     }
     io.File file =
-        io.File('$diretorio$separator${DateTime.now().millisecondsSinceEpoch}');
-    io.Directory dir = io.Directory('$diretorio');
+        io.File('$directory$separator${DateTime.now().millisecondsSinceEpoch}');
+    io.Directory dir = io.Directory('$directory');
     if ((await dir.exists()) == false) {
       dir = await dir.create(recursive: true);
     }

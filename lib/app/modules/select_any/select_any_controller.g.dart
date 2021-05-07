@@ -208,6 +208,23 @@ mixin _$SelectAnyController on _SelectAnyBase, Store {
     }, _$loadingMoreAtom, name: '${_$loadingMoreAtom.name}_set');
   }
 
+  final _$showSearchAtom = Atom(name: '_SelectAnyBase.showSearch');
+
+  @override
+  bool get showSearch {
+    _$showSearchAtom.context.enforceReadPolicy(_$showSearchAtom);
+    _$showSearchAtom.reportObserved();
+    return super.showSearch;
+  }
+
+  @override
+  set showSearch(bool value) {
+    _$showSearchAtom.context.conditionallyRunInAction(() {
+      super.showSearch = value;
+      _$showSearchAtom.reportChanged();
+    }, _$showSearchAtom, name: '${_$showSearchAtom.name}_set');
+  }
+
   final _$_SelectAnyBaseActionController =
       ActionController(name: '_SelectAnyBase');
 

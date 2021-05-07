@@ -20,7 +20,7 @@ class SelectModel {
 
   /// Chave do id de cada linha
   String id;
-  List<Filtro> filtros;
+  List<FilterBase> filtros;
 
   /// Ações que serão selecionáveis após o clique em cada item
   List<Acao> acoes;
@@ -96,7 +96,11 @@ class Linha {
   TextStyle estiloTexto;
 
   /// Você pode espeficicar uma formatação a ser aplicada
-  FormatacaoDados formatacaoDados;
+  FormatData formatData;
+
+  FilterBase filter;
+
+  TypeData typeData;
 
   Linha(this.chave,
       {this.color,
@@ -106,8 +110,40 @@ class Linha {
       @required this.nome,
       this.chavesLista,
       this.estiloTexto,
-      this.formatacaoDados});
+      this.formatData,
+      this.filter,
+      this.typeData}) {
+    if (typeData is TDDateTimestamp && filter == null) {
+      filter = FilterRangeDate();
+    }
+  }
 }
+
+abstract class TypeData {}
+
+class TDText extends TypeData {}
+
+class TDNumberInt extends TypeData {}
+
+class TDNumberDecimal extends TypeData {}
+
+abstract class TDDate extends TypeData {
+  String outputFormat;
+
+  TDDate({this.outputFormat = 'dd/MM/yyyy'});
+}
+
+class TDDateString extends TDDate {
+  TDDateString({String outputFormat = 'dd/MM/yyyy'})
+      : super(outputFormat: outputFormat);
+}
+
+class TDDateTimestamp extends TDDate {
+  TDDateTimestamp({String outputFormat = 'dd/MM/yyyy'})
+      : super(outputFormat: outputFormat);
+}
+
+class TDMoney extends TypeData {}
 
 typedef LinhaPersonalizada = Widget Function(CustomLineData);
 
@@ -122,18 +158,18 @@ class CustomLineData {
 
 typedef ValorPadrao = String Function(dynamic dados);
 
-abstract class FormatacaoDados {
-  String valorPadrao;
-  FormatacaoDados({this.valorPadrao});
-  String dadosFormatados(String dados);
+abstract class FormatData {
+  String defaultValue;
+  FormatData({this.defaultValue});
+  String formatData(String dados);
 }
 
-class FormatacaoDadosDate extends FormatacaoDados {
-  String formatoEntrada;
-  String formatoSaida;
+class FormatDataDate extends FormatData {
+  String inputFormat;
+  String outputFormat;
 
   @override
-  String dadosFormatados(String dataOriginal) {
+  String formatData(String dataOriginal) {
     try {
       String data;
       if (dataOriginal is String) {
@@ -141,38 +177,69 @@ class FormatacaoDadosDate extends FormatacaoDados {
       } else {
         data = dataOriginal?.toString();
       }
-      return data.toDate(formatoEntrada).string(formatoSaida);
+      return data.toDate(inputFormat).string(outputFormat);
     } catch (error, _) {
       // UtilsSentry.reportError(error, stackTrace);
     }
-    return valorPadrao;
+    return defaultValue;
   }
 }
 
-class FormatacaoDadosTimestamp extends FormatacaoDados {
-  String formatoSaida;
+class FormatDataTimestamp extends FormatData {
+  String outputFormat;
 
-  FormatacaoDadosTimestamp(this.formatoSaida);
+  FormatDataTimestamp(this.outputFormat);
 
   @override
-  String dadosFormatados(String dados) {
+  String formatData(String data) {
     try {
-      return DateTime.fromMillisecondsSinceEpoch(dados.toInt())
-          .string(formatoSaida);
+      return DateTime.fromMillisecondsSinceEpoch(data.toInt())
+          .string(outputFormat);
     } catch (error, _) {
       // UtilsSentry.reportError(error, stackTrace);
     }
-    return valorPadrao;
+    return defaultValue;
   }
 }
 
-class Filtro {
-  String id;
-  String label;
-  TextInputType inputType;
-  TextCapitalization textCapitalization;
+abstract class FilterBase {
+  FilterBase();
+}
 
-  Filtro(this.id, this.label, this.inputType, this.textCapitalization);
+class FilterRangeDate extends FilterBase {
+  DateTime dateMin;
+  DateTime dateMax;
+  DateTime dateDefault;
+  FilterRangeDate({
+    this.dateMin,
+    this.dateMax,
+    this.dateDefault,
+  });
+}
+
+class FilterSelectItem {
+  FontDataFilterBase fontDataFilter;
+
+  FilterSelectItem({this.fontDataFilter});
+}
+
+class ItemDataFilter {
+  String label;
+  int id;
+}
+
+abstract class FontDataFilterBase {
+  Future<List<ItemDataFilter>> getList();
+}
+
+class FontDataFilterStatic extends FontDataFilterBase {
+  List<ItemDataFilter> list;
+  FontDataFilterStatic(this.list);
+
+  @override
+  Future<List<ItemDataFilter>> getList() async {
+    return list;
+  }
 }
 
 abstract class DataSource = _DataSourceBase with _$DataSource;
@@ -206,6 +273,10 @@ abstract class _DataSourceBase with Store {
 
   Future<Stream<ResponseData>> getListSearch(
       String text, int limit, int offset, SelectModel selectModel,
+      {Map data, bool refresh, TypeSearch typeSearch = TypeSearch.CONTAINS});
+
+  Future<Stream<ResponseData>> getListFilter(
+      GroupFilterExp filter, int limit, int offset, SelectModel selectModel,
       {Map data, bool refresh});
 
   List<ItemSelectTable> generateList(
@@ -342,3 +413,33 @@ abstract class _ItemSelectExpandedBase extends ItemSelect with Store {
 
   _ItemSelectExpandedBase({this.items, this.isExpanded = false});
 }
+
+enum TypeSearch { CONTAINS, BEGINSWITH, ENDSWITH }
+
+abstract class FilterExp {}
+
+class FilterExpCollun extends FilterExp {
+  Linha line;
+  dynamic value;
+  TypeSearch typeSearch;
+  FilterExpCollun(
+      {this.line, this.value, this.typeSearch = TypeSearch.CONTAINS});
+}
+
+class FilterExpRangeCollun extends FilterExp {
+  Linha line;
+  DateTime dateStart;
+  DateTime dateEnd;
+  FilterExpRangeCollun({this.line, this.dateStart, this.dateEnd});
+}
+
+class GroupFilterExp extends FilterExp {
+  OperatorFilterEx operatorEx;
+  List<FilterExp> filterExps;
+  GroupFilterExp({
+    this.operatorEx,
+    this.filterExps,
+  });
+}
+
+enum OperatorFilterEx { AND, OR }

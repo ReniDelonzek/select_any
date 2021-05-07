@@ -12,6 +12,7 @@ import 'package:select_any/app/modules/select_any/select_any_controller.dart';
 import 'package:select_any/app/widgets/falha/falha_widget.dart';
 import 'package:select_any/app/widgets/table_data/table_data_widget.dart';
 import 'package:select_any/app/widgets/utils_widget.dart';
+import 'package:msk_utils/extensions/date.dart';
 
 class InsertIntent extends Intent {
   const InsertIntent();
@@ -492,11 +493,21 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
     String valor = (item.value == null || item.value.toString().isEmpty)
         ? (linha.valorPadrao != null ? linha.valorPadrao(map) : '')
         : item.value?.toString();
-    if (linha.formatacaoDados != null) {
-      valor = linha.formatacaoDados.dadosFormatados(valor);
+
+    if (linha.formatData != null) {
+      valor = linha.formatData.formatData(valor);
+    } else if (linha.typeData is TDDateTimestamp &&
+        linha.personalizacao == null) {
+      try {
+        valor = DateTime.fromMillisecondsSinceEpoch(int.tryParse(valor))
+            .string((linha.typeData as TDDateTimestamp).outputFormat);
+        if (linha.involucro == null) {
+          linha.involucro = '${linha.nome}: ???';
+        }
+      } catch (_) {}
     }
-    if (linha != null &&
-        (linha.involucro != null || linha.personalizacao != null)) {
+
+    if ((linha.involucro != null || linha.personalizacao != null)) {
       if (linha.personalizacao != null) {
         return linha.personalizacao(CustomLineData(
             data: map, typeScreen: widget.controller.typeDiplay));

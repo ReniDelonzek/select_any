@@ -237,6 +237,18 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_date_pickers:
+    dependency: "direct main"
+    description:
+      name: flutter_date_pickers
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.2.4"
+  flutter_localizations:
+    dependency: transitive
+    description: flutter
+    source: sdk
+    version: "0.0.0"
   flutter_mobx:
     dependency: transitive
     description:
@@ -299,7 +311,7 @@ packages:
     source: hosted
     version: "3.1.4"
   intl:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
       name: intl
       url: "https://pub.dartlang.org"

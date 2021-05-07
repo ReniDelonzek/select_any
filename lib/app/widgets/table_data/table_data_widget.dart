@@ -167,33 +167,34 @@ class TableDataWidget extends StatelessWidget {
               // }
               List<DataRow> rows = [];
               int i = 0;
-              rows.add(DataRow(
-                  cells: controller.selectModel.linhas.map((e) {
-                if (!controller.filterControllers.containsKey(e.chave)) {
-                  if (e.filter != null) {
-                    if (e.filter is FilterRangeDate) {
-                      controller.filterControllers[e.chave] =
-                          SelecionarRangeDataWidget(
-                              SelecionarRangeDataController(),
-                              (dateMin, dateMax) {
-                        controller.setCorretDataSource();
-                      });
-                    }
-                  } else {
-                    controller.filterControllers[e.chave] = TextFormField(
-                      controller: TextEditingController(),
-                      decoration: InputDecoration(hintText: 'Filtro'),
-                      onChanged: (text) {
-                        controller.setCorretDataSource();
-                      },
-                    );
-                  }
-                }
-                return DataCell(Padding(
-                  padding: const EdgeInsets.all(4.0),
-                  child: controller.filterControllers[e.chave],
-                ));
-              }).toList()));
+              // rows.add(DataRow(
+              //     cells: controller.selectModel.linhas.map((e) {
+              //   if (!controller.filterControllers.containsKey(e.chave)) {
+              //     if (e.filter != null) {
+              //       if (e.filter is FilterRangeDate) {
+              //         controller.filterControllers[e.chave] =
+              //             SelecionarRangeDataWidget(
+              //                 SelecionarRangeDataController(),
+              //                 (dateMin, dateMax) {
+              //           controller.setCorretDataSource();
+              //         });
+              //       }
+              //     } else {
+              //       controller.filterControllers[e.chave] = TextFormField(
+              //         controller: TextEditingController(),
+              //         decoration: InputDecoration(hintText: 'Filtro'),
+              //         onChanged: (text) {
+              //           controller.setCorretDataSource();
+              //         },
+              //       );
+              //     }
+              //   }
+              //   return DataCell(Padding(
+              //     padding: const EdgeInsets.all(4.0),
+              //     child: controller.filterControllers[e.chave],
+              //   ));
+              // }).toList()));
+
               for (var element in subList) {
                 rows.add(UtilsWidget.generateDataRow(
                     controller.selectModel,
@@ -282,21 +283,23 @@ class TableDataWidget extends StatelessWidget {
                                 ),
                               ],
                             );
-                          } else if (index == 1) {
-                            /// Coluna de filtros
-                            return SizedBox(
-                              height: 48,
-                              child: IconButton(
-                                onPressed: () {
-                                  controller.clearFilters();
+                          }
+                          // else if (index == 1) {
+                          //   /// Coluna de filtros
+                          //   return SizedBox(
+                          //     height: 48,
+                          //     child: IconButton(
+                          //       onPressed: () {
+                          //         controller.clearFilters();
 
-                                  showSnackMessage(
-                                      context, 'Os filtros foram limpos');
-                                },
-                                icon: Icon(Icons.clear),
-                              ),
-                            );
-                          } else {
+                          //         showSnackMessage(
+                          //             context, 'Os filtros foram limpos');
+                          //       },
+                          //       icon: Icon(Icons.clear),
+                          //     ),
+                          //   );
+                          // }
+                          else {
                             return Row(
                                 children:
                                     controller.selectModel.acoes.map((acao) {

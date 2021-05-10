@@ -314,6 +314,7 @@ class TableDataWidget extends StatelessWidget {
                                         context,
 
                                         /// Tira 1 do index pois o index 0 é o do header
+                                        /// Quando tiver os filtros, precisa tirar dois
                                         subList[index - 1],
                                         index - 1,
                                         acao,

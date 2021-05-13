@@ -98,9 +98,12 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
       } else {
         if (widget.controller.typeDiplay != 1) {
           widget.controller.typeDiplay = 1;
-          // WidgetsBinding.instance.addPostFrameCallback((_) async {
-          //   carregarDados();
-          // });
+          if (!(widget.controller.fonteDadoAtual?.suportPaginate ?? false) &&
+              widget.controller.loaded) {
+            /// Caso a fonte nao suporte paginação, recarrega os dados
+            /// Pois os dados carregados na tabela não são completos
+            widget.controller.setCorretDataSource(offset: -1);
+          }
         }
       }
       //});
@@ -284,9 +287,6 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
               widget.controller.setDataSource(
                   offset: widget.controller.typeDiplay == 1 ? -1 : 0);
               carregarDados();
-              // widget.controller.streamController.addStream((await widget.controller
-              //     .fonteDadoAtual
-              //     .getList(-1, 0, widget._selectModel)));
             });
           });
           return new Center(child: new RefreshProgressIndicator());

@@ -418,14 +418,14 @@ abstract class _SelectAnyBase with Store {
     return GroupFilterExp(filterExps: exps, operatorEx: OperatorFilterEx.AND);
   }
 
-  setCorretDataSource() {
+  setCorretDataSource({int offset}) {
     if (buildFilterExpression().filterExps.isNotEmpty) {
-      setDataSourceFilter();
+      setDataSourceFilter(offset: offset);
     } else {
       if (filter.text.isEmpty) {
-        setDataSource();
+        setDataSource(offset: offset);
       } else {
-        setDataSourceSearch();
+        setDataSourceSearch(offset: offset);
       }
     }
   }

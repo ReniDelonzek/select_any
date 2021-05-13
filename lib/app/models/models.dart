@@ -55,24 +55,23 @@ class SelectModel {
   /// Indica se o botão de selecionar todos ficará visível ou não
   bool permitirSelecionarTodos;
 
+  /// Indica se devem aparecer os campos de filtro para a tabela (EXPERIMENTAL)
+  bool showFiltersInput;
+
   SelectModel(
-    this.titulo,
-    this.id,
-    this.linhas,
-    this.fonteDados,
-    this.tipoSelecao, {
-    this.filtros,
-    this.acoes,
-    this.botoes,
-    this.itensSelecionados,
-    this.exibirPreSelecionados = false,
-    this.fonteDadosAlternativa,
-    this.legendas,
-    this.abrirPesquisaAutomaticamente,
-    this.preSelected,
-    this.confirmarParaCarregarDados = false,
-    this.permitirSelecionarTodos,
-  }) {
+      this.titulo, this.id, this.linhas, this.fonteDados, this.tipoSelecao,
+      {this.filtros,
+      this.acoes,
+      this.botoes,
+      this.itensSelecionados,
+      this.exibirPreSelecionados = false,
+      this.fonteDadosAlternativa,
+      this.legendas,
+      this.abrirPesquisaAutomaticamente,
+      this.preSelected,
+      this.confirmarParaCarregarDados = false,
+      this.permitirSelecionarTodos,
+      this.showFiltersInput = false}) {
     if (abrirPesquisaAutomaticamente == null) {
       abrirPesquisaAutomaticamente = !UtilsPlatform.isMobile();
     }

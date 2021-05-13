@@ -158,8 +158,7 @@ class TableDataWidget extends StatelessWidget {
                       element.position >= start && element.position <= end)
                   .toList();
 
-              /// Remover caso for usar os filtros
-              if (subList.isEmpty) {
+              if (subList.isEmpty && !controller.selectModel.showFiltersInput) {
                 return Center(
                     child: Padding(
                   padding: const EdgeInsets.all(16),
@@ -168,36 +167,40 @@ class TableDataWidget extends StatelessWidget {
               }
               List<DataRow> rows = [];
               int i = 0;
-              // rows.add(DataRow(
-              //     cells: controller.selectModel.linhas.map((e) {
-              //   if (!controller.filterControllers.containsKey(e.chave)) {
-              //     if (e.filter != null) {
-              //       if (e.filter is FilterRangeDate) {
-              //         controller.filterControllers[e.chave] =
-              //             SelecionarRangeDataWidget(
-              //                 SelecionarRangeDataController(),
-              //                 (dateMin, dateMax) {
-              //           controller.filter.clear();
-              //           controller.setCorretDataSource();
-              //         });
-              //       }
-              //     } else {
-              //       controller.filterControllers[e.chave] = TextFormField(
-              //         controller: TextEditingController(),
-              //         decoration: InputDecoration(hintText: 'Filtro'),
-              //         onChanged: (text) {
-              //           controller.filter.clear();
-              //           controller.setCorretDataSource();
-              //         },
-              //       );
-              //     }
-              //   }
-              //   return DataCell(Padding(
-              //     padding: const EdgeInsets.all(4.0),
-              //     child: controller.filterControllers[e.chave],
-              //   ));
-              // }).toList()));
+              if (controller.selectModel.showFiltersInput) {
+                rows.add(DataRow(
+                    selected: false,
+                    cells: controller.selectModel.linhas.map((e) {
+                      if (!controller.filterControllers.containsKey(e.chave)) {
+                        if (e.filter != null) {
+                          if (e.filter is FilterRangeDate) {
+                            controller.filterControllers[e.chave] =
+                                SelecionarRangeDataWidget(
+                                    SelecionarRangeDataController(),
+                                    (dateMin, dateMax) {
+                              controller.filter.clear();
+                              controller.setCorretDataSource();
+                            });
+                          }
+                        } else {
+                          controller.filterControllers[e.chave] = TextField(
+                            controller: TextEditingController(),
+                            decoration: InputDecoration(hintText: 'Filtro'),
+                            onChanged: (text) {
+                              print(text);
+                              controller.filter.clear();
+                              controller.setCorretDataSource();
+                            },
+                          );
+                        }
+                      }
 
+                      return DataCell(Padding(
+                        padding: const EdgeInsets.all(4.0),
+                        child: controller.filterControllers[e.chave],
+                      ));
+                    }).toList()));
+              }
               for (var element in subList) {
                 rows.add(UtilsWidget.generateDataRow(
                     controller.selectModel,
@@ -214,7 +217,7 @@ class TableDataWidget extends StatelessWidget {
                   if (controller.selectModel.tipoSelecao ==
                       SelectAnyPage.TIPO_SELECAO_ACAO) {
                     /// Gambi para evitar problemas ao usuário clicar em selecionar todos
-                    if ((controller.lastClick + 1000) <
+                    if ((controller.lastClick + 500) <
                         (DateTime.now().millisecondsSinceEpoch)) {
                       controller.lastClick =
                           DateTime.now().millisecondsSinceEpoch;
@@ -286,23 +289,21 @@ class TableDataWidget extends StatelessWidget {
                                 ),
                               ],
                             );
-                          }
-                          // else if (index == 1) {
-                          //   /// Coluna de filtros
-                          //   return SizedBox(
-                          //     height: 48,
-                          //     child: IconButton(
-                          //       onPressed: () {
-                          //         controller.clearFilters();
-
-                          //         showSnackMessage(
-                          //             context, 'Os filtros foram limpos');
-                          //       },
-                          //       icon: Icon(Icons.clear),
-                          //     ),
-                          //   );
-                          // }
-                          else {
+                          } else if (index == 1 &&
+                              controller.selectModel.showFiltersInput) {
+                            /// Coluna de filtros
+                            return SizedBox(
+                              height: 48,
+                              child: IconButton(
+                                onPressed: () {
+                                  controller.clearFilters();
+                                  showSnackMessage(
+                                      context, 'Os filtros foram limpos');
+                                },
+                                icon: Icon(Icons.clear),
+                              ),
+                            );
+                          } else {
                             return Row(
                                 children:
                                     controller.selectModel.acoes.map((acao) {
@@ -313,13 +314,17 @@ class TableDataWidget extends StatelessWidget {
                                   icon: acao.icon ??
                                       Text(acao.descricao ?? 'Ação'),
                                   onPressed: () {
+                                    /// Tira 1 do index pois o index 0 é o do header
+                                    int newIndex = index - 1;
+                                    if (controller
+                                        .selectModel.showFiltersInput) {
+                                      /// Quando tiver os filtros, precisa tirar mais um
+                                      newIndex -= 1;
+                                    }
                                     UtilsWidget.onAction(
                                         context,
-
-                                        /// Tira 1 do index pois o index 0 é o do header
-                                        /// Quando tiver os filtros, precisa tirar dois
-                                        subList[index - 1],
-                                        index - 1,
+                                        subList[newIndex],
+                                        index,
                                         acao,
                                         controller.data,
                                         controller.reloadData,

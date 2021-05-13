@@ -419,7 +419,6 @@ abstract class _SelectAnyBase with Store {
   }
 
   setCorretDataSource() {
-    filter.clear();
     if (buildFilterExpression().filterExps.isNotEmpty) {
       setDataSourceFilter();
     } else {

@@ -176,6 +176,7 @@ class TableDataWidget extends StatelessWidget {
               //             SelecionarRangeDataWidget(
               //                 SelecionarRangeDataController(),
               //                 (dateMin, dateMax) {
+              //           controller.filter.clear();
               //           controller.setCorretDataSource();
               //         });
               //       }
@@ -184,6 +185,7 @@ class TableDataWidget extends StatelessWidget {
               //         controller: TextEditingController(),
               //         decoration: InputDecoration(hintText: 'Filtro'),
               //         onChanged: (text) {
+              //           controller.filter.clear();
               //           controller.setCorretDataSource();
               //         },
               //       );

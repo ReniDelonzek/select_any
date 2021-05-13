@@ -158,13 +158,14 @@ class TableDataWidget extends StatelessWidget {
                       element.position >= start && element.position <= end)
                   .toList();
 
-              // if (subList.isEmpty) {
-              //   return Center(
-              //       child: Padding(
-              //     padding: const EdgeInsets.all(16),
-              //     child: Text('Nenhum item encontrado'),
-              //   ));
-              // }
+              /// Remover caso for usar os filtros
+              if (subList.isEmpty) {
+                return Center(
+                    child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Text('Nenhum item encontrado'),
+                ));
+              }
               List<DataRow> rows = [];
               int i = 0;
               // rows.add(DataRow(

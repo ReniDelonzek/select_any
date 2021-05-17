@@ -167,7 +167,7 @@ class TableDataWidget extends StatelessWidget {
               }
               List<DataRow> rows = [];
               int i = 0;
-              if (controller.selectModel.showFiltersInput) {
+              if (controller.selectModel.showFiltersInput == true) {
                 rows.add(DataRow(
                     selected: false,
                     cells: controller.selectModel.linhas.map((e) {

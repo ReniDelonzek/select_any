@@ -329,7 +329,7 @@ abstract class _SelectAnyBase with Store {
   reloadData() {
     /// Não recarrega os dados caso precise de confirmação
     if (!confirmarParaCarregarDados) {
-      setCorretDataSource(offset: typeDiplay == 1 ? -1 : 0);
+      setCorretDataSource(offset: typeDiplay == 1 ? -1 : 0, refresh: true);
     }
   }
 
@@ -413,14 +413,14 @@ abstract class _SelectAnyBase with Store {
     return GroupFilterExp(filterExps: exps, operatorEx: OperatorFilterEx.AND);
   }
 
-  setCorretDataSource({int offset}) {
+  setCorretDataSource({int offset, bool refresh = false}) {
     if (buildFilterExpression().filterExps.isNotEmpty) {
-      setDataSourceFilter(offset: offset);
+      setDataSourceFilter(offset: offset, refresh: refresh);
     } else {
       if (filter.text.isEmpty) {
-        setDataSource(offset: offset);
+        setDataSource(offset: offset, refresh: refresh);
       } else {
-        setDataSourceSearch(offset: offset);
+        setDataSourceSearch(offset: offset, refresh: refresh);
       }
     }
   }

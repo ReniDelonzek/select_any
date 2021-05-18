@@ -82,8 +82,7 @@ class TableDataWidget extends StatelessWidget {
                                     Container(
                                         width: 300,
                                         child: TextField(
-                                          focusNode: controller.focusNodeSearch
-                                            ..requestFocus(),
+                                          focusNode: controller.focusNodeSearch,
                                           decoration: InputDecoration(
                                               hintText: 'Pesquisar'),
                                           controller: controller.filter,

@@ -58,6 +58,9 @@ class SelectModel {
   /// Indica se devem aparecer os campos de filtro para a tabela (EXPERIMENTAL)
   bool showFiltersInput;
 
+  /// Cor do topo da tabela
+  Color headerColor;
+
   SelectModel(
       this.titulo, this.id, this.linhas, this.fonteDados, this.tipoSelecao,
       {this.filtros,
@@ -71,7 +74,8 @@ class SelectModel {
       this.preSelected,
       this.confirmarParaCarregarDados = false,
       this.permitirSelecionarTodos,
-      this.showFiltersInput = false}) {
+      this.showFiltersInput = false,
+      this.headerColor = const Color(0xFF00823A)}) {
     if (abrirPesquisaAutomaticamente == null) {
       abrirPesquisaAutomaticamente = !UtilsPlatform.isMobile();
     }

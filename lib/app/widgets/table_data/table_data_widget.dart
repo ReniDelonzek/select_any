@@ -254,10 +254,13 @@ class TableDataWidget extends StatelessWidget {
                           constraints:
                               BoxConstraints(minWidth: constraint.maxWidth),
                           child: DataTable(
-                              headingRowColor:
-                                  MaterialStateColor.resolveWith((states) {
-                                return Color(0xFF00823A);
-                              }),
+                              headingRowColor: controller
+                                          .selectModel.headerColor !=
+                                      null
+                                  ? MaterialStateColor.resolveWith((states) {
+                                      return controller.selectModel.headerColor;
+                                    })
+                                  : null,
                               columns: UtilsWidget.generateDataColumn(
                                   controller.selectModel,
                                   generateActions: false),
@@ -275,8 +278,9 @@ class TableDataWidget extends StatelessWidget {
                               children: [
                                 Container(
                                   height: 56,
-                                  decoration:
-                                      BoxDecoration(color: Color(0xFF00823A)),
+                                  decoration: BoxDecoration(
+                                      color:
+                                          controller.selectModel.headerColor),
                                   constraints: BoxConstraints(minWidth: 60),
                                   width: controller.selectModel.acoes.length *
                                       50.0,

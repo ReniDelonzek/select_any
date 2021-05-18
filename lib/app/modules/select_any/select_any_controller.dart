@@ -329,6 +329,7 @@ abstract class _SelectAnyBase with Store {
   reloadData() {
     /// Não recarrega os dados caso precise de confirmação
     if (!confirmarParaCarregarDados) {
+      list.clear();
       setCorretDataSource(offset: typeDiplay == 1 ? -1 : 0, refresh: true);
     }
   }

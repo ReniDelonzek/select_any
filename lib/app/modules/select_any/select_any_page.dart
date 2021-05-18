@@ -384,8 +384,11 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
     } else {
       widget.controller.searchIcon = new Icon(Icons.search);
       widget.controller.appBarTitle = new Text(widget._selectModel.titulo);
-      widget.controller.searchText = '';
-      widget.controller.filter.clear();
+      if (widget.controller.filter.text.isNotEmpty) {
+        widget.controller.searchText = '';
+        widget.controller.filter.clear();
+        widget.controller.filtroPesquisaModificado(reload: true);
+      }
     }
   }
 

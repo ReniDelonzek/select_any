@@ -61,6 +61,9 @@ class SelectModel {
   /// Cor do topo da tabela
   Color headerColor;
 
+  /// Indica se o titulo deve ficar centralizado
+  bool centerTitle;
+
   SelectModel(
       this.titulo, this.id, this.linhas, this.fonteDados, this.tipoSelecao,
       {this.filtros,
@@ -75,7 +78,8 @@ class SelectModel {
       this.confirmarParaCarregarDados = false,
       this.permitirSelecionarTodos,
       this.showFiltersInput = false,
-      this.headerColor = const Color(0xFF00823A)}) {
+      this.headerColor = const Color(0xFF00823A),
+      this.centerTitle}) {
     if (abrirPesquisaAutomaticamente == null) {
       abrirPesquisaAutomaticamente = !UtilsPlatform.isMobile();
     }

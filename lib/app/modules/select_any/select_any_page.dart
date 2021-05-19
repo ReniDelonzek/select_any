@@ -173,7 +173,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
                 autofocus: true,
                 child: Scaffold(
                   appBar: AppBar(
-                    centerTitle: true,
+                    centerTitle: widget.controller.selectModel.centerTitle,
                     title:
                         Observer(builder: (_) => widget.controller.appBarTitle),
                     actions: [

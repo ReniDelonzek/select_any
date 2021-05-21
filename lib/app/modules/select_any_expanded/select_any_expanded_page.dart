@@ -147,7 +147,7 @@ class _SelectAnyExpandedPageState extends State<SelectAnyExpandedPage> {
         ? (linha.valorPadrao != null ? linha.valorPadrao(map) : '')
         : item.value?.toString();
     if (linha.formatData != null) {
-      valor = linha.formatData.formatData(valor);
+      valor = linha.formatData.formatData(ObjFormatData(data: valor));
     }
     if (linha != null &&
         (linha.involucro != null || linha.personalizacao != null)) {

@@ -498,7 +498,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
         : item.value?.toString();
 
     if (linha.formatData != null) {
-      valor = linha.formatData.formatData(valor);
+      valor = linha.formatData.formatData(ObjFormatData(data: valor));
     } else if (linha.typeData is TDDateTimestamp &&
         linha.personalizacao == null) {
       try {
@@ -542,7 +542,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
         },
       );
     } else
-      return SizedBox();
+      return null;
   }
 
   List<Widget> _getFloatingActionButtons() {

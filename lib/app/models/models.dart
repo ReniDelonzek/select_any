@@ -122,6 +122,10 @@ class Linha {
       this.typeData}) {
     if (typeData is TDDateTimestamp && filter == null) {
       filter = FilterRangeDate();
+      if (formatData == null) {
+        formatData =
+            FormatDataTimestamp((typeData as TDDateTimestamp).outputFormat);
+      }
     }
   }
 }
@@ -165,10 +169,17 @@ class CustomLineData {
 
 typedef ValorPadrao = String Function(dynamic dados);
 
+class ObjFormatData {
+  String data;
+  ObjFormatData({
+    this.data,
+  });
+}
+
 abstract class FormatData {
   String defaultValue;
   FormatData({this.defaultValue});
-  String formatData(String dados);
+  String formatData(ObjFormatData obj);
 }
 
 class FormatDataDate extends FormatData {
@@ -176,13 +187,13 @@ class FormatDataDate extends FormatData {
   String outputFormat;
 
   @override
-  String formatData(String dataOriginal) {
+  String formatData(ObjFormatData obj) {
     try {
       String data;
-      if (dataOriginal is String) {
-        data = dataOriginal;
+      if (obj.data is String) {
+        data = obj.data;
       } else {
-        data = dataOriginal?.toString();
+        data = obj.data?.toString();
       }
       return data.toDate(inputFormat).string(outputFormat);
     } catch (error, _) {
@@ -198,14 +209,24 @@ class FormatDataTimestamp extends FormatData {
   FormatDataTimestamp(this.outputFormat);
 
   @override
-  String formatData(String data) {
+  String formatData(ObjFormatData data) {
     try {
-      return DateTime.fromMillisecondsSinceEpoch(data.toInt())
+      return DateTime.fromMillisecondsSinceEpoch(data.data.toInt())
           .string(outputFormat);
     } catch (error, _) {
       // UtilsSentry.reportError(error, stackTrace);
     }
     return defaultValue;
+  }
+}
+
+class FormatDataAny extends FormatData {
+  Function(ObjFormatData) format;
+  FormatDataAny(this.format);
+
+  @override
+  String formatData(ObjFormatData data) {
+    return format(data);
   }
 }
 

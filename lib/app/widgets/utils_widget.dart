@@ -85,6 +85,10 @@ class UtilsWidget {
       return linha
           .personalizacao(CustomLineData(data: map, typeScreen: typeScreen));
     } else {
+      if (linha.formatData != null) {
+        return Text(linha.formatData
+            .formatData(ObjFormatData(data: item.value?.toString())));
+      }
       if (item.value?.toString()?.isNullOrBlank != false) {
         return Text(
           linha.valorPadrao?.call(map) ?? '',

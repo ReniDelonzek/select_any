@@ -134,6 +134,7 @@ abstract class _SelectAnyBase with Store {
     filter.clear();
     fonteDadoAtual?.listData?.clear();
     fonteDadoAtual?.clear();
+    loaded = false;
   }
 
   setDataSource({int offset, bool refresh = false}) async {

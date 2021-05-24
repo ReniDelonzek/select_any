@@ -355,11 +355,13 @@ abstract class _SelectAnyBase with Store {
           setDataSource(offset: typeDiplay == 1 ? -1 : 0);
         }
       } else {
+        /// Usa para guardar o valor original
+        String tempSearchText = searchText;
         Future.delayed(
             Duration(milliseconds: selectModel.fonteDados.searchDelay ?? 300),
             () {
           /// Só executa a pesquisa se o input não tiver mudado
-          if (searchText == filter.text.trim()) {
+          if (tempSearchText == filter.text.trim()) {
             list.clear();
             page = 1;
             setDataSourceSearch(offset: typeDiplay == 1 ? -1 : 0);

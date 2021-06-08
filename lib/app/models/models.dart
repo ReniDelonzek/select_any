@@ -170,7 +170,7 @@ class CustomLineData {
 typedef ValorPadrao = String Function(dynamic dados);
 
 class ObjFormatData {
-  String data;
+  dynamic data;
   ObjFormatData({
     this.data,
   });
@@ -211,7 +211,8 @@ class FormatDataTimestamp extends FormatData {
   @override
   String formatData(ObjFormatData data) {
     try {
-      return DateTime.fromMillisecondsSinceEpoch(data.data.toInt())
+      if (data.data == null) return defaultValue;
+      return DateTime.fromMillisecondsSinceEpoch(data.data.toString().toInt())
           .string(outputFormat);
     } catch (error, _) {
       // UtilsSentry.reportError(error, stackTrace);

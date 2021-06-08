@@ -178,7 +178,7 @@ class ObjFormatData {
 
 abstract class FormatData {
   String defaultValue;
-  FormatData({this.defaultValue});
+  FormatData({this.defaultValue = ''});
   String formatData(ObjFormatData obj);
 }
 

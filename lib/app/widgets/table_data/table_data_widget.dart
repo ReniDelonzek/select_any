@@ -262,7 +262,7 @@ class TableDataWidget extends StatelessWidget {
                           showCheckboxColumn:
                               controller.selectModel.tipoSelecao ==
                                   SelectAnyPage.TIPO_SELECAO_MULTIPLA,
-                          tableColumns: controller
+                          tableColumnsWidth: controller
                               .selectModel.theme?.tableTheme?.widthTableColumns,
                           headingRowColor: controller.selectModel.theme
                                       ?.tableTheme?.headerColor !=
@@ -284,7 +284,7 @@ class TableDataWidget extends StatelessWidget {
                                     sort ? EnumTypeSort.ASC : EnumTypeSort.DESC,
                                 linha: controller.selectModel.linhas[index],
                                 indexLine: index);
-                            controller.reloadData(refresh: false);
+                            controller.updateSortCollumn();
                           }),
                           rows: rows),
                     )),

@@ -14,13 +14,13 @@ class UtilsFile {
       String contentExport}) async {
     String directory;
     String separator = "/";
-    if (UtilsPlatform.isWindows()) {
+    if (UtilsPlatform.isWindows) {
       separator = "\\";
     }
-    if (UtilsPlatform.isDesktop()) {
+    if (UtilsPlatform.isDesktop) {
       directory = '${io.Directory.current.path}${separator}Files';
     } else {
-      if (UtilsPlatform.isIOS()) {
+      if (UtilsPlatform.isIOS) {
         directory = (await getTemporaryDirectory()).absolute.path;
       } else {
         directory = (await getExternalStorageDirectory()).absolute.path;
@@ -56,13 +56,13 @@ class UtilsFile {
       bool openExplorer = true}) async {
     String directory;
     String separator = "/";
-    if (UtilsPlatform.isWindows()) {
+    if (UtilsPlatform.isWindows) {
       separator = "\\";
     }
-    if (UtilsPlatform.isDesktop()) {
+    if (UtilsPlatform.isDesktop) {
       directory = '${io.Directory.current.path}${separator}Files';
     } else {
-      if (UtilsPlatform.isIOS()) {
+      if (UtilsPlatform.isIOS) {
         directory = (await getTemporaryDirectory()).absolute.path;
       } else {
         directory = (await getExternalStorageDirectory()).absolute.path;
@@ -98,14 +98,14 @@ class UtilsFile {
 
   static openFileOrDirectory(String filePath, String directoryPath,
       {String contentExport}) async {
-    if (UtilsPlatform.isWeb()) {
+    if (UtilsPlatform.isWeb) {
       return;
     }
-    if (UtilsPlatform.isWindows()) {
+    if (UtilsPlatform.isWindows) {
       await UtilsPlatform.openProcess('explorer.exe', args: ['$directoryPath']);
     } else if (Platform.isMacOS) {
       await UtilsPlatform.openProcess('open', args: ['$directoryPath']);
-    } else if (UtilsPlatform.isMobile()) {
+    } else if (UtilsPlatform.isMobile) {
       ShareExtend.share(filePath, "file",
           sharePanelTitle: 'Selecione por onde deseja enviar seu arquivo',
           subject: contentExport ?? 'Segue em anexo seu relatório');

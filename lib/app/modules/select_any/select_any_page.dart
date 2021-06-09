@@ -53,7 +53,7 @@ class SelectAnyPage extends StatefulWidget {
     controller.init(_selectModel.titulo, _selectModel, data);
     controller.confirmarParaCarregarDados =
         _selectModel.confirmarParaCarregarDados;
-    controller.typeDiplay = UtilsPlatform.isMobile() ? 1 : 2;
+    controller.typeDiplay = UtilsPlatform.isMobile ? 1 : 2;
   }
 
   @override

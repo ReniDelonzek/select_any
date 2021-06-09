@@ -19,7 +19,7 @@ abstract class _SelectAnyBase with Store {
   @observable
 
   /// 1 = List, 2 = Table
-  int typeDiplay = UtilsPlatform.isMobile() ? 1 : 2;
+  int typeDiplay = UtilsPlatform.isMobile ? 1 : 2;
   @observable
   String searchText = "";
   String title;
@@ -205,7 +205,10 @@ abstract class _SelectAnyBase with Store {
       String text = removeDiacritics(filter.text.trim()).toLowerCase();
       (await fonteDadoAtual.getListSearch(text, quantityItensPage,
               offset ?? (page - 1) * quantityItensPage, selectModel,
-              data: data, refresh: refresh, typeSearch: typeSearch))
+              data: data,
+              refresh: refresh,
+              typeSearch: typeSearch,
+              itemSort: itemSort))
           .listen((ResponseData event) {
         error = null;
 
@@ -337,6 +340,11 @@ abstract class _SelectAnyBase with Store {
       list.clear();
       setCorretDataSource(offset: typeDiplay == 1 ? -1 : 0, refresh: refresh);
     }
+  }
+
+  updateSortCollumn() {
+    list.clear();
+    setCorretDataSource(offset: (page - 1) * quantityItensPage, refresh: false);
   }
 
   removeItem(int id) {

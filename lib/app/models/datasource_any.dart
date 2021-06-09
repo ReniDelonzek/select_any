@@ -1,10 +1,9 @@
-import 'package:select_any/app/utils/utils_file.dart';
-import 'package:select_any/select_any.dart';
-
 import 'package:diacritic/diacritic.dart';
 import 'package:msk_utils/extensions/date.dart';
-
 import 'package:msk_utils/extensions/list.dart';
+import 'package:msk_utils/utils/utils_sentry.dart';
+import 'package:select_any/app/utils/utils_file.dart';
+import 'package:select_any/select_any.dart';
 
 abstract class DataSourceAny extends DataSource {
   List<Map<String, dynamic>> listAll;
@@ -26,7 +25,7 @@ abstract class DataSourceAny extends DataSource {
       await fetchData(limit, offset, selectModel, data: data);
     }
     if (itemSort != _actualySort) {
-      applySortFilters(itemSort, selectModel.id);
+      listAll = applySortFilters(itemSort, selectModel.id, listAll);
     }
 
     List<Map<String, dynamic>> subList = getSubList(offset, limit, listAll);
@@ -58,7 +57,8 @@ abstract class DataSourceAny extends DataSource {
       String text, int limit, int offset, SelectModel selectModel,
       {Map data,
       bool refresh = false,
-      TypeSearch typeSearch = TypeSearch.CONTAINS}) async {
+      TypeSearch typeSearch = TypeSearch.CONTAINS,
+      ItemSort itemSort}) async {
     if (listAll == null || listAll.isEmpty || refresh == true) {
       await fetchData(limit, offset, selectModel, data: data);
     }
@@ -73,6 +73,8 @@ abstract class DataSourceAny extends DataSource {
         }
       }
     }
+
+    tempList = applySortFilters(itemSort, selectModel.id, tempList);
 
     List<Map<String, dynamic>> subList = getSubList(offset, limit, tempList);
     return Stream.value(ResponseData(
@@ -202,20 +204,54 @@ abstract class DataSourceAny extends DataSource {
         end: offset + limit));
   }
 
-  bool applySortFilters(ItemSort itemSort, String keyId) {
+  List<Map<String, dynamic>> applySortFilters(
+      ItemSort itemSort, String keyId, List<Map<String, dynamic>> list) {
     _actualySort = itemSort;
-    if (itemSort != null) {
-      /// Maintain a consistent order for the list
-      var temp = listAll.sortedBy((e) => e[keyId]);
+    try {
+      if (itemSort != null && list.isNotEmpty) {
+        //DateTime datetime = DateTime.now();
 
-      temp = listAll.sortedBy((e) => e[itemSort.linha.chave]);
-      if (itemSort.typeSort == EnumTypeSort.DESC) {
-        listAll = temp.toList().reversed.toList();
-      } else {
-        listAll = temp;
+        /// Maintain a consistent order for the list
+        var temp = list.sortedBy((e) => e[keyId]);
+        bool isString = false;
+        if (itemSort.linha.typeData != null) {
+          isString = itemSort.linha.typeData is TDString;
+        } else {
+          isString =
+              list.any((element) => element[itemSort.linha.chave] is String);
+        }
+        if (itemSort.linha.typeData == null) {
+          // Save the data type so you don't need to scroll through the list again
+          if (isString) {
+            itemSort.linha.typeData = TDString();
+          } else {
+            itemSort.linha.typeData = TDNotString();
+          }
+        }
+
+        if (isString) {
+          if (itemSort.typeSort == EnumTypeSort.ASC) {
+            list = temp.sortedBy((e) =>
+                e[itemSort.linha.chave]?.toString()?.toLowerCase()?.trim() ??
+                '');
+          } else {
+            list = temp.sortedByDesc((e) =>
+                e[itemSort.linha.chave]?.toString()?.toLowerCase()?.trim() ??
+                '');
+          }
+        } else {
+          if (itemSort.typeSort == EnumTypeSort.ASC) {
+            list = temp.sortedBy((e) => e[itemSort.linha.chave]);
+          } else {
+            list = temp.sortedByDesc((e) => e[itemSort.linha.chave]);
+          }
+        }
+        //debugPrint(
+        //    'Sort in: ${DateTime.now().difference(datetime).inMilliseconds}');
       }
+    } catch (error, stackTrace) {
+      UtilsSentry.reportError(error, stackTrace);
     }
-
-    return true;
+    return list;
   }
 }

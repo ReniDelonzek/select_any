@@ -79,7 +79,7 @@ class SelectModel {
       this.showFiltersInput = false,
       this.theme}) {
     if (abrirPesquisaAutomaticamente == null) {
-      abrirPesquisaAutomaticamente = !UtilsPlatform.isMobile();
+      abrirPesquisaAutomaticamente = !UtilsPlatform.isMobile;
     }
     if (theme == null) {
       theme = SelectModelTheme(tableTheme: SelectModelThemeTable());
@@ -104,7 +104,7 @@ class SelectModelThemeTable {
   final bool showTableInCard;
 
   /// Custom width column
-  final List<TableColumnWidth> widthTableColumns;
+  final Map<int, TableColumnWidth> widthTableColumns;
 
   /// Table padding
   final EdgeInsetsGeometry tablePadding;
@@ -139,6 +139,9 @@ class Linha {
 
   TypeData typeData;
 
+  int maxLines;
+  int minLines;
+
   Linha(this.chave,
       {this.color,
       this.involucro,
@@ -149,7 +152,9 @@ class Linha {
       this.estiloTexto,
       this.formatData,
       this.filter,
-      this.typeData}) {
+      this.typeData,
+      this.maxLines = 1,
+      this.minLines}) {
     if (typeData is TDDateTimestamp && filter == null) {
       filter = FilterRangeDate();
       if (formatData == null) {
@@ -216,6 +221,11 @@ class TDDateTimestamp extends TDDate {
 }
 
 class TDMoney extends TypeData {}
+
+class TDString extends TypeData {}
+
+/// Generic class that represents a non-string value, do not use outside the app
+class TDNotString extends TypeData {}
 
 typedef LinhaPersonalizada = Widget Function(CustomLineData);
 
@@ -363,7 +373,10 @@ abstract class _DataSourceBase with Store {
 
   Future<Stream<ResponseData>> getListSearch(
       String text, int limit, int offset, SelectModel selectModel,
-      {Map data, bool refresh, TypeSearch typeSearch = TypeSearch.CONTAINS});
+      {Map data,
+      bool refresh,
+      TypeSearch typeSearch = TypeSearch.CONTAINS,
+      ItemSort itemSort});
 
   Future<Stream<ResponseData>> getListFilter(
       GroupFilterExp filter, int limit, int offset, SelectModel selectModel,
@@ -409,8 +422,7 @@ abstract class _DataSourceBase with Store {
         }
 
         /// Caso a fonte indique um id, pega dela, se não, pega do modelo
-        if (a[this.id ?? selectModel.id] == null &&
-            !UtilsPlatform.isRelease()) {
+        if (a[this.id ?? selectModel.id] == null && !UtilsPlatform.isRelease) {
           throw ('Id null');
         }
         itemSelect.id = a[this.id ?? selectModel.id];

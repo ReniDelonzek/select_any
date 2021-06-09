@@ -27,7 +27,7 @@ class FalhaWidget extends StatelessWidget {
           ),
           Padding(
             padding: const EdgeInsets.only(left: 16, right: 16),
-            child: Text(UtilsPlatform.isDebug() && error != null
+            child: Text(UtilsPlatform.isDebug && error != null
                 ? error.toString()
                 : mensagem),
           )

@@ -390,11 +390,9 @@ packages:
   msk_utils:
     dependency: "direct main"
     description:
-      path: "."
-      ref: "0a70e6870ab44034fdbe1ca8e3dea3ba1a324ef3"
-      resolved-ref: "0a70e6870ab44034fdbe1ca8e3dea3ba1a324ef3"
-      url: "git@github.com:ReniDelonzek/msk_utils.git"
-    source: git
+      path: "C:\\Users\\reni\\Downloads\\Projetos\\agro\\libs\\msk_utils"
+      relative: false
+    source: path
     version: "0.0.1"
   node_interop:
     dependency: transitive

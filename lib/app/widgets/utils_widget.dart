@@ -91,24 +91,38 @@ class UtilsWidget {
         return _getText(
             linha.formatData
                 .formatData(ObjFormatData(data: item.value?.toString())),
-            onTap);
+            onTap,
+            linha);
       }
       if (item.value?.toString()?.isNullOrBlank != false) {
-        return _getText(linha.valorPadrao?.call(map) ?? '', onTap);
+        return _getText(linha.valorPadrao?.call(map) ?? '', onTap, linha);
       }
       if (linha.typeData is TDDateTimestamp) {
         return _getText(
             DateTime.fromMillisecondsSinceEpoch(item.value)
                 .string((linha.typeData as TDDateTimestamp).outputFormat),
-            onTap);
+            onTap,
+            linha);
       }
-      return _getText(item.value?.toString(), onTap);
+      return _getText(item.value?.toString(), onTap, linha);
     }
   }
 
-  static Widget _getText(String value, Function onTap) {
+  static Widget _getText(String value, Function onTap, Linha linha) {
+    if ((linha?.maxLines ?? 1) > 2) {
+      return SingleChildScrollView(
+          child: Padding(
+        padding: const EdgeInsets.only(top: 2, bottom: 2),
+        child: _selectableText(value, onTap, linha),
+      ));
+    } else
+      return _selectableText(value, onTap, linha);
+  }
+
+  static Widget _selectableText(String value, Function onTap, Linha linha) {
     return SelectableText(value ?? '',
-        maxLines: 1,
+        maxLines: linha?.maxLines ?? 1,
+        minLines: linha?.minLines,
         onTap: onTap,
         scrollPhysics: const NeverScrollableScrollPhysics());
   }

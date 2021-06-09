@@ -1,3 +1,4 @@
+import 'package:data_table_plus/data_table_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:msk_utils/extensions/date.dart';
 import 'package:msk_utils/extensions/string.dart';
@@ -23,7 +24,9 @@ class UtilsWidget {
           selectModel,
           mapEntry,
           itemSelect.object is Map ? itemSelect.object : itemSelect.strings,
-          typeScreen)));
+          typeScreen, () {
+        onSelected(itemSelect, !(itemSelect.isSelected ?? false));
+      })));
     }
     if (generateActions && selectModel.acoes?.isNotEmpty == true) {
       List<Widget> widgets = [];
@@ -39,7 +42,7 @@ class UtilsWidget {
       }
       cells.add(DataCell(Row(children: widgets)));
     }
-    DataRow dataRow = DataRow.byIndex(
+    DataRowPlus dataRow = DataRowPlus.byIndex(
         index: index,
         cells: cells,
         onSelectChanged:
@@ -77,8 +80,8 @@ class UtilsWidget {
               : []);
   }
 
-  static Widget getLinha(
-      SelectModel selectModel, MapEntry item, Map map, int typeScreen) {
+  static Widget getLinha(SelectModel selectModel, MapEntry item, Map map,
+      int typeScreen, Function onTap) {
     Linha linha = selectModel.linhas
         .firstWhere((linha) => linha.chave == item.key, orElse: () => null);
     if (linha != null && linha.personalizacao != null) {
@@ -86,19 +89,25 @@ class UtilsWidget {
           .personalizacao(CustomLineData(data: map, typeScreen: typeScreen));
     } else {
       if (linha.formatData != null) {
-        return Text(linha.formatData
-            .formatData(ObjFormatData(data: item.value?.toString())));
+        return SelectableText(
+            linha.formatData
+                .formatData(ObjFormatData(data: item.value?.toString())),
+            onTap: onTap);
       }
       if (item.value?.toString()?.isNullOrBlank != false) {
-        return Text(
+        return SelectableText(
           linha.valorPadrao?.call(map) ?? '',
+          onTap: onTap,
         );
       }
       if (linha.typeData is TDDateTimestamp) {
-        return Text(DateTime.fromMillisecondsSinceEpoch(item.value)
-            .string((linha.typeData as TDDateTimestamp).outputFormat));
+        return SelectableText(
+          DateTime.fromMillisecondsSinceEpoch(item.value)
+              .string((linha.typeData as TDDateTimestamp).outputFormat),
+          onTap: onTap,
+        );
       }
-      return Text(item.value?.toString());
+      return SelectableText(item.value?.toString(), onTap: onTap);
     }
   }
 

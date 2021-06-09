@@ -180,8 +180,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: ff9a365439f85ce6150323c3ef7b7a20e2d15df3
-      resolved-ref: ff9a365439f85ce6150323c3ef7b7a20e2d15df3
+      ref: "427c1df210b1ae675316a3a4b0e53fc7cc99c914"
+      resolved-ref: "427c1df210b1ae675316a3a4b0e53fc7cc99c914"
       url: "git@github.com:ReniDelonzek/data_table_plus.git"
     source: git
     version: "0.0.1"

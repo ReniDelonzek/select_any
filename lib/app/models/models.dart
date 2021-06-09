@@ -59,9 +59,6 @@ class SelectModel {
   /// Indica se devem aparecer os campos de filtro para a tabela (EXPERIMENTAL)
   bool showFiltersInput;
 
-  /// Indica se o titulo deve ficar centralizado
-  bool centerTitle;
-
   /// Custom theme
   SelectModelTheme theme;
 
@@ -79,7 +76,6 @@ class SelectModel {
       this.confirmarParaCarregarDados = false,
       this.permitirSelecionarTodos,
       this.showFiltersInput = false,
-      this.centerTitle,
       this.theme}) {
     if (abrirPesquisaAutomaticamente == null) {
       abrirPesquisaAutomaticamente = !UtilsPlatform.isMobile();
@@ -93,7 +89,10 @@ class SelectModel {
 class SelectModelTheme {
   final SelectModelThemeTable tableTheme;
 
-  const SelectModelTheme({this.tableTheme});
+  /// Indicates whether the title should be in the center
+  final bool centerTitle;
+
+  const SelectModelTheme({this.tableTheme, this.centerTitle = true});
 }
 
 class SelectModelThemeTable {

@@ -89,26 +89,29 @@ class UtilsWidget {
           .personalizacao(CustomLineData(data: map, typeScreen: typeScreen));
     } else {
       if (linha.formatData != null) {
-        return SelectableText(
+        return _getText(
             linha.formatData
                 .formatData(ObjFormatData(data: item.value?.toString())),
-            onTap: onTap);
+            onTap);
       }
       if (item.value?.toString()?.isNullOrBlank != false) {
-        return SelectableText(
-          linha.valorPadrao?.call(map) ?? '',
-          onTap: onTap,
-        );
+        return _getText(linha.valorPadrao?.call(map) ?? '', onTap);
       }
       if (linha.typeData is TDDateTimestamp) {
-        return SelectableText(
-          DateTime.fromMillisecondsSinceEpoch(item.value)
-              .string((linha.typeData as TDDateTimestamp).outputFormat),
-          onTap: onTap,
-        );
+        return _getText(
+            DateTime.fromMillisecondsSinceEpoch(item.value)
+                .string((linha.typeData as TDDateTimestamp).outputFormat),
+            onTap);
       }
-      return SelectableText(item.value?.toString(), onTap: onTap);
+      return _getText(item.value?.toString(), onTap);
     }
+  }
+
+  static Widget _getText(String value, Function onTap) {
+    return SelectableText(value ?? '',
+        maxLines: 1,
+        onTap: onTap,
+        scrollPhysics: const NeverScrollableScrollPhysics());
   }
 
   static void onAction(BuildContext context, ItemSelect itemSelect, int index,

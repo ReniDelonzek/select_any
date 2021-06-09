@@ -173,7 +173,8 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
                 autofocus: true,
                 child: Scaffold(
                   appBar: AppBar(
-                    centerTitle: widget.controller.selectModel.centerTitle,
+                    centerTitle:
+                        widget.controller.selectModel.theme?.centerTitle,
                     title:
                         Observer(builder: (_) => widget.controller.appBarTitle),
                     actions: [
@@ -515,7 +516,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
         return linha.personalizacao(CustomLineData(
             data: map, typeScreen: widget.controller.typeDiplay));
       }
-      return Text(linha.involucro.replaceAll('???', valor),
+      return Text(linha.involucro.replaceAll('???', valor ?? ''),
           style: linha.estiloTexto);
     } else {
       return Text(valor, style: linha.estiloTexto);

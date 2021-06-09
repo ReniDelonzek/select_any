@@ -39,6 +39,7 @@ class SelectModel {
   /// Uma lista dos ids que devem iniciar pré-selecionados
   List<ItemSelect> preSelected;
 
+  // ignore: deprecated_member_use_from_same_package
   /// define se os itens já selecionados que constam na lista [itensSelecionados] ou [preSelected]
   /// Devem aparecer na listagem ou não
   bool exibirPreSelecionados;
@@ -58,11 +59,11 @@ class SelectModel {
   /// Indica se devem aparecer os campos de filtro para a tabela (EXPERIMENTAL)
   bool showFiltersInput;
 
-  /// Cor do topo da tabela
-  Color headerColor;
-
   /// Indica se o titulo deve ficar centralizado
   bool centerTitle;
+
+  /// Custom theme
+  SelectModelTheme theme;
 
   SelectModel(
       this.titulo, this.id, this.linhas, this.fonteDados, this.tipoSelecao,
@@ -78,12 +79,41 @@ class SelectModel {
       this.confirmarParaCarregarDados = false,
       this.permitirSelecionarTodos,
       this.showFiltersInput = false,
-      this.headerColor = const Color(0xFF00823A),
-      this.centerTitle}) {
+      this.centerTitle,
+      this.theme}) {
     if (abrirPesquisaAutomaticamente == null) {
       abrirPesquisaAutomaticamente = !UtilsPlatform.isMobile();
     }
+    if (theme == null) {
+      theme = SelectModelTheme(tableTheme: SelectModelThemeTable());
+    }
   }
+}
+
+class SelectModelTheme {
+  final SelectModelThemeTable tableTheme;
+
+  const SelectModelTheme({this.tableTheme});
+}
+
+class SelectModelThemeTable {
+  /// Header color
+  final Color headerColor;
+
+  /// Indicates whether the table should be displayed inside a card.
+  final bool showTableInCard;
+
+  /// Custom width column
+  final List<TableColumnWidth> widthTableColumns;
+
+  /// Table padding
+  final EdgeInsetsGeometry tablePadding;
+  const SelectModelThemeTable(
+      {this.headerColor = const Color(0xFF00823A),
+      this.showTableInCard = true,
+      this.widthTableColumns,
+      this.tablePadding = const EdgeInsets.only(left: 16, right: 16)})
+      : assert(showTableInCard != null);
 }
 
 class Linha {
@@ -313,7 +343,9 @@ abstract class _DataSourceBase with Store {
     ObservableList<ItemSelectTable> lista = ObservableList();
     offset = offset.abs();
     for (Map a in data) {
+      // ignore: deprecated_member_use_from_same_package
       bool preSelecionado = selectModel.itensSelecionados != null &&
+          // ignore: deprecated_member_use_from_same_package
           selectModel.itensSelecionados
               .any((element) => element == a[selectModel.id]);
       if (!preSelecionado) {

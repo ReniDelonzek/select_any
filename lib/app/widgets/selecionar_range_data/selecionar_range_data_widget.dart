@@ -10,6 +10,7 @@ typedef RangeDateChanged(DateTime dataInicial, DateTime dataFinal);
 
 typedef List<DateTime> DatasNaoSelecionaveis();
 
+// ignore: must_be_immutable
 class SelecionarRangeDataWidget extends StatelessWidget {
   final SelecionarRangeDataController controller;
 

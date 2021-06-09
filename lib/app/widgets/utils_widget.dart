@@ -57,15 +57,14 @@ class UtilsWidget {
   }
 
   static List<DataColumn> generateDataColumn(SelectModel selectModel,
-      {bool generateActions = true}) {
+      {bool generateActions = true, Function(int, bool) onSort}) {
     return selectModel.linhas
         .map((e) => DataColumn(
-            onSort: (int i, bool b) {
-              print('$i, $b');
-            },
+            onSort: onSort,
             label: Text(e.nome ?? e.chave.upperCaseFirstLower(),
                 style: TextStyle(
                     fontSize: 16,
+                    height: 0.85,
                     fontWeight: FontWeight.bold,
                     color: Colors.white))))
         .toList()

@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:mobx/mobx.dart';
 import 'package:msk_utils/extensions/date.dart';
 import 'package:msk_utils/extensions/map.dart';
@@ -156,6 +157,37 @@ class Linha {
             FormatDataTimestamp((typeData as TDDateTimestamp).outputFormat);
       }
     }
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is Linha &&
+        other.chave == chave &&
+        other.color == color &&
+        other.involucro == involucro &&
+        other.valorPadrao == valorPadrao &&
+        other.nome == nome &&
+        listEquals(other.chavesLista, chavesLista) &&
+        other.estiloTexto == estiloTexto &&
+        other.formatData == formatData &&
+        other.filter == filter &&
+        other.typeData == typeData;
+  }
+
+  @override
+  int get hashCode {
+    return chave.hashCode ^
+        color.hashCode ^
+        involucro.hashCode ^
+        valorPadrao.hashCode ^
+        nome.hashCode ^
+        chavesLista.hashCode ^
+        estiloTexto.hashCode ^
+        formatData.hashCode ^
+        filter.hashCode ^
+        typeData.hashCode;
   }
 }
 
@@ -327,7 +359,7 @@ abstract class _DataSourceBase with Store {
 
   Future<Stream<ResponseData>> getList(
       int limit, int offset, SelectModel selectModel,
-      {Map data, bool refresh = false});
+      {Map data, bool refresh = false, ItemSort itemSort});
 
   Future<Stream<ResponseData>> getListSearch(
       String text, int limit, int offset, SelectModel selectModel,
@@ -503,3 +535,24 @@ class GroupFilterExp extends FilterExp {
 }
 
 enum OperatorFilterEx { AND, OR }
+
+enum EnumTypeSort { ASC, DESC }
+
+class ItemSort {
+  EnumTypeSort typeSort;
+  Linha linha;
+  int indexLine;
+  ItemSort({this.typeSort, this.linha, this.indexLine});
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is ItemSort &&
+        other.typeSort == typeSort &&
+        other.linha == linha;
+  }
+
+  @override
+  int get hashCode => typeSort.hashCode ^ linha.hashCode;
+}

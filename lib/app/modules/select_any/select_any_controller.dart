@@ -100,6 +100,8 @@ abstract class _SelectAnyBase with Store {
   @observable
   bool showSearch = true;
 
+  ItemSort itemSort;
+
   _SelectAnyBase({this.tipoTeladinamica = true});
 
   init(String title, SelectModel selectModel, Map data) {
@@ -143,7 +145,7 @@ abstract class _SelectAnyBase with Store {
       loading = true;
       offset ??= (page - 1) * quantityItensPage;
       (await fonteDadoAtual.getList(quantityItensPage, offset, selectModel,
-              data: data, refresh: refresh))
+              data: data, refresh: refresh, itemSort: itemSort))
           .listen((event) {
         error = null;
         if (filter.text.trim().isEmpty) {
@@ -327,11 +329,13 @@ abstract class _SelectAnyBase with Store {
     }
   }
 
-  reloadData() {
+  /// Limpa a lista e busca novamente os dados
+  /// Usar refresh = false ao atualizar a ordenação da lista
+  reloadData({bool refresh = true}) {
     /// Não recarrega os dados caso precise de confirmação
     if (!confirmarParaCarregarDados) {
       list.clear();
-      setCorretDataSource(offset: typeDiplay == 1 ? -1 : 0, refresh: true);
+      setCorretDataSource(offset: typeDiplay == 1 ? -1 : 0, refresh: refresh);
     }
   }
 

@@ -1,10 +1,14 @@
 import 'package:select_any/app/utils/utils_file.dart';
 import 'package:select_any/select_any.dart';
+
 import 'package:diacritic/diacritic.dart';
 import 'package:msk_utils/extensions/date.dart';
 
+import 'package:msk_utils/extensions/list.dart';
+
 abstract class DataSourceAny extends DataSource {
   List<Map<String, dynamic>> listAll;
+  ItemSort _actualySort;
 
   DataSourceAny({String id, bool allowExport = true})
       : super(id: id, allowExport: allowExport);
@@ -12,10 +16,19 @@ abstract class DataSourceAny extends DataSource {
   @override
   Future<Stream<ResponseData>> getList(
       int limit, int offset, SelectModel selectModel,
-      {Map data, bool refresh = false}) async {
-    if (listAll == null || listAll.isEmpty || refresh == true) {
+      {Map data, bool refresh = false, ItemSort itemSort}) async {
+    if (listAll == null ||
+        listAll.isEmpty ||
+        refresh == true ||
+        // Caso o itemSort tenha sido anulado, atualiza a lista para restaurar a formatação padrão
+        (itemSort == null && _actualySort != null)) {
+      listAll?.clear();
       await fetchData(limit, offset, selectModel, data: data);
     }
+    if (itemSort != _actualySort) {
+      applySortFilters(itemSort, selectModel.id);
+    }
+
     List<Map<String, dynamic>> subList = getSubList(offset, limit, listAll);
 
     return Stream.value(ResponseData(
@@ -187,5 +200,22 @@ abstract class DataSourceAny extends DataSource {
         data: generateList(subList, offset, selectModel),
         start: offset,
         end: offset + limit));
+  }
+
+  bool applySortFilters(ItemSort itemSort, String keyId) {
+    _actualySort = itemSort;
+    if (itemSort != null) {
+      /// Maintain a consistent order for the list
+      var temp = listAll.sortedBy((e) => e[keyId]);
+
+      temp = listAll.sortedBy((e) => e[itemSort.linha.chave]);
+      if (itemSort.typeSort == EnumTypeSort.DESC) {
+        listAll = temp.toList().reversed.toList();
+      } else {
+        listAll = temp;
+      }
+    }
+
+    return true;
   }
 }

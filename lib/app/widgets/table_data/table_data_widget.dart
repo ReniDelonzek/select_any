@@ -172,7 +172,7 @@ class TableDataWidget extends StatelessWidget {
             ));
           }
           List<DataRow> rows = [];
-          int i = 0;
+
           if (controller.selectModel.showFiltersInput == true) {
             rows.add(DataRow(
                 selected: false,
@@ -207,6 +207,7 @@ class TableDataWidget extends StatelessWidget {
                   ));
                 }).toList()));
           }
+          int i = 0;
           for (var element in subList) {
             rows.add(UtilsWidget.generateDataRow(
                 controller.selectModel, i, element, context, controller.data,
@@ -271,9 +272,20 @@ class TableDataWidget extends StatelessWidget {
                                       ?.tableTheme?.headerColor;
                                 })
                               : null,
+                          sortColumnIndex: controller.itemSort?.indexLine,
+                          sortAscending: controller.itemSort?.typeSort !=
+                              EnumTypeSort.DESC,
                           columns: UtilsWidget.generateDataColumn(
                               controller.selectModel,
-                              generateActions: false),
+                              generateActions: false,
+                              onSort: (int index, bool sort) {
+                            controller.itemSort = ItemSort(
+                                typeSort:
+                                    sort ? EnumTypeSort.ASC : EnumTypeSort.DESC,
+                                linha: controller.selectModel.linhas[index],
+                                indexLine: index);
+                            controller.reloadData(refresh: false);
+                          }),
                           rows: rows),
                     )),
               );

@@ -11,10 +11,10 @@ environment:
 
 dependencies:
   data_table_plus:
-    git:
-      url: git@github.com:ReniDelonzek/data_table_plus.git
-      ref: 427c1df210b1ae675316a3a4b0e53fc7cc99c914
-    #path: C:\Users\reni\Downloads\Projetos\flutter\libs\data_table_2
+    #git:
+     # url: git@github.com:ReniDelonzek/data_table_plus.git
+      #ref: 427c1df210b1ae675316a3a4b0e53fc7cc99c914
+    path: C:\Users\reni\Downloads\Projetos\flutter\libs\data_table_2
   flutter_date_pickers: ^0.2.4
   share_extend: ^1.1.9
   path_provider: ^2.0.1 

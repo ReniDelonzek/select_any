@@ -213,38 +213,38 @@ abstract class DataSourceAny extends DataSource {
 
         /// Maintain a consistent order for the list
         var temp = list.sortedBy((e) => e[keyId]);
-        bool isString = false;
-        if (itemSort.linha.typeData != null) {
-          isString = itemSort.linha.typeData is TDString;
-        } else {
-          isString =
-              list.any((element) => element[itemSort.linha.chave] is String);
-        }
-        if (itemSort.linha.typeData == null) {
-          // Save the data type so you don't need to scroll through the list again
-          if (isString) {
-            itemSort.linha.typeData = TDString();
+        TypeData typeData = itemSort.linha.typeData;
+        if (typeData == null) {
+          /// If you have at least one string, consider everything as a string
+          /// The other types of data require that they all have the same type
+          if (list.any((element) => element[itemSort.linha.chave] is String)) {
+            typeData = TDString();
+          } else if (list
+              .every((element) => element[itemSort.linha.chave] is int)) {
+            typeData = TDNumber();
+          } else if (list
+              .every((element) => element[itemSort.linha.chave] is bool)) {
+            typeData = TDBoolean();
           } else {
-            itemSort.linha.typeData = TDNotString();
+            typeData = TDNotString();
           }
+
+          // Save the data type so you don't need to scroll through the list again
+          itemSort.linha.typeData = typeData;
         }
 
-        if (isString) {
-          if (itemSort.typeSort == EnumTypeSort.ASC) {
-            list = temp.sortedBy((e) =>
-                e[itemSort.linha.chave]?.toString()?.toLowerCase()?.trim() ??
-                '');
-          } else {
-            list = temp.sortedByDesc((e) =>
-                e[itemSort.linha.chave]?.toString()?.toLowerCase()?.trim() ??
-                '');
-          }
+        if (typeData is TDString || typeData is TDNotString) {
+          list = _sort(temp, itemSort, '', typeData: typeData);
+        } else if (typeData is TDNumber) {
+          list = _sort(temp, itemSort, 0);
+        } else if (typeData is TDBoolean) {
+          list = _sort(temp, itemSort, false);
+        } else if (typeData is TDDateTimestamp) {
+          list = _sort(temp, itemSort, 0);
+        } else if (typeData is TDDateString) {
+          list = _sort(temp, itemSort, '');
         } else {
-          if (itemSort.typeSort == EnumTypeSort.ASC) {
-            list = temp.sortedBy((e) => e[itemSort.linha.chave]);
-          } else {
-            list = temp.sortedByDesc((e) => e[itemSort.linha.chave]);
-          }
+          list = _sort(temp, itemSort, null);
         }
         //debugPrint(
         //    'Sort in: ${DateTime.now().difference(datetime).inMilliseconds}');
@@ -253,5 +253,27 @@ abstract class DataSourceAny extends DataSource {
       UtilsSentry.reportError(error, stackTrace);
     }
     return list;
+  }
+
+  static List<Map<String, dynamic>> _sort(
+      List<Map<String, dynamic>> temp, ItemSort itemSort, dynamic defaultValue,
+      {TypeData typeData}) {
+    // Apply special string formatting
+    if (typeData is TDString || typeData is TDNotString) {
+      if (itemSort.typeSort == EnumTypeSort.ASC) {
+        return temp.sortedBy((e) =>
+            e[itemSort.linha.chave]?.toString()?.toLowerCase()?.trim() ??
+            defaultValue);
+      } else {
+        return temp.sortedByDesc((e) =>
+            e[itemSort.linha.chave]?.toString()?.toLowerCase()?.trim() ??
+            defaultValue);
+      }
+    }
+    if (itemSort.typeSort == EnumTypeSort.ASC) {
+      return temp.sortedBy((e) => e[itemSort.linha.chave] ?? defaultValue);
+    } else {
+      return temp.sortedByDesc((e) => e[itemSort.linha.chave] ?? defaultValue);
+    }
   }
 }

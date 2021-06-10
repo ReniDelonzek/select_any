@@ -140,7 +140,10 @@ class Linha {
   TypeData typeData;
 
   int maxLines;
+
   int minLines;
+
+  bool enableSorting;
 
   Linha(this.chave,
       {this.color,
@@ -154,7 +157,8 @@ class Linha {
       this.filter,
       this.typeData,
       this.maxLines = 1,
-      this.minLines}) {
+      this.minLines,
+      this.enableSorting = true}) {
     if (typeData is TDDateTimestamp && filter == null) {
       filter = FilterRangeDate();
       if (formatData == null) {
@@ -223,6 +227,10 @@ class TDDateTimestamp extends TDDate {
 class TDMoney extends TypeData {}
 
 class TDString extends TypeData {}
+
+class TDNumber extends TypeData {}
+
+class TDBoolean extends TypeData {}
 
 /// Generic class that represents a non-string value, do not use outside the app
 class TDNotString extends TypeData {}

@@ -279,12 +279,16 @@ class TableDataWidget extends StatelessWidget {
                               controller.selectModel,
                               generateActions: false,
                               onSort: (int index, bool sort) {
-                            controller.itemSort = ItemSort(
-                                typeSort:
-                                    sort ? EnumTypeSort.ASC : EnumTypeSort.DESC,
-                                linha: controller.selectModel.linhas[index],
-                                indexLine: index);
-                            controller.updateSortCollumn();
+                            if (controller
+                                .selectModel.linhas[index].enableSorting) {
+                              controller.itemSort = ItemSort(
+                                  typeSort: sort
+                                      ? EnumTypeSort.ASC
+                                      : EnumTypeSort.DESC,
+                                  linha: controller.selectModel.linhas[index],
+                                  indexLine: index);
+                              controller.updateSortCollumn();
+                            }
                           }),
                           rows: rows),
                     )),

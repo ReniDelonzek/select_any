@@ -179,9 +179,11 @@ packages:
   data_table_plus:
     dependency: "direct main"
     description:
-      path: "C:\\Users\\reni\\Downloads\\Projetos\\flutter\\libs\\data_table_2"
-      relative: false
-    source: path
+      path: "."
+      ref: "89719161f6219ef4a9b417162c952bd6a62be0cb"
+      resolved-ref: "89719161f6219ef4a9b417162c952bd6a62be0cb"
+      url: "git@github.com:ReniDelonzek/data_table_plus.git"
+    source: git
     version: "0.0.1"
   device_info:
     dependency: transitive
@@ -390,9 +392,11 @@ packages:
   msk_utils:
     dependency: "direct main"
     description:
-      path: "C:\\Users\\reni\\Downloads\\Projetos\\agro\\libs\\msk_utils"
-      relative: false
-    source: path
+      path: "."
+      ref: d6225afd1822421a32e368844b33ce3927d151d7
+      resolved-ref: d6225afd1822421a32e368844b33ce3927d151d7
+      url: "git@github.com:ReniDelonzek/msk_utils.git"
+    source: git
     version: "0.0.1"
   node_interop:
     dependency: transitive

@@ -11,7 +11,8 @@ class UtilsFile {
       {String fileName,
       String extensionFile,
       String dirComplementar,
-      String contentExport}) async {
+      String contentExport,
+      bool openExplorer = true}) async {
     String directory;
     String separator = "/";
     if (UtilsPlatform.isWindows) {
@@ -44,8 +45,10 @@ class UtilsFile {
       file = await file.create(recursive: true);
     }
     await file.writeAsString(s);
-    await openFileOrDirectory(file.path, dir.path,
-        contentExport: contentExport);
+    if (openExplorer) {
+      await openFileOrDirectory(file.path, dir.path,
+          contentExport: contentExport);
+    }
   }
 
   static Future<File> saveFileBytes(List<int> bytes,
@@ -77,7 +80,7 @@ class UtilsFile {
     if ((await dir.exists()) == false) {
       dir = await dir.create(recursive: true);
     }
-    if (fileName == null) {
+    if (fileName == null || fileName.trim().isEmpty) {
       fileName =
           '${DateTime.now().millisecondsSinceEpoch}${extensionFile != null ? extensionFile : ''}';
     }

@@ -313,7 +313,16 @@ class UtilsWidget {
                     onTap: () {
                       Navigator.pop(alertContext, TypeSearch.ENDSWITH);
                     },
-                  )
+                  ),
+                  ListTile(
+                    title: Text('Não contém'),
+                    trailing: actualType == TypeSearch.NOTCONTAINS
+                        ? Icon(Icons.done)
+                        : null,
+                    onTap: () {
+                      Navigator.pop(alertContext, TypeSearch.NOTCONTAINS);
+                    },
+                  ),
                 ],
               ),
             ));

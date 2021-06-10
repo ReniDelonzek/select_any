@@ -64,11 +64,28 @@ abstract class DataSourceAny extends DataSource {
     }
     List<Map<String, dynamic>> tempList = [];
     for (int i = 0; i < listAll.length; i++) {
-      for (var value in listAll[i].values) {
-        if (value != null) {
-          if (filterTypeSearch(typeSearch, value, text)) {
-            tempList.add(listAll[i]);
-            break;
+      if (typeSearch == TypeSearch.NOTCONTAINS) {
+        bool contains = false;
+        for (var value in listAll[i].values) {
+          if (value != null) {
+            if (removeDiacritics(value.toString())
+                .toLowerCase()
+                .contains(text)) {
+              contains = true;
+              break;
+            }
+          }
+        }
+        if (!contains) {
+          tempList.add(listAll[i]);
+        }
+      } else {
+        for (var value in listAll[i].values) {
+          if (value != null) {
+            if (filterTypeSearch(typeSearch, value, text)) {
+              tempList.add(listAll[i]);
+              break;
+            }
           }
         }
       }
@@ -111,22 +128,6 @@ abstract class DataSourceAny extends DataSource {
   Future clear() async {
     listAll = null;
     return;
-  }
-
-  bool filterTypeSearch(TypeSearch typeSearch, dynamic value, String text) {
-    if (typeSearch == TypeSearch.CONTAINS) {
-      return removeDiacritics(value.toString()).toLowerCase()?.contains(text) ==
-          true;
-    } else if (typeSearch == TypeSearch.BEGINSWITH) {
-      return removeDiacritics(value.toString())
-              .toLowerCase()
-              ?.startsWith(text) ==
-          true;
-    } else if (typeSearch == TypeSearch.ENDSWITH) {
-      return removeDiacritics(value.toString()).toLowerCase()?.endsWith(text) ==
-          true;
-    }
-    return false;
   }
 
   bool applyFilter(GroupFilterExp groupFilterExp, Map<String, dynamic> map) {

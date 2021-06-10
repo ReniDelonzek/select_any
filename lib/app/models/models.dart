@@ -1,3 +1,4 @@
+import 'package:diacritic/diacritic.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:mobx/mobx.dart';
@@ -446,6 +447,22 @@ abstract class _DataSourceBase with Store {
   Future exportData(SelectModel selectModel);
 
   Future clear();
+
+  bool filterTypeSearch(TypeSearch typeSearch, dynamic value, String text) {
+    if (typeSearch == TypeSearch.CONTAINS) {
+      return removeDiacritics(value.toString()).toLowerCase()?.contains(text) ==
+          true;
+    } else if (typeSearch == TypeSearch.BEGINSWITH) {
+      return removeDiacritics(value.toString())
+              .toLowerCase()
+              ?.startsWith(text) ==
+          true;
+    } else if (typeSearch == TypeSearch.ENDSWITH) {
+      return removeDiacritics(value.toString()).toLowerCase()?.endsWith(text) ==
+          true;
+    }
+    return false;
+  }
 }
 
 class ResponseData {
@@ -526,7 +543,7 @@ abstract class _ItemSelectExpandedBase extends ItemSelect with Store {
   _ItemSelectExpandedBase({this.items, this.isExpanded = false});
 }
 
-enum TypeSearch { CONTAINS, BEGINSWITH, ENDSWITH }
+enum TypeSearch { CONTAINS, BEGINSWITH, ENDSWITH, NOTCONTAINS }
 
 abstract class FilterExp {}
 

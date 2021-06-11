@@ -173,6 +173,8 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
                 autofocus: true,
                 child: Scaffold(
                   appBar: AppBar(
+                    backgroundColor: widget
+                        .controller.selectModel.theme?.appBarBackgroundColor,
                     centerTitle:
                         widget.controller.selectModel.theme?.centerTitle,
                     title:
@@ -185,10 +187,11 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
                             onPressed: _searchPressed,
                           );
                         } else {
-                          return SizedBox();
+                          return Row(children: _buildIconButtons());
                         }
                       })
                     ],
+                    automaticallyImplyLeading: false,
                     leading: _getMenuButton(),
                   ),
                   bottomNavigationBar: widget._selectModel.tipoSelecao ==
@@ -222,6 +225,8 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
                             ),
                     ),
                   ),
+                  backgroundColor:
+                      widget.controller.selectModel.theme?.backgroundColor,
                   body: Builder(builder: (buildContext) {
                     this.buildContext = buildContext;
                     return _getBody();
@@ -237,6 +242,31 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
       Navigator.pop(context,
           widget.controller.list.where((item) => item.isSelected).toList());
     }
+  }
+
+  List<Widget> _buildIconButtons() {
+    List<Widget> buttons = [];
+    if (widget.controller.selectModel.botoes != null &&
+        widget.controller.selectModel.theme?.buttonsPosition ==
+            ButtonsPosition.APPBAR) {
+      buttons.addAll(widget.controller.selectModel.botoes
+          .map((e) => IconButton(
+                icon: e.icon ?? Icon(Icons.add),
+                tooltip: e.descricao,
+                onPressed: () {
+                  UtilsWidget.onAction(
+                      context,
+                      null,
+                      null,
+                      e,
+                      widget.controller.data,
+                      widget.controller.reloadData,
+                      widget.controller.fonteDadoAtual);
+                },
+              ))
+          .toList());
+    }
+    return buttons;
   }
 
   /// Retorna o conteúdo principal da tela

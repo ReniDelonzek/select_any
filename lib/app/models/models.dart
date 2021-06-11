@@ -94,7 +94,19 @@ class SelectModelTheme {
   /// Indicates whether the title should be in the center
   final bool centerTitle;
 
-  const SelectModelTheme({this.tableTheme, this.centerTitle = true});
+  /// Color AppBar
+  final Color appBarBackgroundColor;
+
+  final Color backgroundColor;
+
+  final ButtonsPosition buttonsPosition;
+
+  const SelectModelTheme(
+      {this.tableTheme,
+      this.centerTitle = true,
+      this.appBarBackgroundColor,
+      this.backgroundColor,
+      this.buttonsPosition = ButtonsPosition.IN_TABLE_AND_BOTTOM});
 }
 
 class SelectModelThemeTable {
@@ -116,6 +128,8 @@ class SelectModelThemeTable {
       this.tablePadding = const EdgeInsets.only(left: 16, right: 16)})
       : assert(showTableInCard != null);
 }
+
+enum ButtonsPosition { APPBAR, BOTTOM, IN_TABLE_AND_BOTTOM }
 
 class Linha {
   String chave;

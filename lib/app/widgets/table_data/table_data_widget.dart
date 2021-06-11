@@ -41,7 +41,9 @@ class TableDataWidget extends StatelessWidget {
 
   Widget _buildContent(BuildContext context) {
     List<Widget> buttons = [];
-    if (controller.selectModel.botoes != null) {
+    if (controller.selectModel.botoes != null &&
+        controller.selectModel.theme?.buttonsPosition ==
+            ButtonsPosition.IN_TABLE_AND_BOTTOM) {
       buttons.addAll(controller.selectModel.botoes
           .map((e) => IconButton(
                 icon: e.icon ?? Icon(Icons.add),

@@ -109,7 +109,7 @@ class UtilsWidget {
   }
 
   static Widget _getText(String value, Function onTap, Linha linha) {
-    if ((linha?.maxLines ?? 1) > 2) {
+    if ((linha?.maxLines ?? 1) > 2 || linha.showTextInTableScroll == true) {
       return SingleChildScrollView(
           child: Padding(
         padding: const EdgeInsets.only(top: 2, bottom: 2),
@@ -121,7 +121,7 @@ class UtilsWidget {
 
   static Widget _selectableText(String value, Function onTap, Linha linha) {
     return SelectableText(value ?? '',
-        maxLines: linha?.maxLines ?? 1,
+        maxLines: linha?.maxLines,
         minLines: linha?.minLines,
         onTap: onTap,
         scrollPhysics: const NeverScrollableScrollPhysics());

@@ -146,6 +146,8 @@ class Linha {
 
   bool enableSorting;
 
+  bool showTextInTableScroll;
+
   Linha(this.chave,
       {this.color,
       this.involucro,
@@ -159,7 +161,8 @@ class Linha {
       this.typeData,
       this.maxLines = 1,
       this.minLines,
-      this.enableSorting = true}) {
+      this.enableSorting = true,
+      this.showTextInTableScroll}) {
     if (typeData is TDDateTimestamp && filter == null) {
       filter = FilterRangeDate();
       if (formatData == null) {

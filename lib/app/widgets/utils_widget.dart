@@ -89,8 +89,7 @@ class UtilsWidget {
     } else {
       if (linha.formatData != null) {
         return _getText(
-            linha.formatData
-                .formatData(ObjFormatData(data: item.value?.toString())),
+            linha.formatData.formatData(ObjFormatData(data: item.value)),
             onTap,
             linha);
       }

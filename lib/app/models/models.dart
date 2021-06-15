@@ -77,7 +77,7 @@ class SelectModel {
       this.preSelected,
       this.confirmarParaCarregarDados = false,
       this.permitirSelecionarTodos,
-      this.showFiltersInput = false,
+      this.showFiltersInput = true,
       this.theme}) {
     if (abrirPesquisaAutomaticamente == null) {
       abrirPesquisaAutomaticamente = !UtilsPlatform.isMobile;
@@ -162,6 +162,12 @@ class Linha {
 
   bool showTextInTableScroll;
 
+  /// Indicates whether the line must support filters specific to it
+  bool enableLineFilter;
+
+  /// Show sizedbox when empty row
+  bool showSizedBoxWhenEmpty;
+
   Linha(this.chave,
       {this.color,
       this.involucro,
@@ -176,13 +182,18 @@ class Linha {
       this.maxLines = 1,
       this.minLines,
       this.enableSorting = true,
-      this.showTextInTableScroll}) {
+      this.showTextInTableScroll,
+      this.enableLineFilter = true,
+      this.showSizedBoxWhenEmpty = false}) {
     if (typeData is TDDateTimestamp && filter == null) {
       filter = FilterRangeDate();
       if (formatData == null) {
         formatData =
             FormatDataTimestamp((typeData as TDDateTimestamp).outputFormat);
       }
+    }
+    if (enableLineFilter == null && personalizacao != null) {
+      enableLineFilter = false;
     }
   }
 
@@ -382,7 +393,10 @@ abstract class _DataSourceBase with Store {
   final bool allowExport;
 
   /// Indica se a fonte suporta paginação
-  bool suportPaginate;
+  bool supportPaginate;
+
+  /// Indica suporte a filtros por coluna
+  bool supportSingleLineFilter;
 
   @observable
   ObservableList<ItemSelect> listData = ObservableList();
@@ -391,11 +405,15 @@ abstract class _DataSourceBase with Store {
       {this.id,
       this.searchDelay = 300,
       this.allowExport = false,
-      this.suportPaginate = false});
+      this.supportPaginate = false,
+      this.supportSingleLineFilter = false});
 
   Future<Stream<ResponseData>> getList(
       int limit, int offset, SelectModel selectModel,
-      {Map data, bool refresh = false, ItemSort itemSort});
+      {Map data,
+      bool refresh = false,
+      ItemSort itemSort,
+      GroupFilterExp filter});
 
   Future<Stream<ResponseData>> getListSearch(
       String text, int limit, int offset, SelectModel selectModel,
@@ -403,10 +421,6 @@ abstract class _DataSourceBase with Store {
       bool refresh,
       TypeSearch typeSearch = TypeSearch.CONTAINS,
       ItemSort itemSort});
-
-  Future<Stream<ResponseData>> getListFilter(
-      GroupFilterExp filter, int limit, int offset, SelectModel selectModel,
-      {Map data, bool refresh});
 
   List<ItemSelectTable> generateList(
       List data, int offset, SelectModel selectModel) {
@@ -476,6 +490,9 @@ abstract class _DataSourceBase with Store {
           true;
     } else if (typeSearch == TypeSearch.ENDSWITH) {
       return removeDiacritics(value.toString()).toLowerCase()?.endsWith(text) ==
+          true;
+    } else if (typeSearch == TypeSearch.NOTCONTAINS) {
+      return removeDiacritics(value.toString()).toLowerCase()?.contains(text) !=
           true;
     }
     return false;

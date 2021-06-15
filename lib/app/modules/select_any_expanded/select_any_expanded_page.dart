@@ -143,9 +143,9 @@ class _SelectAnyExpandedPageState extends State<SelectAnyExpandedPage> {
     if (linha == null) {
       return null;
     }
-    String valor = (item.value == null || item.value.toString().isEmpty)
+    dynamic valor = (item.value == null || item.value.toString().isEmpty)
         ? (linha.valorPadrao != null ? linha.valorPadrao(map) : '')
-        : item.value?.toString();
+        : item.value;
     if (linha.formatData != null) {
       valor = linha.formatData.formatData(ObjFormatData(data: valor));
     }
@@ -157,7 +157,7 @@ class _SelectAnyExpandedPageState extends State<SelectAnyExpandedPage> {
       return Text(linha.involucro.replaceAll('???', valor),
           style: linha.estiloTexto);
     } else {
-      return Text(valor, style: linha.estiloTexto);
+      return Text(valor?.toString(), style: linha.estiloTexto);
     }
   }
 

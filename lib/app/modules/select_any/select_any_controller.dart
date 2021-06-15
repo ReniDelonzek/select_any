@@ -100,6 +100,10 @@ abstract class _SelectAnyBase with Store {
   @observable
   bool showSearch = true;
 
+  bool get showLineFilter =>
+      selectModel.showFiltersInput == true &&
+      fonteDadoAtual?.supportSingleLineFilter != false;
+
   ItemSort itemSort;
 
   _SelectAnyBase({this.tipoTeladinamica = true});
@@ -142,10 +146,15 @@ abstract class _SelectAnyBase with Store {
   setDataSource({int offset, bool refresh = false}) async {
     showSearch = true;
     try {
+      GroupFilterExp groupFilterExp = buildFilterExpression();
+      showSearch = groupFilterExp.filterExps.isEmpty;
       loading = true;
       offset ??= (page - 1) * quantityItensPage;
       (await fonteDadoAtual.getList(quantityItensPage, offset, selectModel,
-              data: data, refresh: refresh, itemSort: itemSort))
+              data: data,
+              refresh: refresh,
+              itemSort: itemSort,
+              filter: groupFilterExp))
           .listen((event) {
         error = null;
         if (filter.text.trim().isEmpty) {
@@ -261,8 +270,10 @@ abstract class _SelectAnyBase with Store {
     }
   }
 
+/*
   setDataSourceFilter({int offset, bool refresh = false}) async {
     showSearch = false;
+    page = 1;
     try {
       loading = true;
       offset ??= (page - 1) * quantityItensPage;
@@ -320,7 +331,7 @@ abstract class _SelectAnyBase with Store {
       loadingMore = false;
       this.error = error;
     }
-  }
+  }*/
 
   /// Caso confirmarParaCarregarDados seja true, inicializada a var fonteDadoAtual com a fonte padrão
   inicializarFonteDados() {
@@ -388,8 +399,8 @@ abstract class _SelectAnyBase with Store {
       typeSearch = newType;
       if (filter.text.trim().isNotEmpty) {
         filtroPesquisaModificado(reload: true);
-      } else if (buildFilterExpression().filterExps.isNotEmpty) {
-        setDataSourceFilter();
+      } else {
+        setDataSource();
       }
     }
   }
@@ -416,12 +427,14 @@ abstract class _SelectAnyBase with Store {
                   (value as SelecionarRangeDataWidget).controller.dataFinal));
         }
       } else {
-        if (value is TextFormField) {
-          if (value.controller.text.trim().isNotEmpty) {
-            exps.add(FilterExpCollun(
-                line: line,
-                value: value.controller.text.trim(),
-                typeSearch: typeSearch));
+        if (value is Padding) {
+          if (value.child is TextField) {
+            if ((value.child as TextField).controller.text.trim().isNotEmpty) {
+              exps.add(FilterExpCollun(
+                  line: line,
+                  value: (value.child as TextField).controller.text.trim(),
+                  typeSearch: typeSearch));
+            }
           }
         }
       }
@@ -430,14 +443,10 @@ abstract class _SelectAnyBase with Store {
   }
 
   setCorretDataSource({int offset, bool refresh = false}) {
-    if (buildFilterExpression().filterExps.isNotEmpty) {
-      setDataSourceFilter(offset: offset, refresh: refresh);
+    if (filter.text.isEmpty) {
+      setDataSource(offset: offset, refresh: refresh);
     } else {
-      if (filter.text.isEmpty) {
-        setDataSource(offset: offset, refresh: refresh);
-      } else {
-        setDataSourceSearch(offset: offset, refresh: refresh);
-      }
+      setDataSourceSearch(offset: offset, refresh: refresh);
     }
   }
 
@@ -445,8 +454,10 @@ abstract class _SelectAnyBase with Store {
     filterControllers.forEach((key, value) {
       if (value is SelecionarRangeDataWidget) {
         value.controller.clear();
-      } else if (value is TextFormField) {
-        value.controller.clear();
+      } else if (value is Padding) {
+        if (value.child is TextField) {
+          (value.child as TextField).controller.clear();
+        }
       }
     });
     setCorretDataSource();

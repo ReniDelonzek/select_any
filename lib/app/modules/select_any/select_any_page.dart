@@ -98,7 +98,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
       } else {
         if (widget.controller.typeDiplay != 1) {
           widget.controller.typeDiplay = 1;
-          if (!(widget.controller.fonteDadoAtual?.suportPaginate ?? false) &&
+          if (!(widget.controller.fonteDadoAtual?.supportPaginate ?? false) &&
               widget.controller.loaded) {
             /// Caso a fonte nao suporte paginação, recarrega os dados
             /// Pois os dados carregados na tabela não são completos
@@ -343,7 +343,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
                   child: NotificationListener<ScrollNotification>(
                       onNotification: (ScrollNotification scrollInfo) {
                         /// não é necessário nenhuma ação caso não suporte paginação, pois os dados já estaram completos na tela
-                        if (widget.controller.fonteDadoAtual.suportPaginate) {
+                        if (widget.controller.fonteDadoAtual.supportPaginate) {
                           if (scrollInfo is ScrollEndNotification &&
                               scrollInfo.metrics.extentAfter == 0) {
                             if (widget.controller.total == 0 ||
@@ -549,7 +549,11 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
       return Text(linha.involucro.replaceAll('???', valor ?? ''),
           style: linha.estiloTexto);
     } else {
-      return Text(valor, style: linha.estiloTexto);
+      if ((valor == null || valor.toString().isEmpty) &&
+          linha.showSizedBoxWhenEmpty == true) {
+        return SizedBox();
+      }
+      return Text(valor?.toString(), style: linha.estiloTexto);
     }
   }
 

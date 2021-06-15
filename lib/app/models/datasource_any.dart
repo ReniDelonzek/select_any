@@ -1,6 +1,5 @@
 import 'package:diacritic/diacritic.dart';
-import 'package:msk_utils/extensions/date.dart';
-import 'package:msk_utils/extensions/list.dart';
+import 'package:msk_utils/msk_utils.dart';
 import 'package:msk_utils/utils/utils_sentry.dart';
 import 'package:select_any/app/utils/utils_file.dart';
 import 'package:select_any/select_any.dart';
@@ -9,13 +8,23 @@ abstract class DataSourceAny extends DataSource {
   List<Map<String, dynamic>> listAll;
   ItemSort _actualySort;
 
-  DataSourceAny({String id, bool allowExport = true})
-      : super(id: id, allowExport: allowExport);
+  DataSourceAny(
+      {String id, bool allowExport = true, bool supportSingleLineFilter = true})
+      : super(
+            id: id,
+            allowExport: allowExport,
+            supportSingleLineFilter: supportSingleLineFilter);
 
   @override
   Future<Stream<ResponseData>> getList(
-      int limit, int offset, SelectModel selectModel,
-      {Map data, bool refresh = false, ItemSort itemSort}) async {
+    int limit,
+    int offset,
+    SelectModel selectModel, {
+    Map data,
+    bool refresh = false,
+    ItemSort itemSort,
+    GroupFilterExp filter,
+  }) async {
     if (listAll == null ||
         listAll.isEmpty ||
         refresh == true ||
@@ -24,14 +33,26 @@ abstract class DataSourceAny extends DataSource {
       listAll?.clear();
       await fetchData(limit, offset, selectModel, data: data);
     }
+
     if (itemSort != _actualySort) {
       listAll = applySortFilters(itemSort, selectModel.id, listAll);
     }
 
-    List<Map<String, dynamic>> subList = getSubList(offset, limit, listAll);
+    List<Map<String, dynamic>> tempList = [];
+    if (filter != null && filter.filterExps.isNotEmpty) {
+      for (int i = 0; i < listAll.length; i++) {
+        if (applyGroupFilterExp(filter, listAll[i])) {
+          tempList.add(listAll[i]);
+        }
+      }
+    } else {
+      tempList = listAll;
+    }
+
+    List<Map<String, dynamic>> subList = getSubList(offset, limit, tempList);
 
     return Stream.value(ResponseData(
-        total: listAll.length,
+        total: tempList.length,
         data: generateList(subList, offset, selectModel),
         start: offset,
         end: offset + limit));
@@ -62,8 +83,24 @@ abstract class DataSourceAny extends DataSource {
     if (listAll == null || listAll.isEmpty || refresh == true) {
       await fetchData(limit, offset, selectModel, data: data);
     }
+    List<Map<String, dynamic>> tempList =
+        applyFilterList(typeSearch, listAll, text);
+
+    tempList = applySortFilters(itemSort, selectModel.id, tempList);
+
+    List<Map<String, dynamic>> subList = getSubList(offset, limit, tempList);
+    return Stream.value(ResponseData(
+        total: tempList.length,
+        data: generateList(subList, offset, selectModel),
+        start: offset,
+        end: offset + limit,
+        filter: text));
+  }
+
+  List<Map<String, dynamic>> applyFilterList(
+      TypeSearch typeSearch, List<Map<String, dynamic>> list, String text) {
     List<Map<String, dynamic>> tempList = [];
-    for (int i = 0; i < listAll.length; i++) {
+    for (int i = 0; i < list.length; i++) {
       if (typeSearch == TypeSearch.NOTCONTAINS) {
         bool contains = false;
         for (var value in listAll[i].values) {
@@ -90,16 +127,7 @@ abstract class DataSourceAny extends DataSource {
         }
       }
     }
-
-    tempList = applySortFilters(itemSort, selectModel.id, tempList);
-
-    List<Map<String, dynamic>> subList = getSubList(offset, limit, tempList);
-    return Stream.value(ResponseData(
-        total: tempList.length,
-        data: generateList(subList, offset, selectModel),
-        start: offset,
-        end: offset + limit,
-        filter: text));
+    return tempList;
   }
 
   Future exportData(SelectModel selectModel) async {
@@ -130,7 +158,8 @@ abstract class DataSourceAny extends DataSource {
     return;
   }
 
-  bool applyFilter(GroupFilterExp groupFilterExp, Map<String, dynamic> map) {
+  bool applyGroupFilterExp(
+      GroupFilterExp groupFilterExp, Map<String, dynamic> map) {
     bool filterAndOk;
     for (var filter in groupFilterExp.filterExps) {
       if (groupFilterExp.operatorEx == OperatorFilterEx.OR) {
@@ -141,27 +170,32 @@ abstract class DataSourceAny extends DataSource {
             return true;
           }
         } else if (filter is GroupFilterExp) {
-          if (applyFilter(filter, map)) {
+          if (applyGroupFilterExp(filter, map)) {
             return true;
           }
         }
       } else if (groupFilterExp.operatorEx == OperatorFilterEx.AND) {
         /// Expressão AND seta filterAndOk = true caso seja true, caso seja falso retorna false na função,
         if (filter is FilterExpCollun) {
-          if (filterTypeSearch(
-              filter.typeSearch, map[filter.line.chave], filter.value)) {
+          var value = map[filter.line.chave];
+          if (filter.line.formatData != null) {
+            value =
+                filter.line.formatData.formatData(ObjFormatData(data: value));
+          }
+          if (filterTypeSearch(filter.typeSearch, value, filter.value)) {
             filterAndOk = true;
           } else {
             return false;
           }
         } else if (filter is GroupFilterExp) {
-          if (applyFilter(filter, map)) {
+          if (applyGroupFilterExp(filter, map)) {
             filterAndOk = true;
           } else {
             return false;
           }
         } else if (filter is FilterExpRangeCollun) {
-          if (map[filter.line.chave] >
+          if (map[filter.line.chave] != null &&
+              map[filter.line.chave] >
                   (filter.dateStart?.millisecondsSinceEpoch ?? 0) &&
               map[filter.line.chave] <
                   (filter.dateEnd?.millisecondsSinceEpoch ??
@@ -181,28 +215,6 @@ abstract class DataSourceAny extends DataSource {
             .toLowerCase()
             ?.contains(value2) ==
         true;
-  }
-
-  @override
-  Future<Stream<ResponseData>> getListFilter(
-      GroupFilterExp filter, int limit, int offset, SelectModel selectModel,
-      {Map data, bool refresh = false}) async {
-    if (listAll == null || listAll.isEmpty || refresh == true) {
-      await fetchData(limit, offset, selectModel, data: data);
-    }
-    List<Map<String, dynamic>> tempList = [];
-
-    for (int i = 0; i < listAll.length; i++) {
-      if (applyFilter(filter, listAll[i])) {
-        tempList.add(listAll[i]);
-      }
-    }
-    List<Map<String, dynamic>> subList = getSubList(offset, limit, tempList);
-    return Stream.value(ResponseData(
-        total: tempList.length,
-        data: generateList(subList, offset, selectModel),
-        start: offset,
-        end: offset + limit));
   }
 
   List<Map<String, dynamic>> applySortFilters(
@@ -261,20 +273,57 @@ abstract class DataSourceAny extends DataSource {
       {TypeData typeData}) {
     // Apply special string formatting
     if (typeData is TDString || typeData is TDNotString) {
+      if (itemSort.linha.valorPadrao != null) {
+        if (itemSort.typeSort == EnumTypeSort.ASC) {
+          return temp.sortedBy((e) {
+            String v =
+                e[itemSort.linha.chave]?.toString()?.toLowerCase()?.trim();
+            if (v.isNullOrEmpty()) {
+              return itemSort.linha.valorPadrao(e) ?? defaultValue;
+            } else
+              return v;
+          });
+        } else {
+          return temp.sortedByDesc((e) {
+            String v =
+                e[itemSort.linha.chave]?.toString()?.toLowerCase()?.trim();
+            if (v.isNullOrEmpty()) {
+              return itemSort.linha.valorPadrao(e) ?? defaultValue;
+            } else
+              return v;
+          });
+        }
+      } else {
+        if (itemSort.typeSort == EnumTypeSort.ASC) {
+          return temp.sortedBy((e) =>
+              e[itemSort.linha.chave]?.toString()?.toLowerCase()?.trim() ??
+              defaultValue);
+        } else {
+          return temp.sortedByDesc((e) =>
+              e[itemSort.linha.chave]?.toString()?.toLowerCase()?.trim() ??
+              defaultValue);
+        }
+      }
+    }
+    if (itemSort.linha.valorPadrao != null) {
       if (itemSort.typeSort == EnumTypeSort.ASC) {
         return temp.sortedBy((e) =>
-            e[itemSort.linha.chave]?.toString()?.toLowerCase()?.trim() ??
+            e[itemSort.linha.chave] ??
+            itemSort.linha.valorPadrao(e) ??
             defaultValue);
       } else {
         return temp.sortedByDesc((e) =>
-            e[itemSort.linha.chave]?.toString()?.toLowerCase()?.trim() ??
+            e[itemSort.linha.chave] ??
+            itemSort.linha.valorPadrao(e) ??
             defaultValue);
       }
-    }
-    if (itemSort.typeSort == EnumTypeSort.ASC) {
-      return temp.sortedBy((e) => e[itemSort.linha.chave] ?? defaultValue);
     } else {
-      return temp.sortedByDesc((e) => e[itemSort.linha.chave] ?? defaultValue);
+      if (itemSort.typeSort == EnumTypeSort.ASC) {
+        return temp.sortedBy((e) => e[itemSort.linha.chave] ?? defaultValue);
+      } else {
+        return temp
+            .sortedByDesc((e) => e[itemSort.linha.chave] ?? defaultValue);
+      }
     }
   }
 }

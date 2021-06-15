@@ -182,10 +182,17 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
                     actions: [
                       Observer(builder: (_) {
                         if (widget.controller.typeDiplay == 1) {
-                          return IconButton(
-                            icon: widget.controller.searchIcon,
-                            onPressed: _searchPressed,
-                          );
+                          return Row(children: [
+                            IconButton(
+                                onPressed: () {
+                                  showDialogSorts(context);
+                                },
+                                icon: Icon(Icons.sort)),
+                            IconButton(
+                              icon: widget.controller.searchIcon,
+                              onPressed: _searchPressed,
+                            )
+                          ]);
                         } else {
                           return Row(children: _buildIconButtons());
                         }
@@ -634,5 +641,48 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
     if (widget._selectModel.abrirPesquisaAutomaticamente == true) {
       _searchPressed();
     }
+  }
+
+  void showDialogSorts(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (alertContext) => AlertDialog(
+              title: Text('Ordenar por'),
+              content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: widget.controller.selectModel.linhas
+                      .map((e) => ListTile(
+                            onTap: () {
+                              EnumTypeSort typeSort = EnumTypeSort.ASC;
+                              if (widget.controller.itemSort != null &&
+                                  widget.controller.itemSort.linha.chave ==
+                                      e.chave) {
+                                if (widget.controller.itemSort.typeSort ==
+                                    EnumTypeSort.ASC) {
+                                  typeSort = EnumTypeSort.DESC;
+                                }
+                              }
+                              widget.controller.itemSort = ItemSort(
+                                  indexLine: widget
+                                      .controller.selectModel.linhas
+                                      .indexWhere((element) =>
+                                          element.chave == e.chave),
+                                  linha: e,
+                                  typeSort: typeSort);
+
+                              widget.controller.updateSortCollumn();
+                              Navigator.pop(alertContext);
+                            },
+                            title: Text(e.nome ?? e.chave),
+                            leading: widget.controller.itemSort?.linha?.chave ==
+                                    e.chave
+                                ? (widget.controller.itemSort.typeSort ==
+                                        EnumTypeSort.ASC
+                                    ? Icon(Icons.arrow_upward)
+                                    : Icon(Icons.arrow_downward))
+                                : null,
+                          ))
+                      .toList()),
+            ));
   }
 }

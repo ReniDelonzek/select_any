@@ -609,6 +609,16 @@ enum OperatorFilterEx { AND, OR }
 
 enum EnumTypeSort { ASC, DESC }
 
+extension ExEnumTypeSort on EnumTypeSort {
+  String toStringEnum() {
+    if (this == EnumTypeSort.ASC) {
+      return 'asc';
+    } else {
+      return 'desc';
+    }
+  }
+}
+
 class ItemSort {
   EnumTypeSort typeSort;
   Linha linha;

@@ -648,41 +648,45 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
         context: context,
         builder: (alertContext) => AlertDialog(
               title: Text('Ordenar por'),
-              content: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: widget.controller.selectModel.linhas
-                      .map((e) => ListTile(
-                            onTap: () {
-                              EnumTypeSort typeSort = EnumTypeSort.ASC;
-                              if (widget.controller.itemSort != null &&
-                                  widget.controller.itemSort.linha.chave ==
-                                      e.chave) {
-                                if (widget.controller.itemSort.typeSort ==
-                                    EnumTypeSort.ASC) {
-                                  typeSort = EnumTypeSort.DESC;
+              content: SingleChildScrollView(
+                child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: widget.controller.selectModel.linhas
+                        .where((element) => element.enableSorting)
+                        .map((e) => ListTile(
+                              onTap: () {
+                                EnumTypeSort typeSort = EnumTypeSort.ASC;
+                                if (widget.controller.itemSort != null &&
+                                    widget.controller.itemSort.linha.chave ==
+                                        e.chave) {
+                                  if (widget.controller.itemSort.typeSort ==
+                                      EnumTypeSort.ASC) {
+                                    typeSort = EnumTypeSort.DESC;
+                                  }
                                 }
-                              }
-                              widget.controller.itemSort = ItemSort(
-                                  indexLine: widget
-                                      .controller.selectModel.linhas
-                                      .indexWhere((element) =>
-                                          element.chave == e.chave),
-                                  linha: e,
-                                  typeSort: typeSort);
+                                widget.controller.itemSort = ItemSort(
+                                    indexLine: widget
+                                        .controller.selectModel.linhas
+                                        .indexWhere((element) =>
+                                            element.chave == e.chave),
+                                    linha: e,
+                                    typeSort: typeSort);
 
-                              widget.controller.updateSortCollumn();
-                              Navigator.pop(alertContext);
-                            },
-                            title: Text(e.nome ?? e.chave),
-                            leading: widget.controller.itemSort?.linha?.chave ==
-                                    e.chave
-                                ? (widget.controller.itemSort.typeSort ==
-                                        EnumTypeSort.ASC
-                                    ? Icon(Icons.arrow_upward)
-                                    : Icon(Icons.arrow_downward))
-                                : null,
-                          ))
-                      .toList()),
+                                widget.controller.updateSortCollumn();
+                                Navigator.pop(alertContext);
+                              },
+                              title: Text(e.nome ?? e.chave),
+                              leading:
+                                  widget.controller.itemSort?.linha?.chave ==
+                                          e.chave
+                                      ? (widget.controller.itemSort.typeSort ==
+                                              EnumTypeSort.ASC
+                                          ? Icon(Icons.arrow_upward)
+                                          : Icon(Icons.arrow_downward))
+                                      : null,
+                            ))
+                        .toList()),
+              ),
             ));
   }
 }

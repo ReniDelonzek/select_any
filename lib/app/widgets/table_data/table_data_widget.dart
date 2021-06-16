@@ -413,10 +413,6 @@ class TableDataWidget extends StatelessWidget {
                                 onPressed: () {
                                   /// Tira 1 do index pois o index 0 é o do header
                                   int newIndex = index - 1;
-                                  if (controller.showLineFilter) {
-                                    /// Quando tiver os filtros, precisa tirar mais um
-                                    newIndex -= 1;
-                                  }
                                   UtilsWidget.onAction(
                                       context,
                                       subList[newIndex],

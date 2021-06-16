@@ -402,4 +402,17 @@ abstract class _SelectAnyBase with Store {
     });
     setCorretDataSource();
   }
+
+  onColumnFilterChanged() {
+    resetOnFiltersChanged();
+    setCorretDataSource();
+  }
+
+  /// Limpa o texto da barra de pesquisa e zera a pagina
+  resetOnFiltersChanged() {
+    if (page != 1) {
+      page = 1;
+    }
+    filter.clear();
+  }
 }

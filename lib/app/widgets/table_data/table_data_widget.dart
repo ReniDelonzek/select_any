@@ -301,9 +301,8 @@ class TableDataWidget extends StatelessWidget {
                                                     SelecionarRangeDataWidget(
                                                         SelecionarRangeDataController(),
                                                         (dateMin, dateMax) {
-                                                  controller.filter.clear();
                                                   controller
-                                                      .setCorretDataSource();
+                                                      .onColumnFilterChanged();
                                                 });
                                               }
                                             } else {
@@ -321,9 +320,8 @@ class TableDataWidget extends StatelessWidget {
                                                       hintText:
                                                           '${e.nome ?? e.chave}'),
                                                   onChanged: (text) {
-                                                    controller.filter.clear();
                                                     controller
-                                                        .setCorretDataSource();
+                                                        .onColumnFilterChanged();
                                                   },
                                                 ),
                                               );

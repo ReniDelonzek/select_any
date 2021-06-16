@@ -355,7 +355,9 @@ abstract class _SelectAnyBase with Store {
 
   updateSortCollumn() {
     list.clear();
-    setCorretDataSource(offset: (page - 1) * quantityItensPage, refresh: false);
+    setCorretDataSource(
+        offset: typeDiplay == 1 ? -1 : (page - 1) * quantityItensPage,
+        refresh: false);
   }
 
   removeItem(int id) {

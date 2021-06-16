@@ -553,7 +553,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
         return linha.personalizacao(CustomLineData(
             data: map, typeScreen: widget.controller.typeDiplay));
       }
-      return Text(linha.involucro.replaceAll('???', valor ?? ''),
+      return Text(linha.involucro.replaceAll('???', valor?.toString() ?? ''),
           style: linha.estiloTexto);
     } else {
       if ((valor == null || valor.toString().isEmpty) &&

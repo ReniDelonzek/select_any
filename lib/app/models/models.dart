@@ -497,6 +497,21 @@ abstract class _DataSourceBase with Store {
     }
     return false;
   }
+
+  GroupFilterExp convertFiltersToLowerCase(GroupFilterExp filter) {
+    if (filter != null) {
+      for (var group in filter.filterExps) {
+        if (group is GroupFilterExp) {
+          group = convertFiltersToLowerCase(group);
+        } else if (group is FilterExpCollun) {
+          if (group.value is String) {
+            group.value = group.value?.toString()?.toLowerCase();
+          }
+        }
+      }
+    }
+    return filter;
+  }
 }
 
 class ResponseData {

@@ -38,6 +38,8 @@ abstract class DataSourceAny extends DataSource {
       listAll = applySortFilters(itemSort, selectModel.id, listAll);
     }
 
+    filter = convertFiltersToLowerCase(filter);
+
     List<Map<String, dynamic>> tempList = [];
     if (filter != null && filter.filterExps.isNotEmpty) {
       for (int i = 0; i < listAll.length; i++) {
@@ -164,9 +166,14 @@ abstract class DataSourceAny extends DataSource {
     for (var filter in groupFilterExp.filterExps) {
       if (groupFilterExp.operatorEx == OperatorFilterEx.OR) {
         /// Como é uma expressão or, caso esse filtro seja verdadeiro sempre retorna true
+
         if (filter is FilterExpCollun) {
-          if (filterTypeSearch(
-              filter.typeSearch, map[filter.line.chave], filter.value)) {
+          var value = map[filter.line.chave];
+          if (filter.line.formatData != null) {
+            value =
+                filter.line.formatData.formatData(ObjFormatData(data: value));
+          }
+          if (filterTypeSearch(filter.typeSearch, value, filter.value)) {
             return true;
           }
         } else if (filter is GroupFilterExp) {

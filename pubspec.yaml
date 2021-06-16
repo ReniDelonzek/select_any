@@ -1,5 +1,5 @@
 name: select_any
-description: A new Flutter package project.
+description: A flexible library for listing data in lists/tables
 version: 0.0.1
 author:
 homepage:
@@ -11,10 +11,10 @@ environment:
 
 dependencies:
   data_table_plus:
-    #git:
-     # url: git@github.com:ReniDelonzek/data_table_plus.git
-      #ref: 89719161f6219ef4a9b417162c952bd6a62be0cb
-    path: "C:/Users/reni/Downloads/Projetos/flutter/libs/data_table_2"
+    git:
+      url: git@github.com:ReniDelonzek/data_table_plus.git
+      ref: 64a0d73991c5694697fb4d77f1ab1952eba43e34
+    #path: "C:/Users/reni/Downloads/Projetos/flutter/libs/data_table_2"
   flutter_date_pickers: ^0.2.4
   share_extend: ^1.1.9
   path_provider: ^2.0.1 

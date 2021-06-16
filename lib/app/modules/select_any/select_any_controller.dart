@@ -270,69 +270,6 @@ abstract class _SelectAnyBase with Store {
     }
   }
 
-/*
-  setDataSourceFilter({int offset, bool refresh = false}) async {
-    showSearch = false;
-    page = 1;
-    try {
-      loading = true;
-      offset ??= (page - 1) * quantityItensPage;
-      (await fonteDadoAtual.getListFilter(
-              buildFilterExpression(), quantityItensPage, offset, selectModel,
-              data: data, refresh: refresh))
-          .listen((ResponseData event) {
-        error = null;
-        if (buildFilterExpression().filterExps.isNotEmpty) {
-          /// Caso seja -1, não remove nada pois ela deve retornar todos os registros
-          if (offset > -1) {
-            /// Remove todos os registros que o id não consta no range retornado
-            list.removeWhere((element) {
-              return element.position <= event.end &&
-                  element.position >= event.start &&
-                  !event.data.any((e2) {
-                    return e2.id == element.id;
-                  });
-            });
-          }
-
-          event.data.forEach((item) {
-            bool present = selectedList.any((element) => element.id == item.id);
-            if (item.isSelected == true) {
-              if (!present) {
-                /// Caso o item esteja selecionado e não esteja na lista selectedList
-                selectedList.add(item);
-              }
-            } else {
-              item.isSelected = present;
-            }
-            int index = list.indexWhere((element) => element.id == item.id);
-            if (index > -1) {
-              list[index] = item;
-            } else {
-              list.add(item);
-            }
-          });
-          loading = false;
-          loadingMore = false;
-          total = event.total;
-        } else {
-          showSearch = true;
-        }
-      }, onError: (error) {
-        print(error);
-        loading = false;
-        loadingMore = false;
-        this.error = error;
-      });
-    } catch (error, stackTrace) {
-      UtilsSentry.reportError(error, stackTrace);
-      print(error);
-      loading = false;
-      loadingMore = false;
-      this.error = error;
-    }
-  }*/
-
   /// Caso confirmarParaCarregarDados seja true, inicializada a var fonteDadoAtual com a fonte padrão
   inicializarFonteDados() {
     if (confirmarParaCarregarDados) {

@@ -398,6 +398,7 @@ abstract class _SelectAnyBase with Store {
 
   updateTypeSearch(TypeSearch newType) {
     if (newType != null && newType != typeSearch) {
+      page = 1;
       typeSearch = newType;
       if (filter.text.trim().isNotEmpty) {
         filtroPesquisaModificado(reload: true);

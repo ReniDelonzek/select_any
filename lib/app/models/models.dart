@@ -173,7 +173,7 @@ class Linha {
       this.involucro,
       this.personalizacao,
       this.valorPadrao,
-      @required this.nome,
+      this.nome,
       this.chavesLista,
       this.estiloTexto,
       this.formatData,
@@ -184,7 +184,8 @@ class Linha {
       this.enableSorting = true,
       this.showTextInTableScroll,
       this.enableLineFilter = true,
-      this.showSizedBoxWhenEmpty = false}) {
+      this.showSizedBoxWhenEmpty = false})
+      : assert(chave != null) {
     if (typeData is TDDateTimestamp && filter == null) {
       filter = FilterRangeDate();
       if (formatData == null) {
@@ -194,6 +195,12 @@ class Linha {
     }
     if (enableLineFilter == null && personalizacao != null) {
       enableLineFilter = false;
+    }
+    if (nome == null) {
+      final pascalWords = RegExp(r"(?:[A-Z]+|^)[a-z]*");
+      List<String> getPascalWords(String input) =>
+          pascalWords.allMatches(input).map((m) => m[0]).toList();
+      nome = getPascalWords(chave).join(' ').upperCaseFirst();
     }
   }
 

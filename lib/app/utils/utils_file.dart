@@ -81,8 +81,10 @@ class UtilsFile {
       dir = await dir.create(recursive: true);
     }
     if (fileName == null || fileName.trim().isEmpty) {
-      fileName =
-          '${DateTime.now().millisecondsSinceEpoch}${extensionFile != null ? extensionFile : ''}';
+      fileName = '${DateTime.now().millisecondsSinceEpoch}';
+    }
+    if (extensionFile != null && extensionFile.isNotEmpty) {
+      fileName += extensionFile != null ? extensionFile : '';
     }
     file = io.File('${dir.path}$separator$fileName');
     if ((await file.exists()) == false) {

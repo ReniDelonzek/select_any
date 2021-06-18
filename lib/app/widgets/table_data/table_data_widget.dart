@@ -46,6 +46,7 @@ class TableDataWidget extends StatelessWidget {
             ButtonsPosition.IN_TABLE_AND_BOTTOM) {
       buttons.addAll(controller.selectModel.botoes
           .map((e) => IconButton(
+                splashRadius: 24,
                 icon: e.icon ?? Icon(Icons.add),
                 tooltip: e.descricao,
                 onPressed: () {
@@ -75,6 +76,7 @@ class TableDataWidget extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         IconButton(
+                            splashRadius: 24,
                             tooltip: 'Opções de pesquisa',
                             onPressed: () async {
                               var newType =
@@ -111,6 +113,7 @@ class TableDataWidget extends StatelessWidget {
                             children: [
                               SizedBox(width: 8),
                               IconButton(
+                                  splashRadius: 24,
                                   tooltip: 'Exportar',
                                   icon: Icon(Icons.file_download),
                                   onPressed: () {
@@ -367,6 +370,7 @@ class TableDataWidget extends StatelessWidget {
                               SizedBox(
                                 height: 48,
                                 child: IconButton(
+                                  splashRadius: 24,
                                   onPressed: () {
                                     controller.clearFilters();
                                     showSnackMessage(
@@ -405,6 +409,7 @@ class TableDataWidget extends StatelessWidget {
                             return Container(
                               height: 48,
                               child: IconButton(
+                                splashRadius: 24,
                                 tooltip: acao.descricao,
                                 icon:
                                     acao.icon ?? Text(acao.descricao ?? 'Ação'),
@@ -504,6 +509,7 @@ class TableDataWidget extends StatelessWidget {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             IconButton(
+                                splashRadius: 24,
                                 iconSize: 36,
                                 icon: Icon(Icons.keyboard_arrow_left_rounded),
                                 onPressed: controller.page > 1
@@ -513,6 +519,7 @@ class TableDataWidget extends StatelessWidget {
                                       }
                                     : null),
                             IconButton(
+                                splashRadius: 24,
                                 iconSize: 36,
                                 icon: Icon(Icons.keyboard_arrow_right_rounded),
                                 onPressed: controller.page < total

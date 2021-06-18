@@ -115,6 +115,7 @@ class _SelectAnyExpandedPageState extends State<SelectAnyExpandedPage> {
                     )),
                     if (itemSelect.items?.isNotEmpty == true)
                       IconButton(
+                          splashRadius: 24,
                           icon: Icon(Icons.expand_more),
                           onPressed: () {
                             itemSelect.isExpanded = !itemSelect.isExpanded;

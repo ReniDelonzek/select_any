@@ -184,11 +184,13 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
                         if (widget.controller.typeDiplay == 1) {
                           return Row(children: [
                             IconButton(
+                                splashRadius: 24,
                                 onPressed: () {
                                   showDialogSorts(context);
                                 },
                                 icon: Icon(Icons.sort)),
                             IconButton(
+                              splashRadius: 24,
                               icon: widget.controller.searchIcon,
                               onPressed: _searchPressed,
                             )
@@ -258,6 +260,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
             ButtonsPosition.APPBAR) {
       buttons.addAll(widget.controller.selectModel.botoes
           .map((e) => IconButton(
+                splashRadius: 24,
                 icon: e.icon ?? Icon(Icons.add),
                 tooltip: e.descricao,
                 onPressed: () {
@@ -578,6 +581,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
   Widget _getMenuButton() {
     if (widget.showBackButton && (!kIsWeb) && !Platform.isAndroid) {
       return IconButton(
+        splashRadius: 24,
         icon: Icon(Icons.arrow_back_ios),
         onPressed: () {
           Navigator.of(context).pop();

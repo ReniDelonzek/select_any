@@ -11,7 +11,9 @@ class FilterWidget extends StatelessWidget {
     switch (filter.runtimeType) {
       case FilterRangeDate:
         return IconButton(
-            onPressed: () {}, icon: Icon(Icons.calendar_today_outlined));
+            splashRadius: 24,
+            onPressed: () {},
+            icon: Icon(Icons.calendar_today_outlined));
       case FilterSelectItem:
         return SizedBox();
       default:

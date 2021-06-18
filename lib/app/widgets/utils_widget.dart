@@ -32,6 +32,7 @@ class UtilsWidget {
       List<Widget> widgets = [];
       for (Acao acao in selectModel.acoes) {
         widgets.add(IconButton(
+          splashRadius: 24,
           tooltip: acao.descricao,
           icon: acao.icon ?? Text(acao.descricao ?? 'Ação'),
           onPressed: () {

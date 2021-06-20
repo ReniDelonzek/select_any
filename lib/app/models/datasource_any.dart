@@ -285,7 +285,7 @@ abstract class DataSourceAny extends DataSource {
           return temp.sortedBy((e) {
             String v =
                 e[itemSort.linha.chave]?.toString()?.toLowerCase()?.trim();
-            if (v.isNullOrEmpty()) {
+            if (v.isNullOrEmpty) {
               return itemSort.linha.valorPadrao(e) ?? defaultValue;
             } else
               return v;
@@ -294,7 +294,7 @@ abstract class DataSourceAny extends DataSource {
           return temp.sortedByDesc((e) {
             String v =
                 e[itemSort.linha.chave]?.toString()?.toLowerCase()?.trim();
-            if (v.isNullOrEmpty()) {
+            if (v.isNullOrEmpty) {
               return itemSort.linha.valorPadrao(e) ?? defaultValue;
             } else
               return v;

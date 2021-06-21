@@ -8,3 +8,6 @@ export 'package:select_any/app/widgets/utils_widget.dart';
 export 'package:select_any/app/models/models.dart';
 export 'package:select_any/app/utils/utils_file.dart';
 export 'package:select_any/app/models/datasource_any.dart';
+
+export 'package:select_any/app/widgets/select_fk/select_fk_widget.dart';
+export 'package:select_any/app/widgets/select_fk/select_fk_controller.dart';

@@ -582,8 +582,9 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
   Widget _getMenuButton() {
     if (widget.showBackButton && (!kIsWeb) && !Platform.isAndroid) {
       return IconButton(
-        splashRadius: 24,
-        icon: Icon(Icons.arrow_back_ios),
+        icon: UtilsPlatform.isIOS || UtilsPlatform.isMacos
+            ? Icon(Icons.arrow_back_ios)
+            : Icon(Icons.arrow_back),
         onPressed: () {
           Navigator.of(context).pop();
         },

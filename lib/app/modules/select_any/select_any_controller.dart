@@ -326,7 +326,12 @@ abstract class _SelectAnyBase with Store {
           if (tempSearchText == filter.text.trim()) {
             list.clear();
             page = 1;
-            setDataSourceSearch(offset: typeDiplay == 1 ? -1 : 0);
+            setDataSourceSearch(
+                offset: selectModel.fonteDados.supportPaginate
+                    ? null
+                    : typeDiplay == 1
+                        ? -1
+                        : 0);
           }
         });
       }

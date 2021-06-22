@@ -413,7 +413,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
         alignment: Alignment.topRight,
         constraints: BoxConstraints(maxWidth: 300),
         child: TextField(
-          focusNode: widget.controller.focusNodeSearch..requestFocus(),
+          focusNode: widget.controller.focusNodeSearch,
           controller: widget.controller.filter,
           decoration: new InputDecoration(
               prefixIcon: new Icon(Icons.search), hintText: 'Pesquise...'),

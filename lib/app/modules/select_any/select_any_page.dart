@@ -369,11 +369,12 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
                                 widget.controller.page++;
                                 widget.controller.setDataSourceSearch();
                               }
-                              print('Carregar mais dados');
+                              debugPrint('Carregar mais dados');
                             } else {
                               widget.controller.loadingMore = false;
-                              print('Não carregar mais');
-                              print(widget.controller.list.length);
+                              debugPrint('Não carregar mais');
+                              debugPrint(
+                                  widget.controller.list.length.toString());
                             }
                           }
                         }

@@ -1,7 +1,7 @@
 import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mobx/mobx.dart';
-import 'package:select_any/app/models/models.dart';
+import 'package:select_any/src/models/models.dart';
 
 import 'select_any_expanded_page.dart';
 

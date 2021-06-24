@@ -7,8 +7,8 @@ import 'package:msk_utils/utils/utils_hive.dart';
 import 'package:msk_utils/utils/utils_platform.dart';
 import 'package:msk_utils/utils/utils_sentry.dart';
 
-import 'package:select_any/app/models/models.dart';
-import 'package:select_any/app/widgets/selecionar_range_data/selecionar_range_data_widget.dart';
+import 'package:select_any/src/models/models.dart';
+import 'package:select_any/src/widgets/selecionar_range_data/selecionar_range_data_widget.dart';
 
 part 'select_any_controller.g.dart';
 

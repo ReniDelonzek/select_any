@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:msk_utils/extensions/date.dart';
 import 'package:msk_utils/extensions/string.dart';
 import 'package:msk_utils/models/item_select.dart';
-import 'package:select_any/app/models/models.dart';
-import 'package:select_any/app/modules/select_any/select_any_page.dart';
+import 'package:msk_utils/msk_utils.dart';
+import 'package:select_any/src/models/models.dart';
+import 'package:select_any/src/modules/select_any/select_any_page.dart';
+import 'package:select_any/src/widgets/my_snack_bar.dart';
 
 class UtilsWidget {
   static DataRow generateDataRow(
@@ -330,6 +332,15 @@ class UtilsWidget {
 }
 
 showSnackMessage(BuildContext context, String message) {
-  ScaffoldMessenger.maybeOf(context)
-      .showSnackBar(SnackBar(content: Text(message)));
+  if (UtilsPlatform.isMobile) {
+    ScaffoldMessenger.maybeOf(context).showSnackBar(SnackBar(
+      content: Text(message),
+      behavior: SnackBarBehavior.floating,
+    ));
+  } else {
+    ScaffoldMessenger.maybeOf(context).showSnackBar(MySnackBar(
+      content: Text(message),
+      behavior: SnackBarBehavior.floating,
+    ));
+  }
 }

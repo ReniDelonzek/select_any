@@ -1,5 +1,5 @@
 import 'package:mobx/mobx.dart';
-import 'package:select_any/app/models/models.dart';
+import 'package:select_any/src/models/models.dart';
 
 part 'select_fk_controller.g.dart';
 

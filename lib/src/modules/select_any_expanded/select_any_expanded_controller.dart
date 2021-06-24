@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
 import 'package:msk_utils/models/item_select.dart';
-import 'package:select_any/app/models/models.dart';
+import 'package:select_any/src/models/models.dart';
 
 part 'select_any_expanded_controller.g.dart';
 

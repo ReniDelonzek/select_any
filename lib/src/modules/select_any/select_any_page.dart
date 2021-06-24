@@ -7,11 +7,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:msk_utils/models/item_select.dart';
 import 'package:msk_utils/utils/utils_platform.dart';
-import 'package:select_any/app/models/models.dart';
-import 'package:select_any/app/modules/select_any/select_any_controller.dart';
-import 'package:select_any/app/widgets/falha/falha_widget.dart';
-import 'package:select_any/app/widgets/table_data/table_data_widget.dart';
-import 'package:select_any/app/widgets/utils_widget.dart';
+import 'package:select_any/src/models/models.dart';
+import 'package:select_any/src/modules/select_any/select_any_controller.dart';
+import 'package:select_any/src/widgets/falha/falha_widget.dart';
+import 'package:select_any/src/widgets/table_data/table_data_widget.dart';
+import 'package:select_any/src/widgets/utils_widget.dart';
 import 'package:msk_utils/extensions/date.dart';
 
 class InsertIntent extends Intent {

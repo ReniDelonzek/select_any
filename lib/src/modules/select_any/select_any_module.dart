@@ -1,6 +1,6 @@
 import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:flutter/widgets.dart';
-import 'package:select_any/app/models/models.dart';
+import 'package:select_any/src/models/models.dart';
 
 import 'select_any_controller.dart';
 import 'select_any_page.dart';

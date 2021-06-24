@@ -169,51 +169,7 @@ class TableDataWidget extends StatelessWidget {
                   element.position >= start && element.position <= end)
               .toList();
 
-          if (subList.isEmpty && !controller.showLineFilter) {
-            return Center(
-                child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Text('Nenhum item encontrado'),
-            ));
-          }
           List<DataRow> rows = [];
-
-          if (controller.showLineFilter == true) {
-            /*
-            rows.add(DataRow(
-                selected: false,
-                cells: controller.selectModel.linhas.map((e) {
-                  if (!controller.filterControllers.containsKey(e.chave)) {
-                    if (e.filter != null) {
-                      if (e.filter is FilterRangeDate) {
-                        controller.filterControllers[e.chave] =
-                            SelecionarRangeDataWidget(
-                                SelecionarRangeDataController(),
-                                (dateMin, dateMax) {
-                          controller.filter.clear();
-                          controller.setCorretDataSource();
-                        });
-                      }
-                    } else {
-                      controller.filterControllers[e.chave] = TextField(
-                        controller: TextEditingController(),
-                        decoration: InputDecoration(hintText: 'Filtro'),
-                        onChanged: (text) {
-                          print(text);
-                          controller.filter.clear();
-                          controller.setCorretDataSource();
-                        },
-                      );
-                    }
-                  }
-
-                  return DataCell(Padding(
-                    padding: const EdgeInsets.all(4.0),
-                    child: controller.filterControllers[e.chave],
-                  ));
-                }).toList()));
-                */
-          }
           int i = 0;
           for (var element in subList) {
             rows.add(UtilsWidget.generateDataRow(
@@ -240,7 +196,6 @@ class TableDataWidget extends StatelessWidget {
                       controller.reloadData,
                       controller.fonteDadoAtual);
                 }
-                //UtilsWidget.exibirListaAcoes()
               } else {
                 if (b) {
                   controller.selectedList.add(itemSelect);
@@ -255,192 +210,212 @@ class TableDataWidget extends StatelessWidget {
             i++;
           }
           ScrollController scrollController = ScrollController();
-          return Row(children: [
-            Expanded(child: LayoutBuilder(builder: (context, constraint) {
-              return Scrollbar(
-                controller: scrollController,
-                child: SingleChildScrollView(
+          return Column(
+            children: [
+              Row(children: [
+                Expanded(child: LayoutBuilder(builder: (context, constraint) {
+                  return Scrollbar(
                     controller: scrollController,
-                    scrollDirection: Axis.horizontal,
-                    child: Container(
-                      constraints:
-                          BoxConstraints(minWidth: constraint.maxWidth),
-                      child: DataTablePlus(
-                          showCheckboxColumn:
-                              controller.selectModel.tipoSelecao ==
-                                  SelectAnyPage.TIPO_SELECAO_MULTIPLA,
-                          tableColumnsWidth: controller
-                              .selectModel.theme?.tableTheme?.widthTableColumns,
-                          headingRowColor: controller.selectModel.theme
-                                      ?.tableTheme?.headerColor !=
-                                  null
-                              ? MaterialStateColor.resolveWith((states) {
-                                  return controller.selectModel.theme
-                                      ?.tableTheme?.headerColor;
-                                })
-                              : null,
-                          sortColumnIndex: controller.itemSort?.indexLine,
-                          customRows: controller.showLineFilter
-                              ? [
-                                  CustomRow(
-                                      index: -1,
-                                      cells: <Widget>[]
-                                        ..addAll(controller.selectModel
-                                                        .tipoSelecao ==
-                                                    SelectAnyPage
-                                                        .TIPO_SELECAO_MULTIPLA &&
-                                                rows.isNotEmpty
-                                            ? [Container()]
-                                            : [])
-                                        ..addAll(controller.selectModel.linhas
-                                            .map((e) {
-                                          if (e.enableLineFilter &&
-                                              !controller.filterControllers
-                                                  .containsKey(e.chave)) {
-                                            if (e.filter != null) {
-                                              if (e.filter is FilterRangeDate) {
-                                                controller.filterControllers[
-                                                        e.chave] =
-                                                    SelecionarRangeDataWidget(
-                                                        SelecionarRangeDataController(),
-                                                        (dateMin, dateMax) {
-                                                  controller
-                                                      .onColumnFilterChanged();
-                                                });
+                    child: SingleChildScrollView(
+                        controller: scrollController,
+                        scrollDirection: Axis.horizontal,
+                        child: Container(
+                          constraints:
+                              BoxConstraints(minWidth: constraint.maxWidth),
+                          child: DataTablePlus(
+                              showCheckboxColumn:
+                                  controller.selectModel.tipoSelecao ==
+                                      SelectAnyPage.TIPO_SELECAO_MULTIPLA,
+                              tableColumnsWidth: controller.selectModel.theme
+                                  ?.tableTheme?.widthTableColumns,
+                              headingRowColor: controller.selectModel.theme
+                                          ?.tableTheme?.headerColor !=
+                                      null
+                                  ? MaterialStateColor.resolveWith((states) {
+                                      return controller.selectModel.theme
+                                          ?.tableTheme?.headerColor;
+                                    })
+                                  : null,
+                              sortColumnIndex: controller.itemSort?.indexLine,
+                              customRows: controller.showLineFilter
+                                  ? [
+                                      CustomRow(
+                                          index: -1,
+                                          cells: <Widget>[]
+                                            ..addAll(controller.selectModel
+                                                            .tipoSelecao ==
+                                                        SelectAnyPage
+                                                            .TIPO_SELECAO_MULTIPLA &&
+                                                    rows.isNotEmpty
+                                                ? [Container()]
+                                                : [])
+                                            ..addAll(controller
+                                                .selectModel.linhas
+                                                .map((e) {
+                                              if (e.enableLineFilter &&
+                                                  !controller.filterControllers
+                                                      .containsKey(e.chave)) {
+                                                if (e.filter != null) {
+                                                  if (e.filter
+                                                      is FilterRangeDate) {
+                                                    controller.filterControllers[
+                                                            e.chave] =
+                                                        SelecionarRangeDataWidget(
+                                                            SelecionarRangeDataController(),
+                                                            (dateMin, dateMax) {
+                                                      controller
+                                                          .onColumnFilterChanged();
+                                                    });
+                                                  }
+                                                } else {
+                                                  controller.filterControllers[
+                                                      e.chave] = Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            left: 8,
+                                                            right: 8,
+                                                            top: 2,
+                                                            bottom: 3),
+                                                    child: TextField(
+                                                      controller:
+                                                          TextEditingController(),
+                                                      decoration: InputDecoration(
+                                                          hintText:
+                                                              '${e.nome ?? e.chave}'),
+                                                      onChanged: (text) {
+                                                        controller
+                                                            .onColumnFilterChanged();
+                                                      },
+                                                    ),
+                                                  );
+                                                }
                                               }
-                                            } else {
-                                              controller.filterControllers[
-                                                  e.chave] = Padding(
-                                                padding: const EdgeInsets.only(
-                                                    left: 8,
-                                                    right: 8,
-                                                    top: 2,
-                                                    bottom: 3),
-                                                child: TextField(
-                                                  controller:
-                                                      TextEditingController(),
-                                                  decoration: InputDecoration(
-                                                      hintText:
-                                                          '${e.nome ?? e.chave}'),
-                                                  onChanged: (text) {
-                                                    controller
-                                                        .onColumnFilterChanged();
-                                                  },
-                                                ),
-                                              );
-                                            }
-                                          }
-                                          return Container(
-                                              height: 48,
-                                              child: controller
-                                                  .filterControllers[e.chave]);
-                                        }).toList()),
-                                      typeCustomRow: TypeCustomRow.ADD)
+                                              return Container(
+                                                  height: 48,
+                                                  child: controller
+                                                          .filterControllers[
+                                                      e.chave]);
+                                            }).toList()),
+                                          typeCustomRow: TypeCustomRow.ADD)
+                                    ]
+                                  : [],
+                              decoration: BoxDecoration(),
+                              sortAscending: controller.itemSort?.typeSort !=
+                                  EnumTypeSort.DESC,
+                              columns: UtilsWidget.generateDataColumn(
+                                  controller.selectModel,
+                                  generateActions: false,
+                                  onSort: (int index, bool sort) {
+                                if (controller
+                                    .selectModel.linhas[index].enableSorting) {
+                                  controller.itemSort = ItemSort(
+                                      typeSort: sort
+                                          ? EnumTypeSort.ASC
+                                          : EnumTypeSort.DESC,
+                                      linha:
+                                          controller.selectModel.linhas[index],
+                                      indexLine: index);
+                                  controller.updateSortCollumn();
+                                }
+                              }),
+                              rows: rows),
+                        )),
+                  );
+                })),
+                if (controller.selectModel.acoes?.isNotEmpty == true)
+                  Container(
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[]
+                          ..addAll(controller.showLineFilter
+                              ? [
+                                  SizedBox(
+                                    height: 48,
+                                    child: IconButton(
+                                      splashRadius: 24,
+                                      onPressed: () {
+                                        controller.clearFilters();
+                                        showSnackMessage(
+                                            context, 'Os filtros foram limpos');
+                                      },
+                                      icon: Icon(Icons.clear),
+                                    ),
+                                  )
                                 ]
-                              : [],
-                          decoration: BoxDecoration(),
-                          sortAscending: controller.itemSort?.typeSort !=
-                              EnumTypeSort.DESC,
-                          columns: UtilsWidget.generateDataColumn(
-                              controller.selectModel,
-                              generateActions: false,
-                              onSort: (int index, bool sort) {
-                            if (controller
-                                .selectModel.linhas[index].enableSorting) {
-                              controller.itemSort = ItemSort(
-                                  typeSort: sort
-                                      ? EnumTypeSort.ASC
-                                      : EnumTypeSort.DESC,
-                                  linha: controller.selectModel.linhas[index],
-                                  indexLine: index);
-                              controller.updateSortCollumn();
+                              : [])
+                          ..addAll(List.generate(rows.length + 1, (index) {
+                            if (index == 0) {
+                              return Column(
+                                children: [
+                                  Container(
+                                    height: 56,
+                                    decoration: BoxDecoration(
+                                        color: controller.selectModel.theme
+                                            ?.tableTheme?.headerColor),
+                                    constraints: BoxConstraints(minWidth: 60),
+                                    width: controller.selectModel.acoes.length *
+                                        50.0,
+                                    alignment: Alignment.center,
+                                    child: Text('Ações',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16,
+                                            color: Colors.white)),
+                                  ),
+                                ],
+                              );
+                            } else {
+                              return Row(
+                                  children:
+                                      controller.selectModel.acoes.map((acao) {
+                                return Container(
+                                  height: 48,
+                                  child: IconButton(
+                                    splashRadius: 24,
+                                    tooltip: acao.descricao,
+                                    icon: acao.icon ??
+                                        Text(acao.descricao ?? 'Ação'),
+                                    onPressed: () {
+                                      /// Tira 1 do index pois o index 0 é o do header
+                                      int newIndex = index - 1;
+                                      UtilsWidget.onAction(
+                                          context,
+                                          subList[newIndex],
+                                          index,
+                                          acao,
+                                          controller.data,
+                                          controller.reloadData,
+                                          controller.fonteDadoAtual);
+                                    },
+                                  ),
+                                );
+                              }).toList());
                             }
-                          }),
-                          rows: rows),
-                    )),
-              );
-            })),
-            if (controller.selectModel.acoes?.isNotEmpty == true)
-              Container(
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[]
-                      ..addAll(controller.showLineFilter
-                          ? [
-                              SizedBox(
-                                height: 48,
-                                child: IconButton(
-                                  splashRadius: 24,
-                                  onPressed: () {
-                                    controller.clearFilters();
-                                    showSnackMessage(
-                                        context, 'Os filtros foram limpos');
-                                  },
-                                  icon: Icon(Icons.clear),
-                                ),
-                              )
-                            ]
-                          : [])
-                      ..addAll(List.generate(rows.length + 1, (index) {
-                        if (index == 0) {
-                          return Column(
-                            children: [
-                              Container(
-                                height: 56,
-                                decoration: BoxDecoration(
-                                    color: controller.selectModel.theme
-                                        ?.tableTheme?.headerColor),
-                                constraints: BoxConstraints(minWidth: 60),
-                                width:
-                                    controller.selectModel.acoes.length * 50.0,
-                                alignment: Alignment.center,
-                                child: Text('Ações',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16,
-                                        color: Colors.white)),
-                              ),
-                            ],
-                          );
-                        } else {
-                          return Row(
-                              children:
-                                  controller.selectModel.acoes.map((acao) {
-                            return Container(
-                              height: 48,
-                              child: IconButton(
-                                splashRadius: 24,
-                                tooltip: acao.descricao,
-                                icon:
-                                    acao.icon ?? Text(acao.descricao ?? 'Ação'),
-                                onPressed: () {
-                                  /// Tira 1 do index pois o index 0 é o do header
-                                  int newIndex = index - 1;
-                                  UtilsWidget.onAction(
-                                      context,
-                                      subList[newIndex],
-                                      index,
-                                      acao,
-                                      controller.data,
-                                      controller.reloadData,
-                                      controller.fonteDadoAtual);
-                                },
-                              ),
-                            );
-                          }).toList());
-                        }
-                      }))),
-              )
-          ]);
+                          }))),
+                  )
+              ]),
+              if (subList.isEmpty)
+                Center(
+                    child: Padding(
+                  padding: const EdgeInsets.all(25),
+                  child: Text(
+                    'Nenhum item encontrado',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                  ),
+                ))
+            ],
+          );
         }),
         Container(
             alignment: Alignment.bottomRight,
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Observer(builder: (_) {
+                if (controller.list.isEmpty) return SizedBox();
                 int total =
                     ((controller.total ?? 0) / controller.quantityItensPage)
                         .ceil();
+
                 return Container(
                   child: Row(
                     mainAxisSize: MainAxisSize.min,

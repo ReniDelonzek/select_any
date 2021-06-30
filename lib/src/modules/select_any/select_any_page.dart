@@ -540,7 +540,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
         : item.value;
 
     if (linha.formatData != null) {
-      valor = linha.formatData.formatData(ObjFormatData(data: valor));
+      valor = linha.formatData.formatData(ObjFormatData(data: valor, map: map));
     } else if (linha.typeData is TDDateTimestamp &&
         linha.personalizacao == null) {
       try {

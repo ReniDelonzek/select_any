@@ -286,9 +286,8 @@ typedef ValorPadrao = String Function(dynamic dados);
 
 class ObjFormatData {
   dynamic data;
-  ObjFormatData({
-    this.data,
-  });
+  Map map;
+  ObjFormatData({this.data, this.map});
 }
 
 abstract class FormatData {

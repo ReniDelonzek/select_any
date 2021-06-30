@@ -170,8 +170,8 @@ abstract class DataSourceAny extends DataSource {
         if (filter is FilterExpCollun) {
           var value = map[filter.line.chave];
           if (filter.line.formatData != null) {
-            value =
-                filter.line.formatData.formatData(ObjFormatData(data: value));
+            value = filter.line.formatData
+                .formatData(ObjFormatData(data: value, map: map));
           }
           if (filterTypeSearch(filter.typeSearch, value, filter.value)) {
             return true;
@@ -186,8 +186,8 @@ abstract class DataSourceAny extends DataSource {
         if (filter is FilterExpCollun) {
           var value = map[filter.line.chave];
           if (filter.line.formatData != null) {
-            value =
-                filter.line.formatData.formatData(ObjFormatData(data: value));
+            value = filter.line.formatData
+                .formatData(ObjFormatData(data: value, map: map));
           }
           if (filterTypeSearch(filter.typeSearch, value, filter.value)) {
             filterAndOk = true;

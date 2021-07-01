@@ -240,7 +240,7 @@ abstract class DataSourceAny extends DataSource {
           if (list.any((element) => element[itemSort.linha.chave] is String)) {
             typeData = TDString();
           } else if (list
-              .every((element) => element[itemSort.linha.chave] is int)) {
+              .every((element) => element[itemSort.linha.chave] is num)) {
             typeData = TDNumber();
           } else if (list
               .every((element) => element[itemSort.linha.chave] is bool)) {

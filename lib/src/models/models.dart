@@ -7,6 +7,7 @@ import 'package:msk_utils/extensions/map.dart';
 import 'package:msk_utils/extensions/string.dart';
 import 'package:msk_utils/models/item_select.dart';
 import 'package:msk_utils/utils/utils_platform.dart';
+import 'package:select_any/src/utils/utils_format.dart';
 
 part 'models.g.dart';
 
@@ -342,6 +343,23 @@ class FormatDataAny extends FormatData {
   @override
   String formatData(ObjFormatData data) {
     return format(data);
+  }
+}
+
+class FormatDataMoney extends FormatData {
+  String locale;
+  String symbol;
+  int maxDecimalDigits;
+
+  FormatDataMoney({this.locale, this.symbol, this.maxDecimalDigits = 2});
+
+  @override
+  String formatData(ObjFormatData data) {
+    try {
+      return UtilsFormat.formatMoney(data.data,
+          maxDecimalDigits: maxDecimalDigits);
+    } catch (error, _) {}
+    return defaultValue;
   }
 }
 

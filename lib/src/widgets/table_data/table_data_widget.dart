@@ -422,43 +422,53 @@ class TableDataWidget extends StatelessWidget {
                     children: [
                       total > 0
                           ? Row(
+                              mainAxisSize: MainAxisSize.min,
                               children: [
-                                Text('Itens por Pag.'),
-                                SizedBox(width: 8),
-                                DropdownButton<int>(
-                                    underline: SizedBox(),
-                                    value: controller.quantityItensPage,
-                                    onChanged: (item) {
-                                      controller.quantityItensPage = item;
+                                Text('Linhas por Pág.'),
+                                SizedBox(width: 16),
+                                SizedBox(
+                                  width: 90,
+                                  height: 36,
+                                  child: DropdownButtonFormField<int>(
+                                      decoration: const InputDecoration(
+                                          border: OutlineInputBorder(),
+                                          contentPadding: const EdgeInsets.only(
+                                              left: 16, right: 16)),
+                                      value: controller.quantityItensPage,
+                                      onChanged: (item) {
+                                        controller.quantityItensPage = item;
 
-                                      /// Caso o total de paginas seja menor do que a pagina atuali
-                                      if (((controller.total ?? 0) /
+                                        /// Caso o total de paginas seja menor do que a pagina atuali
+                                        if (((controller.total ?? 0) /
+                                                    controller
+                                                        .quantityItensPage)
+                                                .ceil() <
+                                            controller.page) {
+                                          /// Seta a ultima pagina como pagina atual
+                                          controller
+                                              .page = ((controller.total ?? 0) /
                                                   controller.quantityItensPage)
-                                              .ceil() <
-                                          controller.page) {
-                                        /// Seta a ultima pagina como pagina atual
-                                        controller.page = ((controller.total ??
-                                                    0) /
-                                                controller.quantityItensPage)
-                                            .ceil();
-                                      }
-                                      controller.setCorretDataSource();
+                                              .ceil();
+                                        }
+                                        controller.setCorretDataSource();
 
-                                      /// Salva isso no banco
-                                      UtilsHive.getInstance()
-                                          .getBox('select_utils')
-                                          .then((value) {
-                                        value.put('quantityItensPage', item);
-                                      });
-                                    },
-                                    items: controller.getNumberItemsPerPage
-                                        .map((e) => DropdownMenuItem(
-                                            value: e, child: Text('$e')))
-                                        .toList()),
+                                        /// Salva isso no banco
+                                        UtilsHive.getInstance()
+                                            .getBox('select_utils')
+                                            .then((value) {
+                                          value.put('quantityItensPage', item);
+                                        });
+                                      },
+                                      items: controller.getNumberItemsPerPage
+                                          .map((e) => DropdownMenuItem(
+                                              value: e, child: Text('$e')))
+                                          .toList()),
+                                ),
                                 SizedBox(width: 16)
                               ],
                             )
                           : SizedBox(),
+                      SizedBox(width: 16),
                       Row(
                         children: [
                           total > 0
@@ -479,10 +489,21 @@ class TableDataWidget extends StatelessWidget {
                               'de ${((controller.total ?? 0) / controller.quantityItensPage).ceil()}'),
                         ],
                       ),
+                      SizedBox(width: 16),
                       if (total > 1)
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
+                            IconButton(
+                                splashRadius: 24,
+                                iconSize: 34,
+                                icon: Icon(Icons.first_page),
+                                onPressed: controller.page > 1
+                                    ? () {
+                                        controller.page = 0;
+                                        controller.setCorretDataSource();
+                                      }
+                                    : null),
                             IconButton(
                                 splashRadius: 24,
                                 iconSize: 36,
@@ -500,6 +521,16 @@ class TableDataWidget extends StatelessWidget {
                                 onPressed: controller.page < total
                                     ? () {
                                         controller.page = controller.page + 1;
+                                        controller.setCorretDataSource();
+                                      }
+                                    : null),
+                            IconButton(
+                                splashRadius: 24,
+                                iconSize: 34,
+                                icon: Icon(Icons.last_page),
+                                onPressed: controller.page < total
+                                    ? () {
+                                        controller.page = total;
                                         controller.setCorretDataSource();
                                       }
                                     : null)

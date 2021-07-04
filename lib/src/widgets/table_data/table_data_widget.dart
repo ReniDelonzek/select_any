@@ -468,28 +468,45 @@ class TableDataWidget extends StatelessWidget {
                               ],
                             )
                           : SizedBox(),
-                      SizedBox(width: 16),
-                      Row(
-                        children: [
-                          total > 0
-                              ? DropdownButton<int>(
-                                  underline: SizedBox(),
-                                  value: controller.page,
-                                  onChanged: (item) {
-                                    controller.page = item;
-                                    controller.setCorretDataSource();
-                                  },
-                                  items: List<DropdownMenuItem<int>>.generate(
-                                      total,
-                                      (index) => DropdownMenuItem(
-                                          value: index + 1,
-                                          child: Text((index + 1).toString()))))
-                              : SizedBox(),
-                          Text(
-                              'de ${((controller.total ?? 0) / controller.quantityItensPage).ceil()}'),
-                        ],
+                      SizedBox(width: 24),
+                      Flexible(
+                        fit: FlexFit.loose,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            total > 0
+                                ? SizedBox(
+                                    /// TODO Implementar abordagem com Flexiveis
+                                    width: 30 +
+                                        ((controller.total.toString().length) *
+                                                12)
+                                            .toDouble(),
+                                    child: DropdownButtonFormField<int>(
+                                        decoration: const InputDecoration(
+                                            border: InputBorder.none,
+                                            contentPadding:
+                                                const EdgeInsets.all(0)),
+                                        icon: SizedBox(),
+                                        style: TextStyle(fontSize: 14),
+                                        value: controller.page,
+                                        onChanged: (item) {
+                                          controller.page = item;
+                                          controller.setCorretDataSource();
+                                        },
+                                        items: List<
+                                                DropdownMenuItem<int>>.generate(
+                                            total,
+                                            (index) => DropdownMenuItem(
+                                                value: index + 1,
+                                                child: Text(
+                                                    '${(controller.quantityItensPage * index) + 1}-${controller.quantityItensPage * (index + 1)}')))),
+                                  )
+                                : SizedBox(),
+                            Text('de ${(controller.total ?? 0)}'),
+                          ],
+                        ),
                       ),
-                      SizedBox(width: 16),
+                      SizedBox(width: 24),
                       if (total > 1)
                         Row(
                           mainAxisSize: MainAxisSize.min,
@@ -500,7 +517,7 @@ class TableDataWidget extends StatelessWidget {
                                 icon: Icon(Icons.first_page),
                                 onPressed: controller.page > 1
                                     ? () {
-                                        controller.page = 0;
+                                        controller.page = 1;
                                         controller.setCorretDataSource();
                                       }
                                     : null),

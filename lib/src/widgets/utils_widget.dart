@@ -112,7 +112,7 @@ class UtilsWidget {
   }
 
   static Widget _getText(String value, Function onTap, Linha linha) {
-    if ((linha?.maxLines ?? 1) > 2 || linha.showTextInTableScroll == true) {
+    if ((linha?.maxLines ?? 1) > 3 || linha.showTextInTableScroll == true) {
       return SingleChildScrollView(
           child: Padding(
         padding: const EdgeInsets.only(top: 2, bottom: 2),

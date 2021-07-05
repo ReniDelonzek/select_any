@@ -374,15 +374,18 @@ class _MySnackBarState extends State<MySnackBar> {
         const double horizontalMargin = 15.0;
         snackBar = Row(
           children: [
-            Padding(
-                padding: widget.margin ??
-                    const EdgeInsets.fromLTRB(
-                      horizontalMargin,
-                      topMargin,
-                      horizontalMargin,
-                      bottomMargin,
-                    ),
-                child: snackBar)
+            Flexible(
+              fit: FlexFit.loose,
+              child: Padding(
+                  padding: widget.margin ??
+                      const EdgeInsets.fromLTRB(
+                        horizontalMargin,
+                        topMargin,
+                        horizontalMargin,
+                        bottomMargin,
+                      ),
+                  child: snackBar),
+            )
           ],
           mainAxisAlignment: widget.placement == SnackPlacement.CENTER
               ? MainAxisAlignment.center

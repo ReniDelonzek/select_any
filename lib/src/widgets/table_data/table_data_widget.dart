@@ -487,7 +487,12 @@ class TableDataWidget extends StatelessWidget {
                                             contentPadding:
                                                 const EdgeInsets.all(0)),
                                         icon: SizedBox(),
-                                        style: TextStyle(fontSize: 14),
+                                        style: TextStyle(
+                                            fontSize: 14,
+                                            color: Theme.of(context)
+                                                .textTheme
+                                                .bodyText1
+                                                .color),
                                         value: controller.page,
                                         onChanged: (item) {
                                           controller.page = item;

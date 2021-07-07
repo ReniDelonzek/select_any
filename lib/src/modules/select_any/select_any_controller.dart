@@ -286,21 +286,21 @@ abstract class _SelectAnyBase with Store {
     /// Não recarrega os dados caso precise de confirmação
     if (!confirmarParaCarregarDados) {
       list.clear();
-      setCorretDataSource(offset: typeDiplay == 1 ? -1 : 0, refresh: refresh);
+      setCorretDataSource(offset: getOffSet, refresh: refresh);
     }
   }
 
   updateSortCollumn() {
     list.clear();
-    setCorretDataSource(
-        offset: typeDiplay == 1 ? -1 : (page - 1) * quantityItensPage,
-        refresh: false);
+    setCorretDataSource(offset: getOffSet, refresh: false);
   }
 
   removeItem(int id) {
     list.removeWhere((element) => element.id == id);
     --total;
   }
+
+  int get getOffSet => typeDiplay == 1 ? -1 : (page - 1) * quantityItensPage;
 
   export() {
     fonteDadoAtual.exportData(selectModel);

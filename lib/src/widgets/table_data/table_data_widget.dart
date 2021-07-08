@@ -143,71 +143,65 @@ class TableDataWidget extends StatelessWidget {
                     }));
           }
 
-          /// Codigo para armazenar em variáveis partes do conteúdo
-          if (controller.loading) {
-            return Center(
-                child: Padding(
-                    padding: const EdgeInsets.all(25),
-                    child: Column(
-                      children: [
-                        CircularProgressIndicator(),
-                        SizedBox(height: 16),
-                        Text('Carregando dados')
-                      ],
-                    )));
-          }
           if (controller.error != null) {
             return FalhaWidget('Houve uma falha ao carregar os dados',
                 error: controller.error);
           }
-          int start =
-              (controller.page - 1).abs() * controller.quantityItensPage;
-          int end = controller.page * controller.quantityItensPage;
 
-          List<ItemSelect> subList = controller.list
-              .where((element) =>
-                  element.position >= start && element.position <= end)
-              .toList();
+          /// Codigo para armazenar em variáveis partes do conteúdo
 
           List<DataRow> rows = [];
-          int i = 0;
-          for (var element in subList) {
-            rows.add(UtilsWidget.generateDataRow(
-                controller.selectModel, i, element, context, controller.data,
-                (ItemSelect itemSelect, bool b) {
-              if (controller.selectModel.tipoSelecao ==
-                  SelectAnyPage.TIPO_SELECAO_SIMPLES) {
-                if (Navigator?.maybeOf(context)?.canPop() == true) {
-                  Navigator?.maybeOf(context)?.pop(itemSelect.object);
+          List<ItemSelect> subList = [];
+          if (!controller.loading) {
+            int start =
+                (controller.page - 1).abs() * controller.quantityItensPage;
+            int end = controller.page * controller.quantityItensPage;
+
+            subList = controller.list
+                .where((element) =>
+                    element.position >= start && element.position <= end)
+                .toList();
+
+            int i = 0;
+            for (var element in subList) {
+              rows.add(UtilsWidget.generateDataRow(
+                  controller.selectModel, i, element, context, controller.data,
+                  (ItemSelect itemSelect, bool b) {
+                if (controller.selectModel.tipoSelecao ==
+                    SelectAnyPage.TIPO_SELECAO_SIMPLES) {
+                  if (Navigator?.maybeOf(context)?.canPop() == true) {
+                    Navigator?.maybeOf(context)?.pop(itemSelect.object);
+                  }
                 }
-              }
-              if (controller.selectModel.tipoSelecao ==
-                  SelectAnyPage.TIPO_SELECAO_ACAO) {
-                /// Gambi para evitar problemas ao usuário clicar em selecionar todos
-                if ((controller.lastClick + 500) <
-                    (DateTime.now().millisecondsSinceEpoch)) {
-                  controller.lastClick = DateTime.now().millisecondsSinceEpoch;
-                  UtilsWidget.tratarOnTap(
-                      context,
-                      itemSelect,
-                      i,
-                      controller.selectModel,
-                      controller.data,
-                      controller.reloadData,
-                      controller.fonteDadoAtual);
-                }
-              } else {
-                if (b) {
-                  controller.selectedList.add(itemSelect);
+                if (controller.selectModel.tipoSelecao ==
+                    SelectAnyPage.TIPO_SELECAO_ACAO) {
+                  /// Gambi para evitar problemas ao usuário clicar em selecionar todos
+                  if ((controller.lastClick + 500) <
+                      (DateTime.now().millisecondsSinceEpoch)) {
+                    controller.lastClick =
+                        DateTime.now().millisecondsSinceEpoch;
+                    UtilsWidget.tratarOnTap(
+                        context,
+                        itemSelect,
+                        i,
+                        controller.selectModel,
+                        controller.data,
+                        controller.reloadData,
+                        controller.fonteDadoAtual);
+                  }
                 } else {
-                  controller.selectedList
-                      .removeWhere((element) => element.id == itemSelect.id);
+                  if (b) {
+                    controller.selectedList.add(itemSelect);
+                  } else {
+                    controller.selectedList
+                        .removeWhere((element) => element.id == itemSelect.id);
+                  }
+                  itemSelect.isSelected = b;
                 }
-                itemSelect.isSelected = b;
-              }
-            }, controller.reloadData, 2, controller.fonteDadoAtual,
-                generateActions: false));
-            i++;
+              }, controller.reloadData, 2, controller.fonteDadoAtual,
+                  generateActions: false));
+              i++;
+            }
           }
           ScrollController scrollController = ScrollController();
           return Column(
@@ -394,7 +388,8 @@ class TableDataWidget extends StatelessWidget {
                           }))),
                   )
               ]),
-              if (subList.isEmpty)
+              if (controller.loading) LinearProgressIndicator(),
+              if (!controller.loading && subList.isEmpty)
                 Center(
                     child: Padding(
                   padding: const EdgeInsets.all(25),

@@ -334,3 +334,17 @@ abstract class DataSourceAny extends DataSource {
     }
   }
 }
+
+typedef FontDataAnyInterface = Future<List<Map>> Function(dynamic data);
+
+class FontDataAny extends DataSourceAny {
+  FontDataAnyInterface fontData;
+  FontDataAny(this.fontData);
+
+  @override
+  Future fetchData(int limit, int offset, SelectModel selectModel,
+      {Map data}) async {
+    listAll = await fontData(data);
+    return;
+  }
+}

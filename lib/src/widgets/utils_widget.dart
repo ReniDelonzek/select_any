@@ -63,6 +63,7 @@ class UtilsWidget {
       {bool generateActions = true, Function(int, bool) onSort}) {
     return selectModel.linhas
         .map((e) => DataColumn(
+            tooltip: e.tableTooltip,
             onSort: e.enableSorting ? onSort : null,
             label: Text(e.nome ?? e.chave.upperCaseFirstLower(),
                 style: TextStyle(

@@ -169,6 +169,8 @@ class Linha {
   /// Show sizedbox when empty row
   bool showSizedBoxWhenEmpty;
 
+  String tableTooltip;
+
   Linha(this.chave,
       {this.color,
       this.involucro,
@@ -185,7 +187,8 @@ class Linha {
       this.enableSorting = true,
       this.showTextInTableScroll,
       this.enableLineFilter = true,
-      this.showSizedBoxWhenEmpty = false})
+      this.showSizedBoxWhenEmpty = false,
+      this.tableTooltip})
       : assert(chave != null) {
     if (typeData is TDDateTimestamp && filter == null) {
       filter = FilterRangeDate();

@@ -75,22 +75,11 @@ class TableDataWidget extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        IconButton(
-                            splashRadius: 24,
-                            tooltip: 'Opções de pesquisa',
-                            onPressed: () async {
-                              var newType =
-                                  await UtilsWidget.showDialogChangeTypeSearch(
-                                      context, controller.typeSearch);
-                              controller.updateTypeSearch(newType);
-                            },
-                            icon: Icon(Icons.saved_search)),
                         Observer(builder: (_) {
                           if (!controller.showSearch) {
                             return SizedBox();
                           }
                           return Row(mainAxisSize: MainAxisSize.min, children: [
-                            SizedBox(width: 8),
                             Container(
                                 width: 300,
                                 child: TextField(
@@ -102,7 +91,17 @@ class TableDataWidget extends StatelessWidget {
                                     controller.filtroPesquisaModificado();
                                   },
                                 )),
-                            Icon(Icons.search),
+                            SizedBox(width: 8),
+                            IconButton(
+                                splashRadius: 24,
+                                tooltip: 'Opções de pesquisa',
+                                onPressed: () async {
+                                  var newType = await UtilsWidget
+                                      .showDialogChangeTypeSearch(
+                                          context, controller.typeSearch);
+                                  controller.updateTypeSearch(newType);
+                                },
+                                icon: Icon(Icons.saved_search)),
                           ]);
                         }),
 

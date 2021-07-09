@@ -15,7 +15,7 @@ class UtilsWidget {
       ItemSelect itemSelect,
       BuildContext context,
       Map data,
-      Function(ItemSelect, bool) onSelected,
+      Function(ItemSelect, bool, int index) onSelected,
       Function reloadData,
       int typeScreen,
       DataSource dataSource,
@@ -27,7 +27,7 @@ class UtilsWidget {
           mapEntry,
           itemSelect.object is Map ? itemSelect.object : itemSelect.strings,
           typeScreen, () {
-        onSelected(itemSelect, !(itemSelect.isSelected ?? false));
+        onSelected(itemSelect, !(itemSelect.isSelected ?? false), index);
       })));
     }
     if (generateActions && selectModel.acoes?.isNotEmpty == true) {
@@ -53,7 +53,7 @@ class UtilsWidget {
             //             SelectAnyPage.TIPO_SELECAO_SIMPLES ||
             //         selectModel.tipoSelecao == SelectAnyPage.TIPO_SELECAO_MULTIPLA
             (b) {
-          onSelected(itemSelect, b);
+          onSelected(itemSelect, b, index);
         },
         selected: itemSelect.isSelected ?? false);
     return dataRow;

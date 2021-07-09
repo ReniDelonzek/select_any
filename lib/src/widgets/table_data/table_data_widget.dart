@@ -165,7 +165,7 @@ class TableDataWidget extends StatelessWidget {
             for (var element in subList) {
               rows.add(UtilsWidget.generateDataRow(
                   controller.selectModel, i, element, context, controller.data,
-                  (ItemSelect itemSelect, bool b) {
+                  (ItemSelect itemSelect, bool b, int index) {
                 if (controller.selectModel.tipoSelecao ==
                     SelectAnyPage.TIPO_SELECAO_SIMPLES) {
                   if (Navigator?.maybeOf(context)?.canPop() == true) {
@@ -182,7 +182,7 @@ class TableDataWidget extends StatelessWidget {
                     UtilsWidget.tratarOnTap(
                         context,
                         itemSelect,
-                        i,
+                        index,
                         controller.selectModel,
                         controller.data,
                         controller.reloadData,

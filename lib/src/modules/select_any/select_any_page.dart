@@ -228,8 +228,11 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
                     child: Observer(
                       builder: (_) => (widget.controller.typeDiplay == 2)
                           ? SizedBox()
-                          : Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
+                          : Wrap(
+                              crossAxisAlignment: WrapCrossAlignment.center,
+                              spacing: 8,
+                              direction: Axis.horizontal,
+                              runAlignment: WrapAlignment.end,
                               children: _getFloatingActionButtons(),
                             ),
                     ),

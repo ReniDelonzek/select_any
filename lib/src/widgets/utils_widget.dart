@@ -35,6 +35,7 @@ class UtilsWidget {
       for (Acao acao in selectModel.acoes) {
         widgets.add(IconButton(
           splashRadius: 24,
+          color: selectModel.theme?.defaultIconActionColor,
           tooltip: acao.descricao,
           icon: acao.icon ?? Text(acao.descricao ?? 'Ação'),
           onPressed: () {
@@ -66,19 +67,21 @@ class UtilsWidget {
             tooltip: e.tableTooltip,
             onSort: e.enableSorting ? onSort : null,
             label: Text(e.nome ?? e.chave.upperCaseFirstLower(),
-                style: TextStyle(
-                    fontSize: 16,
-                    height: 0.85,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white))))
+                style: selectModel.theme?.tableTheme?.headerTextStyle ??
+                    TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white))))
         .toList()
           ..addAll(generateActions && selectModel.acoes?.isNotEmpty == true
               ? [
                   DataColumn(
                       label: Text('Ações',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white)))
+                          style:
+                              selectModel.theme?.tableTheme?.headerTextStyle ??
+                                  TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white)))
                 ]
               : []);
   }
@@ -96,35 +99,41 @@ class UtilsWidget {
             linha.formatData
                 .formatData(ObjFormatData(data: item.value, map: map)),
             onTap,
-            linha);
+            linha,
+            selectModel);
       }
       if (item.value?.toString()?.isNullOrBlank != false) {
-        return _getText(linha.valorPadrao?.call(map) ?? '', onTap, linha);
+        return _getText(
+            linha.valorPadrao?.call(map) ?? '', onTap, linha, selectModel);
       }
       if (linha.typeData is TDDateTimestamp) {
         return _getText(
             DateTime.fromMillisecondsSinceEpoch(item.value)
                 .string((linha.typeData as TDDateTimestamp).outputFormat),
             onTap,
-            linha);
+            linha,
+            selectModel);
       }
-      return _getText(item.value?.toString(), onTap, linha);
+      return _getText(item.value?.toString(), onTap, linha, selectModel);
     }
   }
 
-  static Widget _getText(String value, Function onTap, Linha linha) {
+  static Widget _getText(
+      String value, Function onTap, Linha linha, SelectModel selectModel) {
     if ((linha?.maxLines ?? 1) > 3 || linha.showTextInTableScroll == true) {
       return SingleChildScrollView(
           child: Padding(
         padding: const EdgeInsets.only(top: 2, bottom: 2),
-        child: _selectableText(value, onTap, linha),
+        child: _selectableText(value, onTap, linha, selectModel),
       ));
     } else
-      return _selectableText(value, onTap, linha);
+      return _selectableText(value, onTap, linha, selectModel);
   }
 
-  static Widget _selectableText(String value, Function onTap, Linha linha) {
+  static Widget _selectableText(
+      String value, Function onTap, Linha linha, SelectModel selectModel) {
     return SelectableText(value ?? '',
+        style: selectModel?.theme?.defaultTextStyle,
         maxLines: linha?.maxLines,
         minLines: linha?.minLines,
         onTap: onTap,

@@ -365,6 +365,8 @@ class TableDataWidget extends StatelessWidget {
                                   height: 48,
                                   child: IconButton(
                                     splashRadius: 24,
+                                    color: controller.selectModel.theme
+                                        ?.defaultIconActionColor,
                                     tooltip: acao.descricao,
                                     icon: acao.icon ??
                                         Text(acao.descricao ?? 'Ação'),
@@ -418,7 +420,9 @@ class TableDataWidget extends StatelessWidget {
                           ? Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Text('Linhas por Pág.'),
+                                Text('Linhas por Pág.',
+                                    style: controller
+                                        .selectModel.theme?.defaultTextStyle),
                                 SizedBox(width: 16),
                                 SizedBox(
                                   width: 90,
@@ -455,7 +459,12 @@ class TableDataWidget extends StatelessWidget {
                                       },
                                       items: controller.getNumberItemsPerPage
                                           .map((e) => DropdownMenuItem(
-                                              value: e, child: Text('$e')))
+                                              value: e,
+                                              child: Text('$e',
+                                                  style: controller
+                                                      .selectModel
+                                                      .theme
+                                                      ?.defaultTextStyle)))
                                           .toList()),
                                 ),
                                 SizedBox(width: 16)
@@ -481,12 +490,14 @@ class TableDataWidget extends StatelessWidget {
                                             contentPadding:
                                                 const EdgeInsets.all(0)),
                                         icon: SizedBox(),
-                                        style: TextStyle(
-                                            fontSize: 14,
-                                            color: Theme.of(context)
-                                                .textTheme
-                                                .bodyText1
-                                                .color),
+                                        style: controller.selectModel.theme
+                                                ?.defaultTextStyle ??
+                                            TextStyle(
+                                                fontSize: 14,
+                                                color: Theme.of(context)
+                                                    .textTheme
+                                                    .bodyText1
+                                                    .color),
                                         value: controller.page,
                                         onChanged: (item) {
                                           controller.page = item;
@@ -498,10 +509,16 @@ class TableDataWidget extends StatelessWidget {
                                             (index) => DropdownMenuItem(
                                                 value: index + 1,
                                                 child: Text(
-                                                    '${(controller.quantityItensPage * index) + 1}-${controller.quantityItensPage * (index + 1)}')))),
+                                                    '${(controller.quantityItensPage * index) + 1}-${controller.quantityItensPage * (index + 1)}',
+                                                    style: controller
+                                                        .selectModel
+                                                        .theme
+                                                        ?.defaultTextStyle)))),
                                   )
                                 : SizedBox(),
-                            Text('de ${(controller.total ?? 0)}'),
+                            Text('de ${(controller.total ?? 0)}',
+                                style: controller
+                                    .selectModel.theme?.defaultTextStyle),
                           ],
                         ),
                       ),
@@ -514,6 +531,8 @@ class TableDataWidget extends StatelessWidget {
                                 splashRadius: 24,
                                 iconSize: 34,
                                 icon: Icon(Icons.first_page),
+                                color: controller.selectModel.theme?.tableTheme
+                                    ?.bottomIconsColor,
                                 onPressed: controller.page > 1
                                     ? () {
                                         controller.page = 1;
@@ -524,6 +543,8 @@ class TableDataWidget extends StatelessWidget {
                                 splashRadius: 24,
                                 iconSize: 36,
                                 icon: Icon(Icons.keyboard_arrow_left_rounded),
+                                color: controller.selectModel.theme?.tableTheme
+                                    ?.bottomIconsColor,
                                 onPressed: controller.page > 1
                                     ? () {
                                         controller.page = controller.page - 1;
@@ -534,6 +555,8 @@ class TableDataWidget extends StatelessWidget {
                                 splashRadius: 24,
                                 iconSize: 36,
                                 icon: Icon(Icons.keyboard_arrow_right_rounded),
+                                color: controller.selectModel.theme?.tableTheme
+                                    ?.bottomIconsColor,
                                 onPressed: controller.page < total
                                     ? () {
                                         controller.page = controller.page + 1;
@@ -543,6 +566,8 @@ class TableDataWidget extends StatelessWidget {
                             IconButton(
                                 splashRadius: 24,
                                 iconSize: 34,
+                                color: controller.selectModel.theme?.tableTheme
+                                    ?.bottomIconsColor,
                                 icon: Icon(Icons.last_page),
                                 onPressed: controller.page < total
                                     ? () {

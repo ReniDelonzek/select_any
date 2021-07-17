@@ -102,12 +102,18 @@ class SelectModelTheme {
 
   final ButtonsPosition buttonsPosition;
 
+  final TextStyle defaultTextStyle;
+
+  final Color defaultIconActionColor;
+
   const SelectModelTheme(
       {this.tableTheme,
       this.centerTitle = true,
       this.appBarBackgroundColor,
       this.backgroundColor,
-      this.buttonsPosition = ButtonsPosition.IN_TABLE_AND_BOTTOM});
+      this.buttonsPosition = ButtonsPosition.IN_TABLE_AND_BOTTOM,
+      this.defaultTextStyle,
+      this.defaultIconActionColor});
 }
 
 class SelectModelThemeTable {
@@ -120,13 +126,19 @@ class SelectModelThemeTable {
   /// Custom width column
   final Map<int, TableColumnWidth> widthTableColumns;
 
+  final TextStyle headerTextStyle;
+
+  final Color bottomIconsColor;
+
   /// Table padding
   final EdgeInsetsGeometry tablePadding;
   const SelectModelThemeTable(
       {this.headerColor = const Color(0xFF00823A),
       this.showTableInCard = true,
       this.widthTableColumns,
-      this.tablePadding = const EdgeInsets.only(left: 16, right: 16)})
+      this.tablePadding = const EdgeInsets.only(left: 16, right: 16),
+      this.headerTextStyle,
+      this.bottomIconsColor})
       : assert(showTableInCard != null);
 }
 

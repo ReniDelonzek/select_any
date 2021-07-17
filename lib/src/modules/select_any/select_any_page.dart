@@ -182,21 +182,28 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
                     actions: [
                       Observer(builder: (_) {
                         if (widget.controller.typeDiplay == 1) {
-                          return Row(children: [
-                            IconButton(
+                          return Container(
+                            padding: widget.controller.selectModel.theme
+                                ?.paddingAppBarActions,
+                            child: Row(children: [
+                              IconButton(
+                                  splashRadius: 24,
+                                  onPressed: () {
+                                    showDialogSorts(context);
+                                  },
+                                  icon: Icon(Icons.sort)),
+                              IconButton(
                                 splashRadius: 24,
-                                onPressed: () {
-                                  showDialogSorts(context);
-                                },
-                                icon: Icon(Icons.sort)),
-                            IconButton(
-                              splashRadius: 24,
-                              icon: widget.controller.searchIcon,
-                              onPressed: _searchPressed,
-                            )
-                          ]);
+                                icon: widget.controller.searchIcon,
+                                onPressed: _searchPressed,
+                              )
+                            ]),
+                          );
                         } else {
-                          return Row(children: _buildIconButtons());
+                          return Container(
+                              padding: widget.controller.selectModel.theme
+                                  ?.paddingAppBarActions,
+                              child: Row(children: _buildIconButtons()));
                         }
                       })
                     ],
@@ -266,16 +273,18 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
                 splashRadius: 24,
                 icon: e.icon ?? Icon(Icons.add),
                 tooltip: e.descricao,
-                onPressed: () {
-                  UtilsWidget.onAction(
-                      context,
-                      null,
-                      null,
-                      e,
-                      widget.controller.data,
-                      widget.controller.reloadData,
-                      widget.controller.fonteDadoAtual);
-                },
+                onPressed: e.enabled
+                    ? () {
+                        UtilsWidget.onAction(
+                            context,
+                            null,
+                            null,
+                            e,
+                            widget.controller.data,
+                            widget.controller.reloadData,
+                            widget.controller.fonteDadoAtual);
+                      }
+                    : null,
               ))
           .toList());
     }
@@ -561,13 +570,16 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
             data: map, typeScreen: widget.controller.typeDiplay));
       }
       return Text(linha.involucro.replaceAll('???', valor?.toString() ?? ''),
-          style: linha.estiloTexto);
+          style: linha.estiloTexto ??
+              widget.controller.selectModel.theme.defaultTextStyle);
     } else {
       if ((valor == null || valor.toString().isEmpty) &&
           linha.showSizedBoxWhenEmpty == true) {
         return SizedBox();
       }
-      return Text(valor?.toString(), style: linha.estiloTexto);
+      return Text(valor?.toString(),
+          style: linha.estiloTexto ??
+              widget.controller.selectModel.theme.defaultTextStyle);
     }
   }
 

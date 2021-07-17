@@ -106,6 +106,8 @@ class SelectModelTheme {
 
   final Color defaultIconActionColor;
 
+  final EdgeInsets paddingAppBarActions;
+
   const SelectModelTheme(
       {this.tableTheme,
       this.centerTitle = true,
@@ -113,7 +115,8 @@ class SelectModelTheme {
       this.backgroundColor,
       this.buttonsPosition = ButtonsPosition.IN_TABLE_AND_BOTTOM,
       this.defaultTextStyle,
-      this.defaultIconActionColor});
+      this.defaultIconActionColor,
+      this.paddingAppBarActions});
 }
 
 class SelectModelThemeTable {
@@ -597,6 +600,7 @@ class Acao {
 
   /// Indica se a tela deve ser fechada ou não
   bool fecharTela;
+  bool enabled;
 
   Acao(
       {this.descricao,
@@ -607,7 +611,13 @@ class Acao {
       this.icon,
       this.page,
       this.fecharTela = false,
-      this.funcaoAtt});
+      this.funcaoAtt,
+      this.enabled}) {
+    if (enabled == null) {
+      enabled =
+          funcao != null || funcaoAtt != null || page != null || route != null;
+    }
+  }
 }
 
 typedef Funcao = void Function(DataFunction);

@@ -101,7 +101,9 @@ class TableDataWidget extends StatelessWidget {
                                           context, controller.typeSearch);
                                   controller.updateTypeSearch(newType);
                                 },
-                                icon: Icon(Icons.saved_search)),
+                                icon: Icon(
+                                  Icons.saved_search,
+                                )),
                           ]);
                         }),
 
@@ -350,10 +352,12 @@ class TableDataWidget extends StatelessWidget {
                                         50.0,
                                     alignment: Alignment.center,
                                     child: Text('Ações',
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 16,
-                                            color: Colors.white)),
+                                        style: controller.selectModel.theme
+                                                ?.tableTheme?.headerTextStyle ??
+                                            TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16,
+                                                color: Colors.white)),
                                   ),
                                 ],
                               );

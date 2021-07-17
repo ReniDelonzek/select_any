@@ -133,7 +133,7 @@ class UtilsWidget {
   static Widget _selectableText(
       String value, Function onTap, Linha linha, SelectModel selectModel) {
     return SelectableText(value ?? '',
-        style: selectModel?.theme?.defaultTextStyle,
+        style: linha.estiloTexto ?? selectModel?.theme?.defaultTextStyle,
         maxLines: linha?.maxLines,
         minLines: linha?.minLines,
         onTap: onTap,

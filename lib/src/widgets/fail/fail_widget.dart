@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:msk_utils/utils/utils_platform.dart';
 
-class FalhaWidget extends StatelessWidget {
-  final String mensagem;
+class FailWidget extends StatelessWidget {
+  final String message;
   final Object error;
 
-  FalhaWidget(this.mensagem, {this.error});
+  FailWidget(this.message, {this.error});
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +29,7 @@ class FalhaWidget extends StatelessWidget {
             padding: const EdgeInsets.only(left: 16, right: 16),
             child: Text(UtilsPlatform.isDebug && error != null
                 ? error.toString()
-                : mensagem),
+                : message),
           )
         ],
       ),

@@ -5,10 +5,9 @@ import 'package:msk_utils/models/item_select.dart';
 import 'package:msk_utils/utils/utils_hive.dart';
 import 'package:select_any/src/models/models.dart';
 import 'package:select_any/src/modules/select_any/select_any_controller.dart';
-import 'package:select_any/src/modules/select_any/select_any_page.dart';
-import 'package:select_any/src/widgets/falha/falha_widget.dart';
-import 'package:select_any/src/widgets/selecionar_range_data/selecionar_range_data_controller.dart';
-import 'package:select_any/src/widgets/selecionar_range_data/selecionar_range_data_widget.dart';
+import 'package:select_any/src/widgets/fail/fail_widget.dart';
+import 'package:select_any/src/widgets/select_range_date/select_range_date_controller.dart';
+import 'package:select_any/src/widgets/select_range_date/select_range_date_widget.dart';
 import 'package:select_any/src/widgets/utils_widget.dart';
 
 class TableDataWidget extends StatelessWidget {
@@ -23,7 +22,7 @@ class TableDataWidget extends StatelessWidget {
     }
 
     if (carregarDados) {
-      controller.fonteDadoAtual = selectModel.fonteDados;
+      controller.actualDataSource = selectModel.dataSource;
       controller.setDataSource();
     }
   }
@@ -41,17 +40,17 @@ class TableDataWidget extends StatelessWidget {
 
   Widget _buildContent(BuildContext context) {
     List<Widget> buttons = [];
-    if (controller.selectModel.botoes != null &&
+    if (controller.selectModel.buttons != null &&
         controller.selectModel.theme?.buttonsPosition ==
             ButtonsPosition.IN_TABLE_AND_BOTTOM) {
-      buttons.addAll(controller.selectModel.botoes
+      buttons.addAll(controller.selectModel.buttons
           .map((e) => IconButton(
                 splashRadius: 24,
                 icon: e.icon ?? Icon(Icons.add),
-                tooltip: e.descricao,
+                tooltip: e.description,
                 onPressed: () {
                   UtilsWidget.onAction(context, null, null, e, controller.data,
-                      controller.reloadData, controller.fonteDadoAtual);
+                      controller.reloadData, controller.actualDataSource);
                 },
               ))
           .toList());
@@ -108,7 +107,7 @@ class TableDataWidget extends StatelessWidget {
                         }),
 
                         /// fonteDadoAtual pode ser null caso o carregarDados seja false
-                        if (controller.fonteDadoAtual?.allowExport == true)
+                        if (controller.actualDataSource?.allowExport == true)
                           Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
@@ -129,7 +128,7 @@ class TableDataWidget extends StatelessWidget {
           ),
         ),
         Observer(builder: (_) {
-          if (controller.confirmarParaCarregarDados) {
+          if (controller.confirmToLoadData) {
             return Center(
                 child: TextButton.icon(
                     icon: Icon(Icons.sync),
@@ -137,15 +136,15 @@ class TableDataWidget extends StatelessWidget {
                     onPressed: () {
                       /// Aqui é vantagem usar o setState, pois toda a tela precisa ser recarregada
 
-                      controller.confirmarParaCarregarDados = false;
-                      controller.fonteDadoAtual =
-                          controller.selectModel.fonteDados;
+                      controller.confirmToLoadData = false;
+                      controller.actualDataSource =
+                          controller.selectModel.dataSource;
                       controller.setDataSource();
                     }));
           }
 
           if (controller.error != null) {
-            return FalhaWidget('Houve uma falha ao carregar os dados',
+            return FailWidget('Houve uma falha ao carregar os dados',
                 error: controller.error);
           }
 
@@ -168,14 +167,12 @@ class TableDataWidget extends StatelessWidget {
               rows.add(UtilsWidget.generateDataRow(
                   controller.selectModel, i, element, context, controller.data,
                   (ItemSelect itemSelect, bool b, int index) {
-                if (controller.selectModel.tipoSelecao ==
-                    SelectAnyPage.TIPO_SELECAO_SIMPLES) {
+                if (controller.selectModel.typeSelect == TypeSelect.SIMPLE) {
                   if (Navigator?.maybeOf(context)?.canPop() == true) {
                     Navigator?.maybeOf(context)?.pop(itemSelect.object);
                   }
                 }
-                if (controller.selectModel.tipoSelecao ==
-                    SelectAnyPage.TIPO_SELECAO_ACAO) {
+                if (controller.selectModel.typeSelect == TypeSelect.ACTION) {
                   /// Gambi para evitar problemas ao usuário clicar em selecionar todos
                   if ((controller.lastClick + 500) <
                       (DateTime.now().millisecondsSinceEpoch)) {
@@ -188,7 +185,7 @@ class TableDataWidget extends StatelessWidget {
                         controller.selectModel,
                         controller.data,
                         controller.reloadData,
-                        controller.fonteDadoAtual);
+                        controller.actualDataSource);
                   }
                 } else {
                   if (b) {
@@ -199,7 +196,7 @@ class TableDataWidget extends StatelessWidget {
                   }
                   itemSelect.isSelected = b;
                 }
-              }, controller.reloadData, 2, controller.fonteDadoAtual,
+              }, controller.reloadData, 2, controller.actualDataSource,
                   generateActions: false));
               i++;
             }
@@ -219,8 +216,8 @@ class TableDataWidget extends StatelessWidget {
                               BoxConstraints(minWidth: constraint.maxWidth),
                           child: DataTablePlus(
                               showCheckboxColumn:
-                                  controller.selectModel.tipoSelecao ==
-                                      SelectAnyPage.TIPO_SELECAO_MULTIPLA,
+                                  controller.selectModel.typeSelect ==
+                                      TypeSelect.MULTIPLE,
                               tableColumnsWidth: controller.selectModel.theme
                                   ?.tableTheme?.widthTableColumns,
                               headingRowColor: controller.selectModel.theme
@@ -238,25 +235,24 @@ class TableDataWidget extends StatelessWidget {
                                           index: -1,
                                           cells: <Widget>[]
                                             ..addAll(controller.selectModel
-                                                            .tipoSelecao ==
-                                                        SelectAnyPage
-                                                            .TIPO_SELECAO_MULTIPLA &&
+                                                            .typeSelect ==
+                                                        TypeSelect.MULTIPLE &&
                                                     rows.isNotEmpty
                                                 ? [Container()]
                                                 : [])
                                             ..addAll(controller
-                                                .selectModel.linhas
+                                                .selectModel.lines
                                                 .map((e) {
                                               if (e.enableLineFilter &&
                                                   !controller.filterControllers
-                                                      .containsKey(e.chave)) {
+                                                      .containsKey(e.key)) {
                                                 if (e.filter != null) {
                                                   if (e.filter
                                                       is FilterRangeDate) {
                                                     controller.filterControllers[
-                                                            e.chave] =
-                                                        SelecionarRangeDataWidget(
-                                                            SelecionarRangeDataController(),
+                                                            e.key] =
+                                                        SelectRangeDateWidget(
+                                                            SelectRangeDateController(),
                                                             (dateMin, dateMax) {
                                                       controller
                                                           .onColumnFilterChanged();
@@ -264,7 +260,7 @@ class TableDataWidget extends StatelessWidget {
                                                   }
                                                 } else {
                                                   controller.filterControllers[
-                                                      e.chave] = Padding(
+                                                      e.key] = Padding(
                                                     padding:
                                                         const EdgeInsets.only(
                                                             left: 8,
@@ -276,7 +272,7 @@ class TableDataWidget extends StatelessWidget {
                                                           TextEditingController(),
                                                       decoration: InputDecoration(
                                                           hintText:
-                                                              '${e.nome ?? e.chave}'),
+                                                              '${e.name ?? e.key}'),
                                                       onChanged: (text) {
                                                         controller
                                                             .onColumnFilterChanged();
@@ -289,7 +285,7 @@ class TableDataWidget extends StatelessWidget {
                                                   height: 48,
                                                   child: controller
                                                           .filterControllers[
-                                                      e.chave]);
+                                                      e.key]);
                                             }).toList()),
                                           typeCustomRow: TypeCustomRow.ADD)
                                     ]
@@ -302,13 +298,12 @@ class TableDataWidget extends StatelessWidget {
                                   generateActions: false,
                                   onSort: (int index, bool sort) {
                                 if (controller
-                                    .selectModel.linhas[index].enableSorting) {
+                                    .selectModel.lines[index].enableSorting) {
                                   controller.itemSort = ItemSort(
                                       typeSort: sort
                                           ? EnumTypeSort.ASC
                                           : EnumTypeSort.DESC,
-                                      linha:
-                                          controller.selectModel.linhas[index],
+                                      line: controller.selectModel.lines[index],
                                       indexLine: index);
                                   controller.updateSortCollumn();
                                 }
@@ -317,7 +312,7 @@ class TableDataWidget extends StatelessWidget {
                         )),
                   );
                 })),
-                if (controller.selectModel.acoes?.isNotEmpty == true)
+                if (controller.selectModel.actions?.isNotEmpty == true)
                   Container(
                     child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
@@ -348,8 +343,9 @@ class TableDataWidget extends StatelessWidget {
                                         color: controller.selectModel.theme
                                             ?.tableTheme?.headerColor),
                                     constraints: BoxConstraints(minWidth: 60),
-                                    width: controller.selectModel.acoes.length *
-                                        50.0,
+                                    width:
+                                        controller.selectModel.actions.length *
+                                            50.0,
                                     alignment: Alignment.center,
                                     child: Text('Ações',
                                         style: controller.selectModel.theme
@@ -363,17 +359,17 @@ class TableDataWidget extends StatelessWidget {
                               );
                             } else {
                               return Row(
-                                  children:
-                                      controller.selectModel.acoes.map((acao) {
+                                  children: controller.selectModel.actions
+                                      .map((acao) {
                                 return Container(
                                   height: 48,
                                   child: IconButton(
                                     splashRadius: 24,
                                     color: controller.selectModel.theme
                                         ?.defaultIconActionColor,
-                                    tooltip: acao.descricao,
+                                    tooltip: acao.description,
                                     icon: acao.icon ??
-                                        Text(acao.descricao ?? 'Ação'),
+                                        Text(acao.description ?? 'Ação'),
                                     onPressed: () {
                                       /// Tira 1 do index pois o index 0 é o do header
                                       int newIndex = index - 1;
@@ -384,7 +380,7 @@ class TableDataWidget extends StatelessWidget {
                                           acao,
                                           controller.data,
                                           controller.reloadData,
-                                          controller.fonteDadoAtual);
+                                          controller.actualDataSource);
                                     },
                                   ),
                                 );

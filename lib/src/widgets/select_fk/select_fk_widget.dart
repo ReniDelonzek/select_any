@@ -16,15 +16,15 @@ class SelectFKWidget extends StatelessWidget {
   final String title;
   final String id;
   final DataSource dataSource;
-  final List<Linha> linhas;
+  final List<Line> linhas;
 
   /// Dispara toda fez que um registro é selecionado
   /// Caso retorne false, a seleção é cancelada
   final SelectedFK selectedFK;
   final ValidationSelect preValidationSelect;
-  final List<Acao> actions;
-  final List<Acao> buttons;
-  Linha defaultLine;
+  final List<ActionSelect> actions;
+  final List<ActionSelect> buttons;
+  Line defaultLine;
   final bool isRequired;
   SelectModel selectModel;
 
@@ -54,16 +54,15 @@ class SelectFKWidget extends StatelessWidget {
       this.defaultLine = linhas.first;
     }
     actions?.forEach((element) {
-      element.fecharTela = true;
+      element.closePage = true;
     });
     buttons?.forEach((element) {
-      element.fecharTela = true;
+      element.closePage = true;
     });
-    selectModel = SelectModel(
-        title, id, linhas, dataSource, SelectAnyPage.TIPO_SELECAO_SIMPLES,
-        abrirPesquisaAutomaticamente: !UtilsPlatform.isMobile,
-        acoes: actions,
-        botoes: buttons,
+    selectModel = SelectModel(title, id, linhas, dataSource, TypeSelect.SIMPLE,
+        openSearchAutomatically: !UtilsPlatform.isMobile,
+        actions: actions,
+        buttons: buttons,
         theme: theme);
     if (isRequired == true) {
       controller.checkSingleRow(selectModel);
@@ -151,9 +150,8 @@ class SelectFKWidget extends StatelessWidget {
                             builder: (_) {
                               String valor = controller.obj == null
                                   ? (defaultLabel ?? 'Toque para selecionar')
-                                  : (controller.obj[defaultLine.chave] ==
-                                              null ||
-                                          controller.obj[defaultLine.chave]
+                                  : (controller.obj[defaultLine.key] == null ||
+                                          controller.obj[defaultLine.key]
                                               .toString()
                                               .isEmpty)
                                       ? (defaultLine.valorPadrao != null
@@ -161,12 +159,12 @@ class SelectFKWidget extends StatelessWidget {
                                               .valorPadrao(controller.obj)
                                           : 'Linha vazia')
                                       : controller.obj
-                                          .getLineValue(defaultLine.chave)
+                                          .getLineValue(defaultLine.key)
                                           .toString();
-                              return defaultLine.personalizacao == null
+                              return defaultLine.customLine == null
                                   ? Text(
-                                      (defaultLine.involucro != null
-                                          ? defaultLine.involucro
+                                      (defaultLine.enclosure != null
+                                          ? defaultLine.enclosure
                                               .replaceAll('???', valor)
                                           : valor),
                                       maxLines: 2,
@@ -174,7 +172,7 @@ class SelectFKWidget extends StatelessWidget {
                                           ? TextStyle(color: Colors.white)
                                           : TextStyle(color: defaultLine.color),
                                     )
-                                  : defaultLine.personalizacao(
+                                  : defaultLine.customLine(
                                       CustomLineData(data: controller.obj));
                             },
                           ),

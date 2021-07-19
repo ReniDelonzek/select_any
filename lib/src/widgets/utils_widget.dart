@@ -5,7 +5,6 @@ import 'package:msk_utils/extensions/string.dart';
 import 'package:msk_utils/models/item_select.dart';
 import 'package:msk_utils/msk_utils.dart';
 import 'package:select_any/src/models/models.dart';
-import 'package:select_any/src/modules/select_any/select_any_page.dart';
 import 'package:select_any/src/widgets/my_snack_bar.dart';
 
 class UtilsWidget {
@@ -30,17 +29,17 @@ class UtilsWidget {
         onSelected(itemSelect, !(itemSelect.isSelected ?? false), index);
       })));
     }
-    if (generateActions && selectModel.acoes?.isNotEmpty == true) {
+    if (generateActions && selectModel.actions?.isNotEmpty == true) {
       List<Widget> widgets = [];
-      for (Acao acao in selectModel.acoes) {
+      for (ActionSelect action in selectModel.actions) {
         widgets.add(IconButton(
           splashRadius: 24,
           color: selectModel.theme?.defaultIconActionColor,
-          tooltip: acao.descricao,
-          icon: acao.icon ?? Text(acao.descricao ?? 'Ação'),
+          tooltip: action.description,
+          icon: action.icon ?? Text(action.description ?? 'Ação'),
           onPressed: () {
-            UtilsWidget.onAction(
-                context, itemSelect, index, acao, data, reloadData, dataSource);
+            UtilsWidget.onAction(context, itemSelect, index, action, data,
+                reloadData, dataSource);
           },
         ));
       }
@@ -62,18 +61,18 @@ class UtilsWidget {
 
   static List<DataColumn> generateDataColumn(SelectModel selectModel,
       {bool generateActions = true, Function(int, bool) onSort}) {
-    return selectModel.linhas
+    return selectModel.lines
         .map((e) => DataColumn(
             tooltip: e.tableTooltip,
             onSort: e.enableSorting ? onSort : null,
-            label: Text(e.nome ?? e.chave.upperCaseFirstLower(),
+            label: Text(e.name ?? e.key.upperCaseFirstLower(),
                 style: selectModel.theme?.tableTheme?.headerTextStyle ??
                     TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                         color: Colors.white))))
         .toList()
-          ..addAll(generateActions && selectModel.acoes?.isNotEmpty == true
+          ..addAll(generateActions && selectModel.actions?.isNotEmpty == true
               ? [
                   DataColumn(
                       label: Text('Ações',
@@ -88,11 +87,11 @@ class UtilsWidget {
 
   static Widget getLinha(SelectModel selectModel, MapEntry item, Map map,
       int typeScreen, Function onTap) {
-    Linha linha = selectModel.linhas
-        .firstWhere((linha) => linha.chave == item.key, orElse: () => null);
-    if (linha != null && linha.personalizacao != null) {
+    Line linha = selectModel.lines
+        .firstWhere((linha) => linha.key == item.key, orElse: () => null);
+    if (linha != null && linha.customLine != null) {
       return linha
-          .personalizacao(CustomLineData(data: map, typeScreen: typeScreen));
+          .customLine(CustomLineData(data: map, typeScreen: typeScreen));
     } else {
       if (linha.formatData != null) {
         return _getText(
@@ -119,7 +118,7 @@ class UtilsWidget {
   }
 
   static Widget _getText(
-      String value, Function onTap, Linha linha, SelectModel selectModel) {
+      String value, Function onTap, Line linha, SelectModel selectModel) {
     if ((linha?.maxLines ?? 1) > 3 || linha.showTextInTableScroll == true) {
       return SingleChildScrollView(
           child: Padding(
@@ -131,37 +130,44 @@ class UtilsWidget {
   }
 
   static Widget _selectableText(
-      String value, Function onTap, Linha linha, SelectModel selectModel) {
+      String value, Function onTap, Line linha, SelectModel selectModel) {
     return SelectableText(value ?? '',
-        style: linha.estiloTexto ?? selectModel?.theme?.defaultTextStyle,
+        style: linha.textStyle ?? selectModel?.theme?.defaultTextStyle,
         maxLines: linha?.maxLines,
         minLines: linha?.minLines,
         onTap: onTap,
         scrollPhysics: const NeverScrollableScrollPhysics());
   }
 
-  static void onAction(BuildContext context, ItemSelect itemSelect, int index,
-      Acao acao, Map data, Function reloadData, DataSource dataSource) async {
-    if (acao.funcao != null) {
-      if (acao.fecharTela) {
+  static void onAction(
+      BuildContext context,
+      ItemSelect itemSelect,
+      int index,
+      ActionSelect acao,
+      Map data,
+      Function reloadData,
+      DataSource dataSource) async {
+    if (acao.function != null) {
+      if (acao.closePage) {
         Navigator.pop(context);
       }
-      acao.funcao(
+      acao.function(
           DataFunction(data: itemSelect, index: index, context: context));
     }
-    if (acao.funcaoAtt != null) {
-      if (acao.fecharTela) {
+    if (acao.functionUpd != null) {
+      if (acao.closePage) {
         Navigator.pop(context);
       }
 
-      var res = await acao.funcaoAtt(data: itemSelect, context: context);
+      var res = await acao.functionUpd(
+          DataFunction(data: itemSelect, index: index, context: context));
       if (res == true) {
         reloadData();
       }
     } else if (acao.route != null || acao.page != null) {
       Map<String, dynamic> dados = Map();
-      if (acao.chaves?.entries != null) {
-        for (MapEntry dado in acao.chaves.entries) {
+      if (acao.keys?.entries != null) {
+        for (MapEntry dado in acao.keys.entries) {
           if (itemSelect != null &&
               (itemSelect.object as Map).containsKey(dado.key)) {
             dados.addAll({dado.value: itemSelect.object[dado.key]});
@@ -186,7 +192,7 @@ class UtilsWidget {
               builder: (_) => acao.page, settings: settings));
 
       if (res != null && res != false) {
-        if (acao.fecharTela) {
+        if (acao.closePage) {
           if (res is Map &&
               res['dados'] != null &&
               res['dados'] is Map &&
@@ -211,7 +217,7 @@ class UtilsWidget {
       BuildContext context,
       ItemSelect itemSelect,
       int index,
-      List<Acao> acoes,
+      List<ActionSelect> actions,
       Map data,
       Function reloadData,
       DataSource dataSource) {
@@ -220,10 +226,10 @@ class UtilsWidget {
         builder: (BuildContext bc) {
           return Container(
             child: new Wrap(
-              children: acoes
+              children: actions
                   .map((acao) => new ListTile(
                       leading: acao.icon,
-                      title: new Text(acao.descricao),
+                      title: new Text(acao.description),
                       onTap: () {
                         Navigator.pop(context);
                         UtilsWidget.onAction(context, itemSelect, index, acao,
@@ -243,21 +249,21 @@ class UtilsWidget {
       Map data,
       Function onDataUpdate,
       DataSource dataSource) {
-    if (selectModel.tipoSelecao == SelectAnyPage.TIPO_SELECAO_ACAO &&
-        selectModel.acoes != null) {
-      if (selectModel.acoes.length > 1) {
+    if (selectModel.typeSelect == TypeSelect.ACTION &&
+        selectModel.actions != null) {
+      if (selectModel.actions.length > 1) {
         UtilsWidget.exibirListaAcoes(context, itemSelect, index,
-            selectModel.acoes, data, onDataUpdate, dataSource);
-      } else if (selectModel.acoes.isNotEmpty) {
-        Acao acao = selectModel.acoes?.first;
+            selectModel.actions, data, onDataUpdate, dataSource);
+      } else if (selectModel.actions.isNotEmpty) {
+        ActionSelect acao = selectModel.actions?.first;
         if (acao != null) {
           UtilsWidget.onAction(
               context, itemSelect, index, acao, data, onDataUpdate, dataSource);
         }
       }
-    } else if (selectModel.tipoSelecao == SelectAnyPage.TIPO_SELECAO_SIMPLES) {
+    } else if (selectModel.typeSelect == TypeSelect.SIMPLE) {
       Navigator.pop(context, itemSelect.object);
-    } else if (selectModel.tipoSelecao == SelectAnyPage.TIPO_SELECAO_MULTIPLA) {
+    } else if (selectModel.typeSelect == TypeSelect.MULTIPLE) {
       itemSelect.isSelected = !itemSelect.isSelected;
     }
   }
@@ -270,20 +276,20 @@ class UtilsWidget {
       Map data,
       Function onDataUpdate,
       DataSource dataSource) {
-    if (selectModel.acoes != null) {
-      if (selectModel.acoes.length > 1) {
+    if (selectModel.actions != null) {
+      if (selectModel.actions.length > 1) {
         UtilsWidget.exibirListaAcoes(context, itemSelect, index,
-            selectModel.acoes, data, onDataUpdate, dataSource);
+            selectModel.actions, data, onDataUpdate, dataSource);
       } else {
-        Acao acao = selectModel.acoes?.first;
+        ActionSelect acao = selectModel.actions?.first;
         if (acao != null) {
           UtilsWidget.onAction(
               context, itemSelect, index, acao, data, onDataUpdate, dataSource);
         }
       }
-    } else if (selectModel.tipoSelecao == SelectAnyPage.TIPO_SELECAO_SIMPLES) {
+    } else if (selectModel.typeSelect == TypeSelect.SIMPLE) {
       Navigator.pop(context, itemSelect.object);
-    } else if (selectModel.tipoSelecao == SelectAnyPage.TIPO_SELECAO_MULTIPLA) {
+    } else if (selectModel.typeSelect == TypeSelect.MULTIPLE) {
       itemSelect.isSelected = !itemSelect.isSelected;
     } else {
       //case seja do tipo acao, mas n tenha nenhuma acao

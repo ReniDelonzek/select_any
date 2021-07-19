@@ -147,7 +147,7 @@ abstract class DataSourceAny extends DataSource {
       stringBuffer.write('\n');
     }
     UtilsFile.saveFileString(stringBuffer.toString(),
-        dirComplementar: '${selectModel.titulo}',
+        dirComplementar: '${selectModel.title}',
         fileName: '${DateTime.now().string('dd-MM-yyyy HH-mm-ss')}.csv');
     return;
   }
@@ -168,7 +168,7 @@ abstract class DataSourceAny extends DataSource {
         /// Como é uma expressão or, caso esse filtro seja verdadeiro sempre retorna true
 
         if (filter is FilterExpCollun) {
-          var value = map[filter.line.chave];
+          var value = map[filter.line.key];
           if (filter.line.formatData != null) {
             value = filter.line.formatData
                 .formatData(ObjFormatData(data: value, map: map));
@@ -184,7 +184,7 @@ abstract class DataSourceAny extends DataSource {
       } else if (groupFilterExp.operatorEx == OperatorFilterEx.AND) {
         /// Expressão AND seta filterAndOk = true caso seja true, caso seja falso retorna false na função,
         if (filter is FilterExpCollun) {
-          var value = map[filter.line.chave];
+          var value = map[filter.line.key];
           if (filter.line.formatData != null) {
             value = filter.line.formatData
                 .formatData(ObjFormatData(data: value, map: map));
@@ -201,10 +201,10 @@ abstract class DataSourceAny extends DataSource {
             return false;
           }
         } else if (filter is FilterExpRangeCollun) {
-          if (map[filter.line.chave] != null &&
-              map[filter.line.chave] >
+          if (map[filter.line.key] != null &&
+              map[filter.line.key] >
                   (filter.dateStart?.millisecondsSinceEpoch ?? 0) &&
-              map[filter.line.chave] <
+              map[filter.line.key] <
                   (filter.dateEnd?.millisecondsSinceEpoch ??
                       double.maxFinite.toInt())) {
             filterAndOk = true;
@@ -233,24 +233,24 @@ abstract class DataSourceAny extends DataSource {
 
         /// Maintain a consistent order for the list
         var temp = list.sortedBy((e) => e[keyId]);
-        TypeData typeData = itemSort.linha.typeData;
+        TypeData typeData = itemSort.line.typeData;
         if (typeData == null) {
           /// If you have at least one string, consider everything as a string
           /// The other types of data require that they all have the same type
-          if (list.any((element) => element[itemSort.linha.chave] is String)) {
+          if (list.any((element) => element[itemSort.line.key] is String)) {
             typeData = TDString();
           } else if (list
-              .every((element) => element[itemSort.linha.chave] is num)) {
+              .every((element) => element[itemSort.line.key] is num)) {
             typeData = TDNumber();
           } else if (list
-              .every((element) => element[itemSort.linha.chave] is bool)) {
+              .every((element) => element[itemSort.line.key] is bool)) {
             typeData = TDBoolean();
           } else {
             typeData = TDNotString();
           }
 
           // Save the data type so you don't need to scroll through the list again
-          itemSort.linha.typeData = typeData;
+          itemSort.line.typeData = typeData;
         }
 
         if (typeData is TDString || typeData is TDNotString) {
@@ -280,22 +280,20 @@ abstract class DataSourceAny extends DataSource {
       {TypeData typeData}) {
     // Apply special string formatting
     if (typeData is TDString || typeData is TDNotString) {
-      if (itemSort.linha.valorPadrao != null) {
+      if (itemSort.line.valorPadrao != null) {
         if (itemSort.typeSort == EnumTypeSort.ASC) {
           return temp.sortedBy((e) {
-            String v =
-                e[itemSort.linha.chave]?.toString()?.toLowerCase()?.trim();
+            String v = e[itemSort.line.key]?.toString()?.toLowerCase()?.trim();
             if (v.isNullOrEmpty) {
-              return itemSort.linha.valorPadrao(e) ?? defaultValue;
+              return itemSort.line.valorPadrao(e) ?? defaultValue;
             } else
               return v;
           });
         } else {
           return temp.sortedByDesc((e) {
-            String v =
-                e[itemSort.linha.chave]?.toString()?.toLowerCase()?.trim();
+            String v = e[itemSort.line.key]?.toString()?.toLowerCase()?.trim();
             if (v.isNullOrEmpty) {
-              return itemSort.linha.valorPadrao(e) ?? defaultValue;
+              return itemSort.line.valorPadrao(e) ?? defaultValue;
             } else
               return v;
           });
@@ -303,33 +301,32 @@ abstract class DataSourceAny extends DataSource {
       } else {
         if (itemSort.typeSort == EnumTypeSort.ASC) {
           return temp.sortedBy((e) =>
-              e[itemSort.linha.chave]?.toString()?.toLowerCase()?.trim() ??
+              e[itemSort.line.key]?.toString()?.toLowerCase()?.trim() ??
               defaultValue);
         } else {
           return temp.sortedByDesc((e) =>
-              e[itemSort.linha.chave]?.toString()?.toLowerCase()?.trim() ??
+              e[itemSort.line.key]?.toString()?.toLowerCase()?.trim() ??
               defaultValue);
         }
       }
     }
-    if (itemSort.linha.valorPadrao != null) {
+    if (itemSort.line.valorPadrao != null) {
       if (itemSort.typeSort == EnumTypeSort.ASC) {
         return temp.sortedBy((e) =>
-            e[itemSort.linha.chave] ??
-            itemSort.linha.valorPadrao(e) ??
+            e[itemSort.line.key] ??
+            itemSort.line.valorPadrao(e) ??
             defaultValue);
       } else {
         return temp.sortedByDesc((e) =>
-            e[itemSort.linha.chave] ??
-            itemSort.linha.valorPadrao(e) ??
+            e[itemSort.line.key] ??
+            itemSort.line.valorPadrao(e) ??
             defaultValue);
       }
     } else {
       if (itemSort.typeSort == EnumTypeSort.ASC) {
-        return temp.sortedBy((e) => e[itemSort.linha.chave] ?? defaultValue);
+        return temp.sortedBy((e) => e[itemSort.line.key] ?? defaultValue);
       } else {
-        return temp
-            .sortedByDesc((e) => e[itemSort.linha.chave] ?? defaultValue);
+        return temp.sortedByDesc((e) => e[itemSort.line.key] ?? defaultValue);
       }
     }
   }

@@ -4,7 +4,6 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:mobx/mobx.dart';
 import 'package:msk_utils/models/item_select.dart';
 import 'package:select_any/src/models/models.dart';
-import 'package:select_any/src/modules/select_any/select_any_page.dart';
 import 'package:select_any/src/modules/select_any_expanded/select_any_expanded_controller.dart';
 
 // ignore: must_be_immutable
@@ -17,7 +16,7 @@ class SelectAnyExpandedPage extends StatefulWidget {
 
   @override
   _SelectAnyExpandedPageState createState() {
-    return _SelectAnyExpandedPageState(_selectModel.titulo, itens);
+    return _SelectAnyExpandedPageState(_selectModel.title, itens);
   }
 }
 
@@ -139,8 +138,8 @@ class _SelectAnyExpandedPageState extends State<SelectAnyExpandedPage> {
   }
 
   Widget _getLinha(MapEntry item, Map map) {
-    Linha linha = widget._selectModel.linhas
-        .firstWhere((linha) => linha.chave == item.key, orElse: () => null);
+    Line linha = widget._selectModel.lines
+        .firstWhere((linha) => linha.key == item.key, orElse: () => null);
     if (linha == null) {
       return null;
     }
@@ -151,14 +150,14 @@ class _SelectAnyExpandedPageState extends State<SelectAnyExpandedPage> {
       valor = linha.formatData.formatData(ObjFormatData(data: valor, map: map));
     }
     if (linha != null &&
-        (linha.involucro != null || linha.personalizacao != null)) {
-      if (linha.personalizacao != null) {
-        return linha.personalizacao(CustomLineData(data: map));
+        (linha.enclosure != null || linha.customLine != null)) {
+      if (linha.customLine != null) {
+        return linha.customLine(CustomLineData(data: map));
       }
-      return Text(linha.involucro.replaceAll('???', valor),
-          style: linha.estiloTexto);
+      return Text(linha.enclosure.replaceAll('???', valor),
+          style: linha.textStyle);
     } else {
-      return Text(valor?.toString(), style: linha.estiloTexto);
+      return Text(valor?.toString(), style: linha.textStyle);
     }
   }
 
@@ -173,26 +172,27 @@ class _SelectAnyExpandedPageState extends State<SelectAnyExpandedPage> {
     return widgets;
   }
 
-  void _onAction(ItemSelect itemSelect, Acao acao) async {
-    if (acao.funcao != null) {
-      if (acao.fecharTela) {
+  void _onAction(ItemSelect itemSelect, ActionSelect acao) async {
+    if (acao.function != null) {
+      if (acao.closePage) {
         Navigator.pop(context);
       }
-      acao.funcao(DataFunction(data: itemSelect, context: context));
+      acao.function(DataFunction(data: itemSelect, context: context));
     }
-    if (acao.funcaoAtt != null) {
-      if (acao.fecharTela) {
+    if (acao.functionUpd != null) {
+      if (acao.closePage) {
         Navigator.pop(context);
       }
 
-      var res = await acao.funcaoAtt(data: itemSelect, context: buildContext);
+      var res = await acao
+          .functionUpd(DataFunction(data: itemSelect, context: context));
       if (res == true) {
         loaded = false;
       }
     } else if (acao.route != null || acao.page != null) {
       Map<String, dynamic> dados = Map();
-      if (acao.chaves?.entries != null) {
-        for (MapEntry dado in acao.chaves.entries) {
+      if (acao.keys?.entries != null) {
+        for (MapEntry dado in acao.keys.entries) {
           if (itemSelect != null &&
               (itemSelect.object as Map).containsKey(dado.key)) {
             dados.addAll({dado.value: itemSelect.object[dado.key]});
@@ -214,7 +214,7 @@ class _SelectAnyExpandedPageState extends State<SelectAnyExpandedPage> {
           ? acao.route
           : new MaterialPageRoute(
               builder: (_) => acao.page, settings: settings));
-      if (acao.fecharTela) {
+      if (acao.closePage) {
         if (res != null) {
           if (res is Map &&
               res['dados'] != null &&
@@ -253,12 +253,12 @@ class _SelectAnyExpandedPageState extends State<SelectAnyExpandedPage> {
     //       mini: (!(widget._selectModel.acoes?.isEmpty ?? true)),
     //       child: Icon(Icons.filter_list)));
     // }
-    if (!(widget._selectModel.botoes?.isEmpty ?? true)) {
-      for (Acao acao in widget._selectModel.botoes) {
+    if (!(widget._selectModel.buttons?.isEmpty ?? true)) {
+      for (ActionSelect acao in widget._selectModel.buttons) {
         widgets.add(FloatingActionButton(
           heroTag: widgets.length,
           mini: widgets.isNotEmpty,
-          tooltip: acao.descricao,
+          tooltip: acao.description,
           onPressed: () {
             _onAction(null, acao);
           },
@@ -276,9 +276,9 @@ class _SelectAnyExpandedPageState extends State<SelectAnyExpandedPage> {
         builder: (BuildContext bc) {
           return Container(
             child: new Wrap(
-              children: widget._selectModel.acoes
+              children: widget._selectModel.actions
                   .map((acao) => new ListTile(
-                      title: new Text(acao.descricao),
+                      title: new Text(acao.description),
                       onTap: () {
                         Navigator.pop(context);
                         _onAction(itemSelect, acao);
@@ -290,21 +290,19 @@ class _SelectAnyExpandedPageState extends State<SelectAnyExpandedPage> {
   }
 
   void _tratarOnTap(ItemSelect itemSelect) {
-    if (widget._selectModel.tipoSelecao == SelectAnyPage.TIPO_SELECAO_ACAO &&
-        widget._selectModel.acoes != null) {
-      if (widget._selectModel.acoes.length > 1) {
+    if (widget._selectModel.typeSelect == TypeSelect.ACTION &&
+        widget._selectModel.actions != null) {
+      if (widget._selectModel.actions.length > 1) {
         _exibirListaAcoes(itemSelect);
-      } else if (widget._selectModel.acoes.isNotEmpty) {
-        Acao acao = widget._selectModel.acoes?.first;
+      } else if (widget._selectModel.actions.isNotEmpty) {
+        ActionSelect acao = widget._selectModel.actions?.first;
         if (acao != null) {
           _onAction(itemSelect, acao);
         }
       }
-    } else if (widget._selectModel.tipoSelecao ==
-        SelectAnyPage.TIPO_SELECAO_SIMPLES) {
+    } else if (widget._selectModel.typeSelect == TypeSelect.SIMPLE) {
       Navigator.pop(context, itemSelect.object);
-    } else if (widget._selectModel.tipoSelecao ==
-        SelectAnyPage.TIPO_SELECAO_MULTIPLA) {
+    } else if (widget._selectModel.typeSelect == TypeSelect.MULTIPLE) {
       itemSelect.isSelected = !itemSelect.isSelected;
     }
   }

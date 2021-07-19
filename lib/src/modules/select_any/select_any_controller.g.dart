@@ -85,24 +85,22 @@ mixin _$SelectAnyController on _SelectAnyBase, Store {
     }, _$appBarTitleAtom, name: '${_$appBarTitleAtom.name}_set');
   }
 
-  final _$confirmarParaCarregarDadosAtom =
-      Atom(name: '_SelectAnyBase.confirmarParaCarregarDados');
+  final _$confirmToLoadDataAtom =
+      Atom(name: '_SelectAnyBase.confirmToLoadData');
 
   @override
-  bool get confirmarParaCarregarDados {
-    _$confirmarParaCarregarDadosAtom.context
-        .enforceReadPolicy(_$confirmarParaCarregarDadosAtom);
-    _$confirmarParaCarregarDadosAtom.reportObserved();
-    return super.confirmarParaCarregarDados;
+  bool get confirmToLoadData {
+    _$confirmToLoadDataAtom.context.enforceReadPolicy(_$confirmToLoadDataAtom);
+    _$confirmToLoadDataAtom.reportObserved();
+    return super.confirmToLoadData;
   }
 
   @override
-  set confirmarParaCarregarDados(bool value) {
-    _$confirmarParaCarregarDadosAtom.context.conditionallyRunInAction(() {
-      super.confirmarParaCarregarDados = value;
-      _$confirmarParaCarregarDadosAtom.reportChanged();
-    }, _$confirmarParaCarregarDadosAtom,
-        name: '${_$confirmarParaCarregarDadosAtom.name}_set');
+  set confirmToLoadData(bool value) {
+    _$confirmToLoadDataAtom.context.conditionallyRunInAction(() {
+      super.confirmToLoadData = value;
+      _$confirmToLoadDataAtom.reportChanged();
+    }, _$confirmToLoadDataAtom, name: '${_$confirmToLoadDataAtom.name}_set');
   }
 
   final _$pageAtom = Atom(name: '_SelectAnyBase.page');

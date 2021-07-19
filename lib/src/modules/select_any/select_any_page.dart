@@ -9,7 +9,7 @@ import 'package:msk_utils/models/item_select.dart';
 import 'package:msk_utils/utils/utils_platform.dart';
 import 'package:select_any/src/models/models.dart';
 import 'package:select_any/src/modules/select_any/select_any_controller.dart';
-import 'package:select_any/src/widgets/falha/falha_widget.dart';
+import 'package:select_any/src/widgets/fail/fail_widget.dart';
 import 'package:select_any/src/widgets/table_data/table_data_widget.dart';
 import 'package:select_any/src/widgets/utils_widget.dart';
 import 'package:msk_utils/extensions/date.dart';
@@ -32,14 +32,6 @@ class DoneIntent extends Intent {
 
 // ignore: must_be_immutable
 class SelectAnyPage extends StatefulWidget {
-  /// Retorna Map<String, dynamic>
-  static const int TIPO_SELECAO_SIMPLES = 0;
-
-  /// Retorna [ItemSelect]
-  static const int TIPO_SELECAO_MULTIPLA = 1;
-
-  static const int TIPO_SELECAO_ACAO = 2;
-
   final SelectModel _selectModel;
   Map data;
   SelectAnyController controller;
@@ -50,9 +42,8 @@ class SelectAnyPage extends StatefulWidget {
     if (controller == null) {
       controller = SelectAnyController();
     }
-    controller.init(_selectModel.titulo, _selectModel, data);
-    controller.confirmarParaCarregarDados =
-        _selectModel.confirmarParaCarregarDados;
+    controller.init(_selectModel.title, _selectModel, data);
+    controller.confirmToLoadData = _selectModel.confirmToLoadData;
     controller.typeDiplay = UtilsPlatform.isMobile ? 1 : 2;
   }
 
@@ -88,7 +79,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.controller.tipoTeladinamica) {
+    if (widget.controller.dynamicScreen) {
       //WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (MediaQuery.of(context).size.width > 800) {
         if (widget.controller.typeDiplay != 2) {
@@ -98,7 +89,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
       } else {
         if (widget.controller.typeDiplay != 1) {
           widget.controller.typeDiplay = 1;
-          if (!(widget.controller.fonteDadoAtual?.supportPaginate ?? false) &&
+          if (!(widget.controller.actualDataSource?.supportPaginate ?? false) &&
               widget.controller.loaded) {
             /// Caso a fonte nao suporte paginação, recarrega os dados
             /// Pois os dados carregados na tabela não são completos
@@ -108,7 +99,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
       }
       //});
     }
-    if (!widget.controller.confirmarParaCarregarDados) {
+    if (!widget.controller.confirmToLoadData) {
       carregarDados();
     }
     return Shortcuts(
@@ -135,15 +126,15 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
               }),
               InsertIntent:
                   CallbackAction<InsertIntent>(onInvoke: (InsertIntent intent) {
-                if (widget._selectModel.botoes?.isNotEmpty == true) {
+                if (widget._selectModel.buttons?.isNotEmpty == true) {
                   UtilsWidget.onAction(
                       context,
                       null,
                       null,
-                      widget._selectModel.botoes.first,
+                      widget._selectModel.buttons.first,
                       widget.data,
                       widget.controller.reloadData,
-                      widget.controller.fonteDadoAtual);
+                      widget.controller.actualDataSource);
                 }
                 return;
               }),
@@ -158,7 +149,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
               }),
               ExportIntent:
                   CallbackAction<ExportIntent>(onInvoke: (ExportIntent intent) {
-                if (widget.controller.fonteDadoAtual?.allowExport == true) {
+                if (widget.controller.actualDataSource?.allowExport == true) {
                   widget.controller.export();
                 }
                 return;
@@ -210,8 +201,8 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
                     automaticallyImplyLeading: false,
                     leading: _getMenuButton(),
                   ),
-                  bottomNavigationBar: widget._selectModel.tipoSelecao ==
-                          SelectAnyPage.TIPO_SELECAO_MULTIPLA
+                  bottomNavigationBar: widget._selectModel.typeSelect ==
+                          TypeSelect.MULTIPLE
                       ? BottomNavigationBar(
                           selectedItemColor:
                               Theme.of(context).brightness == Brightness.dark
@@ -265,14 +256,14 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
 
   List<Widget> _buildIconButtons() {
     List<Widget> buttons = [];
-    if (widget.controller.selectModel.botoes != null &&
+    if (widget.controller.selectModel.buttons != null &&
         widget.controller.selectModel.theme?.buttonsPosition ==
             ButtonsPosition.APPBAR) {
-      buttons.addAll(widget.controller.selectModel.botoes
+      buttons.addAll(widget.controller.selectModel.buttons
           .map((e) => IconButton(
                 splashRadius: 24,
                 icon: e.icon ?? Icon(Icons.add),
-                tooltip: e.descricao,
+                tooltip: e.description,
                 onPressed: e.enabled
                     ? () {
                         UtilsWidget.onAction(
@@ -282,7 +273,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
                             e,
                             widget.controller.data,
                             widget.controller.reloadData,
-                            widget.controller.fonteDadoAtual);
+                            widget.controller.actualDataSource);
                       }
                     : null,
               ))
@@ -298,7 +289,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
         return TableDataWidget(widget._selectModel,
             controller: widget.controller, carregarDados: false);
       } else {
-        if (!widget.controller.confirmarParaCarregarDados) {
+        if (!widget.controller.confirmToLoadData) {
           return _getStreamBody();
         } else {
           return Center(
@@ -308,7 +299,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
                   onPressed: () {
                     /// Aqui é vantagem usar o setState, pois toda a tela precisa ser recarregada
                     setState(() {
-                      widget.controller.confirmarParaCarregarDados = false;
+                      widget.controller.confirmToLoadData = false;
                       carregarDados();
                     });
                   }));
@@ -327,16 +318,16 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
         return new Center(child: new RefreshProgressIndicator());
       }
       if (widget.controller.error != null) {
-        if (widget._selectModel.fonteDadosAlternativa != null &&
-            widget.controller.fonteDadoAtual !=
-                widget._selectModel.fonteDadosAlternativa) {
+        if (widget._selectModel.alternativeDataSource != null &&
+            widget.controller.actualDataSource !=
+                widget._selectModel.alternativeDataSource) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             //usa esse artefato para nao dar problema com o setstate
             widget.controller.loaded = false;
 
             setState(() async {
-              widget.controller.fonteDadoAtual =
-                  widget._selectModel.fonteDadosAlternativa;
+              widget.controller.actualDataSource =
+                  widget._selectModel.alternativeDataSource;
               widget.controller.setDataSource(
                   offset: widget.controller.typeDiplay == 1 ? -1 : 0);
               carregarDados();
@@ -344,7 +335,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
           });
           return new Center(child: new RefreshProgressIndicator());
         }
-        return FalhaWidget(
+        return FailWidget(
           'Houve uma falha ao recuperar os dados',
           error: widget.controller.error,
         );
@@ -365,7 +356,8 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
                   child: NotificationListener<ScrollNotification>(
                       onNotification: (ScrollNotification scrollInfo) {
                         /// não é necessário nenhuma ação caso não suporte paginação, pois os dados já estaram completos na tela
-                        if (widget.controller.fonteDadoAtual.supportPaginate) {
+                        if (widget
+                            .controller.actualDataSource.supportPaginate) {
                           if (scrollInfo is ScrollEndNotification &&
                               scrollInfo.metrics.extentAfter == 0) {
                             if (widget.controller.total == 0 ||
@@ -437,7 +429,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
       );
     } else {
       widget.controller.searchIcon = new Icon(Icons.search);
-      widget.controller.appBarTitle = new Text(widget._selectModel.titulo);
+      widget.controller.appBarTitle = new Text(widget._selectModel.title);
       if (widget.controller.filter.text.isNotEmpty) {
         widget.controller.searchText = '';
         widget.controller.filter.clear();
@@ -451,7 +443,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
       return new Padding(
           padding: EdgeInsets.only(left: 5, right: 5),
           child: ListTile(
-            leading: widget._selectModel.tipoSelecao == 1
+            leading: widget._selectModel.typeSelect == TypeSelect.SIMPLE
                 ? Checkbox(
                     onChanged: (newValue) {
                       itemSelect.isSelected = newValue;
@@ -473,7 +465,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
                   widget.controller.selectModel,
                   widget.controller.data,
                   widget.controller.reloadData,
-                  widget.controller.fonteDadoAtual);
+                  widget.controller.actualDataSource);
             },
             onLongPress: () {
               UtilsWidget.tratarOnLongPres(
@@ -483,7 +475,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
                   widget.controller.selectModel,
                   widget.controller.data,
                   widget.controller.reloadData,
-                  widget.controller.fonteDadoAtual);
+                  widget.controller.actualDataSource);
             },
           ));
     } else {
@@ -497,7 +489,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
                 widget.controller.selectModel,
                 widget.controller.data,
                 widget.controller.reloadData,
-                widget.controller.fonteDadoAtual);
+                widget.controller.actualDataSource);
           },
           onLongPress: () {
             UtilsWidget.tratarOnLongPres(
@@ -507,11 +499,11 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
                 widget.controller.selectModel,
                 widget.controller.data,
                 widget.controller.reloadData,
-                widget.controller.fonteDadoAtual);
+                widget.controller.actualDataSource);
           },
           child: Padding(
             padding: const EdgeInsets.all(16.0),
-            child: widget._selectModel.tipoSelecao == 1
+            child: widget._selectModel.typeSelect == TypeSelect.SIMPLE
                 ? Row(
                     children: [
                       Checkbox(
@@ -542,8 +534,8 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
   }
 
   Widget _getLinha(MapEntry item, Map map) {
-    Linha linha = widget._selectModel.linhas
-        .firstWhere((linha) => linha.chave == item.key, orElse: () => null);
+    Line linha = widget._selectModel.lines
+        .firstWhere((linha) => linha.key == item.key, orElse: () => null);
     if (linha == null) {
       return null;
     }
@@ -553,24 +545,23 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
 
     if (linha.formatData != null) {
       valor = linha.formatData.formatData(ObjFormatData(data: valor, map: map));
-    } else if (linha.typeData is TDDateTimestamp &&
-        linha.personalizacao == null) {
+    } else if (linha.typeData is TDDateTimestamp && linha.customLine == null) {
       try {
         valor = DateTime.fromMillisecondsSinceEpoch(int.tryParse(valor))
             .string((linha.typeData as TDDateTimestamp).outputFormat);
-        if (linha.involucro == null) {
-          linha.involucro = '${linha.nome}: ???';
+        if (linha.enclosure == null) {
+          linha.enclosure = '${linha.name}: ???';
         }
       } catch (_) {}
     }
 
-    if ((linha.involucro != null || linha.personalizacao != null)) {
-      if (linha.personalizacao != null) {
-        return linha.personalizacao(CustomLineData(
+    if ((linha.enclosure != null || linha.customLine != null)) {
+      if (linha.customLine != null) {
+        return linha.customLine(CustomLineData(
             data: map, typeScreen: widget.controller.typeDiplay));
       }
-      return Text(linha.involucro.replaceAll('???', valor?.toString() ?? ''),
-          style: linha.estiloTexto ??
+      return Text(linha.enclosure.replaceAll('???', valor?.toString() ?? ''),
+          style: linha.textStyle ??
               widget.controller.selectModel.theme.defaultTextStyle);
     } else {
       if ((valor == null || valor.toString().isEmpty) &&
@@ -578,7 +569,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
         return SizedBox();
       }
       return Text(valor?.toString(),
-          style: linha.estiloTexto ??
+          style: linha.textStyle ??
               widget.controller.selectModel.theme.defaultTextStyle);
     }
   }
@@ -626,15 +617,21 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
     //       mini: (!(widget._selectModel.acoes?.isEmpty ?? true)),
     //       child: Icon(Icons.filter_list)));
     // }
-    if (!(widget._selectModel.botoes?.isEmpty ?? true)) {
-      for (Acao acao in widget._selectModel.botoes) {
+    if (!(widget._selectModel.buttons?.isEmpty ?? true)) {
+      for (ActionSelect acao in widget._selectModel.buttons) {
         widgets.add(FloatingActionButton(
           heroTag: widgets.length,
           mini: widgets.isNotEmpty,
-          tooltip: acao.descricao,
+          tooltip: acao.description,
           onPressed: () {
-            UtilsWidget.onAction(context, null, null, acao, widget.data,
-                widget.controller.reloadData, widget.controller.fonteDadoAtual);
+            UtilsWidget.onAction(
+                context,
+                null,
+                null,
+                acao,
+                widget.data,
+                widget.controller.reloadData,
+                widget.controller.actualDataSource);
           },
           child: acao.icon ?? Icon(Icons.add),
         ));
@@ -654,12 +651,12 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
         widget.data.addAll(args['data']);
       }
       widget.controller.data = widget.data;
-      widget.controller.fonteDadoAtual = widget._selectModel.fonteDados;
+      widget.controller.actualDataSource = widget._selectModel.dataSource;
       widget.controller
           .setDataSource(offset: widget.controller.typeDiplay == 1 ? -1 : 0);
       widget.controller.loaded = true;
     }
-    if (widget._selectModel.abrirPesquisaAutomaticamente == true) {
+    if (widget._selectModel.openSearchAutomatically == true) {
       _searchPressed();
     }
   }
@@ -672,14 +669,14 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
               content: SingleChildScrollView(
                 child: Column(
                     mainAxisSize: MainAxisSize.min,
-                    children: widget.controller.selectModel.linhas
+                    children: widget.controller.selectModel.lines
                         .where((element) => element.enableSorting)
                         .map((e) => ListTile(
                               onTap: () {
                                 EnumTypeSort typeSort = EnumTypeSort.ASC;
                                 if (widget.controller.itemSort != null &&
-                                    widget.controller.itemSort.linha.chave ==
-                                        e.chave) {
+                                    widget.controller.itemSort.line.key ==
+                                        e.key) {
                                   if (widget.controller.itemSort.typeSort ==
                                       EnumTypeSort.ASC) {
                                     typeSort = EnumTypeSort.DESC;
@@ -687,19 +684,18 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
                                 }
                                 widget.controller.itemSort = ItemSort(
                                     indexLine: widget
-                                        .controller.selectModel.linhas
-                                        .indexWhere((element) =>
-                                            element.chave == e.chave),
-                                    linha: e,
+                                        .controller.selectModel.lines
+                                        .indexWhere(
+                                            (element) => element.key == e.key),
+                                    line: e,
                                     typeSort: typeSort);
 
                                 widget.controller.updateSortCollumn();
                                 Navigator.pop(alertContext);
                               },
-                              title: Text(e.nome ?? e.chave),
+                              title: Text(e.name ?? e.key),
                               leading:
-                                  widget.controller.itemSort?.linha?.chave ==
-                                          e.chave
+                                  widget.controller.itemSort?.line?.key == e.key
                                       ? (widget.controller.itemSort.typeSort ==
                                               EnumTypeSort.ASC
                                           ? Icon(Icons.arrow_upward)

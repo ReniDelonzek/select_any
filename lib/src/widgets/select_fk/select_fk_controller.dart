@@ -25,7 +25,7 @@ abstract class _SelectFKBase with Store {
   /// Caso sim, seta o dado no input
   checkSingleRow(SelectModel selectModel) async {
     /// Deixa o limite como dois, porque caso retorne dois ele possui > 1 registro
-    selectModel.fonteDados.getList(2, 0, selectModel).then((value) {
+    selectModel.dataSource.getList(2, 0, selectModel).then((value) {
       value.first.then((value) {
         if (value.data?.length == 1) {
           obj = value.data.first.object;

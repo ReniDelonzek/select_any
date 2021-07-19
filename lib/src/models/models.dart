@@ -11,53 +11,61 @@ import 'package:select_any/src/utils/utils_format.dart';
 
 part 'models.g.dart';
 
+enum TypeSelect {
+  /// Returns Map<String, dynamic>
+  SIMPLE,
+
+  /// Returns [ItemSelect]
+  MULTIPLE,
+  ACTION
+}
+
 class SelectModel {
   /// 0 selecao simples, 1 selecao multipla, 2 acao
-  int tipoSelecao;
+  TypeSelect typeSelect;
 
   /// Titulo a ser exibido na parte superior
-  String titulo;
+  String title;
 
   /// Lista de linhas a serem exibidas
-  List<Linha> linhas;
+  List<Line> lines;
 
   /// Chave do id de cada linha
   String id;
-  List<FilterBase> filtros;
+  List<FilterBase> filters;
 
   /// Ações que serão selecionáveis após o clique em cada item
-  List<Acao> acoes;
+  List<ActionSelect> actions;
 
   /// Botões que apareceram no canto inferior direito
-  List<Acao> botoes;
-  List<String> legendas;
+  List<ActionSelect> buttons;
 
   /// Indica a fonte dos dados a ser exibidos
-  DataSource fonteDados;
+  DataSource dataSource;
 
   /// Uma lista dos ids que devem iniciar pré-selecionados
   @Deprecated("Use preSelected")
-  List<int> itensSelecionados;
+  List<int> selectedItens;
 
   /// Uma lista dos ids que devem iniciar pré-selecionados
   List<ItemSelect> preSelected;
 
   // ignore: deprecated_member_use_from_same_package
-  /// define se os itens já selecionados que constam na lista [itensSelecionados] ou [preSelected]
+  /// define se os itens já selecionados que constam na lista [selectedItens] ou [preSelected]
   /// Devem aparecer na listagem ou não
-  bool exibirPreSelecionados;
+  bool showPreSelected;
 
   /// Caso a fonte de daos principal falhe, tenta buscar os dados da segunda fonte
-  DataSource fonteDadosAlternativa;
+  DataSource alternativeDataSource;
 
   /// Caso seja true, abre a pesquisa automaticamente
-  bool abrirPesquisaAutomaticamente;
+  bool openSearchAutomatically;
 
   /// caso true, não carrega os dados automaticamente, exibindo um botão na tela para fazer isso
-  bool confirmarParaCarregarDados;
+  bool confirmToLoadData;
 
   /// Indica se o botão de selecionar todos ficará visível ou não
-  bool permitirSelecionarTodos;
+  bool allowSelectAll;
 
   /// Indica se devem aparecer os campos de filtro para a tabela (EXPERIMENTAL)
   bool showFiltersInput;
@@ -65,23 +73,21 @@ class SelectModel {
   /// Custom theme
   SelectModelTheme theme;
 
-  SelectModel(
-      this.titulo, this.id, this.linhas, this.fonteDados, this.tipoSelecao,
-      {this.filtros,
-      this.acoes,
-      this.botoes,
-      this.itensSelecionados,
-      this.exibirPreSelecionados = false,
-      this.fonteDadosAlternativa,
-      this.legendas,
-      this.abrirPesquisaAutomaticamente,
+  SelectModel(this.title, this.id, this.lines, this.dataSource, this.typeSelect,
+      {this.filters,
+      this.actions,
+      this.buttons,
+      this.selectedItens,
+      this.showPreSelected = false,
+      this.alternativeDataSource,
+      this.openSearchAutomatically,
       this.preSelected,
-      this.confirmarParaCarregarDados = false,
-      this.permitirSelecionarTodos,
+      this.confirmToLoadData = false,
+      this.allowSelectAll,
       this.showFiltersInput = true,
       this.theme}) {
-    if (abrirPesquisaAutomaticamente == null) {
-      abrirPesquisaAutomaticamente = !UtilsPlatform.isMobile;
+    if (openSearchAutomatically == null) {
+      openSearchAutomatically = !UtilsPlatform.isMobile;
     }
     if (theme == null) {
       theme = SelectModelTheme(tableTheme: SelectModelThemeTable());
@@ -147,21 +153,21 @@ class SelectModelThemeTable {
 
 enum ButtonsPosition { APPBAR, BOTTOM, IN_TABLE_AND_BOTTOM }
 
-class Linha {
-  String chave;
+class Line {
+  String key;
   Color color;
-  String involucro;
-  LinhaPersonalizada personalizacao;
+  String enclosure;
+  CustomLine customLine;
   ValorPadrao valorPadrao;
 
   /// Usado para o cabeçalho em tabelas
-  String nome;
+  String name;
 
   /// Caso seja != null, infica que o resultado é uma lista, e as quais linhas devem ser exibidas
-  List<Linha> chavesLista;
+  List<Line> listKeys;
 
   /// Define o estilo do texto a ser apresentado
-  TextStyle estiloTexto;
+  TextStyle textStyle;
 
   /// Você pode espeficicar uma formatação a ser aplicada
   FormatData formatData;
@@ -186,14 +192,14 @@ class Linha {
 
   String tableTooltip;
 
-  Linha(this.chave,
+  Line(this.key,
       {this.color,
-      this.involucro,
-      this.personalizacao,
+      this.enclosure,
+      this.customLine,
       this.valorPadrao,
-      this.nome,
-      this.chavesLista,
-      this.estiloTexto,
+      this.name,
+      this.listKeys,
+      this.textStyle,
       this.formatData,
       this.filter,
       this.typeData,
@@ -204,7 +210,7 @@ class Linha {
       this.enableLineFilter = true,
       this.showSizedBoxWhenEmpty = false,
       this.tableTooltip})
-      : assert(chave != null) {
+      : assert(key != null) {
     if (typeData is TDDateTimestamp && filter == null) {
       filter = FilterRangeDate();
       if (formatData == null) {
@@ -212,14 +218,14 @@ class Linha {
             FormatDataTimestamp((typeData as TDDateTimestamp).outputFormat);
       }
     }
-    if (enableLineFilter == null && personalizacao != null) {
+    if (enableLineFilter == null && customLine != null) {
       enableLineFilter = false;
     }
-    if (nome == null) {
+    if (name == null) {
       final pascalWords = RegExp(r"(?:[A-Z]+|^)[a-z]*");
       List<String> getPascalWords(String input) =>
           pascalWords.allMatches(input).map((m) => m[0]).toList();
-      nome = getPascalWords(chave).join(' ').upperCaseFirst();
+      name = getPascalWords(key).join(' ').upperCaseFirst();
     }
   }
 
@@ -227,14 +233,14 @@ class Linha {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
-    return other is Linha &&
-        other.chave == chave &&
+    return other is Line &&
+        other.key == key &&
         other.color == color &&
-        other.involucro == involucro &&
+        other.enclosure == enclosure &&
         other.valorPadrao == valorPadrao &&
-        other.nome == nome &&
-        listEquals(other.chavesLista, chavesLista) &&
-        other.estiloTexto == estiloTexto &&
+        other.name == name &&
+        listEquals(other.listKeys, listKeys) &&
+        other.textStyle == textStyle &&
         other.formatData == formatData &&
         other.filter == filter &&
         other.typeData == typeData;
@@ -242,13 +248,13 @@ class Linha {
 
   @override
   int get hashCode {
-    return chave.hashCode ^
+    return key.hashCode ^
         color.hashCode ^
-        involucro.hashCode ^
+        enclosure.hashCode ^
         valorPadrao.hashCode ^
-        nome.hashCode ^
-        chavesLista.hashCode ^
-        estiloTexto.hashCode ^
+        name.hashCode ^
+        listKeys.hashCode ^
+        textStyle.hashCode ^
         formatData.hashCode ^
         filter.hashCode ^
         typeData.hashCode;
@@ -290,7 +296,7 @@ class TDBoolean extends TypeData {}
 /// Generic class that represents a non-string value, do not use outside the app
 class TDNotString extends TypeData {}
 
-typedef LinhaPersonalizada = Widget Function(CustomLineData);
+typedef CustomLine = Widget Function(CustomLineData);
 
 class CustomLineData {
   dynamic data;
@@ -470,9 +476,9 @@ abstract class _DataSourceBase with Store {
     offset = offset.abs();
     for (Map a in data) {
       // ignore: deprecated_member_use_from_same_package
-      bool preSelecionado = selectModel.itensSelecionados != null &&
+      bool preSelecionado = selectModel.selectedItens != null &&
           // ignore: deprecated_member_use_from_same_package
-          selectModel.itensSelecionados
+          selectModel.selectedItens
               .any((element) => element == a[selectModel.id]);
       if (!preSelecionado) {
         preSelecionado = selectModel.preSelected
@@ -480,26 +486,25 @@ abstract class _DataSourceBase with Store {
             true;
       }
       //caso nao seja pré-selecionado ou a regra é exibir os pre-selecionados
-      if (preSelecionado == false ||
-          selectModel.exibirPreSelecionados == true) {
+      if (preSelecionado == false || selectModel.showPreSelected == true) {
         ItemSelectTable itemSelect = ItemSelectTable();
-        for (var linha in selectModel.linhas) {
+        for (Line line in selectModel.lines) {
           // caso seja uma lista
-          if (linha.chavesLista != null) {
-            String valorLinha = "";
-            for (Map map2 in a[linha.chave]) {
-              for (Linha linha2 in linha.chavesLista) {
-                var ret = map2.getLineValue(linha2.chave);
-                valorLinha += '$ret, ';
+          if (line.listKeys != null) {
+            String lineValue = "";
+            for (Map map2 in a[line.key]) {
+              for (Line linha2 in line.listKeys) {
+                var ret = map2.getLineValue(linha2.key);
+                lineValue += '$ret, ';
               }
             }
-            if (valorLinha.isNotEmpty) {
+            if (lineValue.isNotEmpty) {
               //remove a ultima virgula
-              valorLinha.substring(0, valorLinha.length - 2);
+              lineValue.substring(0, lineValue.length - 2);
             }
-            itemSelect.strings[linha.chave] = valorLinha;
+            itemSelect.strings[line.key] = lineValue;
           } else {
-            itemSelect.strings[linha.chave] = a.getLineValue(linha.chave);
+            itemSelect.strings[line.key] = a.getLineValue(line.key);
           }
         }
 
@@ -585,43 +590,43 @@ class ItemSelectTable extends ItemSelect {
   });
 }
 
-class Acao {
-  Map<String, String>
-      chaves; //keys das colunas a serem enviadas, e o nome como elas devem ir
-  String descricao;
+class ActionSelect {
+  /// Keys das colunas a serem enviadas, e o nome como elas devem ir
+  Map<String, String> keys;
+  String description;
   PageRoute route;
   Widget page;
-  bool edicao;
-  Funcao funcao;
+  FunctionAction function;
 
   /// Tem um papel igual da função, esta porém atualiza a tela quando recebe um resultado verdadeiro
-  FuncaoAtt funcaoAtt;
+  FunctionActionUpd functionUpd;
   Widget icon;
 
   /// Indica se a tela deve ser fechada ou não
-  bool fecharTela;
+  bool closePage;
   bool enabled;
 
-  Acao(
-      {this.descricao,
+  ActionSelect(
+      {this.description,
       this.route,
-      this.chaves,
-      this.edicao,
-      this.funcao,
+      this.keys,
+      this.function,
       this.icon,
       this.page,
-      this.fecharTela = false,
-      this.funcaoAtt,
+      this.closePage = false,
+      this.functionUpd,
       this.enabled}) {
     if (enabled == null) {
-      enabled =
-          funcao != null || funcaoAtt != null || page != null || route != null;
+      enabled = function != null ||
+          functionUpd != null ||
+          page != null ||
+          route != null;
     }
   }
 }
 
-typedef Funcao = void Function(DataFunction);
-typedef FuncaoAtt = Future<bool> Function({dynamic data, BuildContext context});
+typedef FunctionAction = void Function(DataFunction);
+typedef FunctionActionUpd = Future<bool> Function(DataFunction);
 
 class ItemSelectExpanded = _ItemSelectExpandedBase with _$ItemSelectExpanded;
 
@@ -646,7 +651,7 @@ enum TypeSearch { CONTAINS, BEGINSWITH, ENDSWITH, NOTCONTAINS }
 abstract class FilterExp {}
 
 class FilterExpCollun extends FilterExp {
-  Linha line;
+  Line line;
   dynamic value;
   TypeSearch typeSearch;
   FilterExpCollun(
@@ -654,7 +659,7 @@ class FilterExpCollun extends FilterExp {
 }
 
 class FilterExpRangeCollun extends FilterExp {
-  Linha line;
+  Line line;
   DateTime dateStart;
   DateTime dateEnd;
   FilterExpRangeCollun({this.line, this.dateStart, this.dateEnd});
@@ -685,9 +690,9 @@ extension ExEnumTypeSort on EnumTypeSort {
 
 class ItemSort {
   EnumTypeSort typeSort;
-  Linha linha;
+  Line line;
   int indexLine;
-  ItemSort({this.typeSort, this.linha, this.indexLine});
+  ItemSort({this.typeSort, this.line, this.indexLine});
 
   @override
   bool operator ==(Object other) {
@@ -695,9 +700,9 @@ class ItemSort {
 
     return other is ItemSort &&
         other.typeSort == typeSort &&
-        other.linha == linha;
+        other.line == line;
   }
 
   @override
-  int get hashCode => typeSort.hashCode ^ linha.hashCode;
+  int get hashCode => typeSort.hashCode ^ line.hashCode;
 }

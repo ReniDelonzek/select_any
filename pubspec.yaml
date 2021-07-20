@@ -12,7 +12,7 @@ environment:
 dependencies:
   data_table_plus:
     git:
-      url: git@github.com:ReniDelonzek/data_table_plus.git
+      url: https://github.com/ReniDelonzek/data_table_plus.git
       ref: 64a0d73991c5694697fb4d77f1ab1952eba43e34
     #path: "C:/Users/reni/Downloads/Projetos/flutter/libs/data_table_2"
   flutter_date_pickers: ^0.2.4
@@ -25,7 +25,7 @@ dependencies:
     #path: "C:/Users/reni/Downloads/Projetos/agro/libs/msk_utils"
     #path: /Users/reni/Downloads/Projetos/MSK/flutter/msk_plugin/msk_utils
     git:
-      url: git@github.com:ReniDelonzek/msk_utils.git
+      url: https://github.com/ReniDelonzek/msk_utils.git
       ref: 8c4d7ab378b853e6ea732121c14e76dee7741e14
   flutter:
     sdk: flutter

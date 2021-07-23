@@ -443,7 +443,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
       return new Padding(
           padding: EdgeInsets.only(left: 5, right: 5),
           child: ListTile(
-            leading: widget._selectModel.typeSelect == TypeSelect.SIMPLE
+            leading: widget._selectModel.typeSelect == TypeSelect.MULTIPLE
                 ? Checkbox(
                     onChanged: (newValue) {
                       itemSelect.isSelected = newValue;
@@ -503,7 +503,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
           },
           child: Padding(
             padding: const EdgeInsets.all(16.0),
-            child: widget._selectModel.typeSelect == TypeSelect.SIMPLE
+            child: widget._selectModel.typeSelect == TypeSelect.MULTIPLE
                 ? Row(
                     children: [
                       Checkbox(
@@ -568,7 +568,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
           linha.showSizedBoxWhenEmpty == true) {
         return SizedBox();
       }
-      return Text(valor?.toString(),
+      return Text(valor?.toString() ?? '',
           style: linha.textStyle ??
               widget.controller.selectModel.theme.defaultTextStyle);
     }

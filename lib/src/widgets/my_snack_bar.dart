@@ -174,6 +174,9 @@ class MySnackBar extends StatefulWidget implements SnackBar {
 
   @override
   State<MySnackBar> createState() => _MySnackBarState();
+
+  @override
+  DismissDirection get dismissDirection => DismissDirection.down;
 }
 
 class _MySnackBarState extends State<MySnackBar> {

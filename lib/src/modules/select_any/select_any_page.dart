@@ -1,5 +1,3 @@
-import 'dart:io' show Platform;
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -586,7 +584,9 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
   }
 
   Widget _getMenuButton() {
-    if (widget.showBackButton && (!kIsWeb) && !Platform.isAndroid) {
+    if (widget.showBackButton &&
+        (!UtilsPlatform.isWeb) &&
+        !UtilsPlatform.isAndroid) {
       return IconButton(
         icon: UtilsPlatform.isIOS || UtilsPlatform.isMacos
             ? Icon(Icons.arrow_back_ios)

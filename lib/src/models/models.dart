@@ -500,7 +500,7 @@ abstract class _DataSourceBase with Store {
             }
             if (lineValue.isNotEmpty) {
               //remove a ultima virgula
-              lineValue.substring(0, lineValue.length - 2);
+              lineValue = lineValue.substring(0, lineValue.length - 2);
             }
             itemSelect.strings[line.key] = lineValue;
           } else {

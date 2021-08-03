@@ -72,17 +72,16 @@ class UtilsWidget {
                         fontWeight: FontWeight.bold,
                         color: Colors.white))))
         .toList()
-          ..addAll(generateActions && selectModel.actions?.isNotEmpty == true
-              ? [
-                  DataColumn(
-                      label: Text('Ações',
-                          style:
-                              selectModel.theme?.tableTheme?.headerTextStyle ??
-                                  TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white)))
-                ]
-              : []);
+      ..addAll(generateActions && selectModel.actions?.isNotEmpty == true
+          ? [
+              DataColumn(
+                  label: Text('Ações',
+                      style: selectModel.theme?.tableTheme?.headerTextStyle ??
+                          TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white)))
+            ]
+          : []);
   }
 
   static Widget getLinha(SelectModel selectModel, MapEntry item, Map map,

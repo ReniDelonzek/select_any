@@ -78,7 +78,7 @@ class SelectFKWidget extends StatelessWidget {
         buttons: buttons,
         theme: theme);
     if (isRequired == true) {
-      controller.checkSingleObj();
+      controller.checkSingleRow();
     }
     if (typeView != TypeView.SELECTABLE) {
       controller.carregarDados();

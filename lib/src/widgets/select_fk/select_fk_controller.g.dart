@@ -6,57 +6,92 @@ part of 'select_fk_controller.dart';
 // StoreGenerator
 // **************************************************************************
 
-// ignore_for_file: non_constant_identifier_names, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic
+// ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic
 
 mixin _$SelectFKController on _SelectFKBase, Store {
   final _$inFocusAtom = Atom(name: '_SelectFKBase.inFocus');
 
   @override
   bool get inFocus {
-    _$inFocusAtom.context.enforceReadPolicy(_$inFocusAtom);
-    _$inFocusAtom.reportObserved();
+    _$inFocusAtom.reportRead();
     return super.inFocus;
   }
 
   @override
   set inFocus(bool value) {
-    _$inFocusAtom.context.conditionallyRunInAction(() {
+    _$inFocusAtom.reportWrite(value, super.inFocus, () {
       super.inFocus = value;
-      _$inFocusAtom.reportChanged();
-    }, _$inFocusAtom, name: '${_$inFocusAtom.name}_set');
+    });
   }
 
   final _$objAtom = Atom(name: '_SelectFKBase.obj');
 
   @override
   Map<String, dynamic> get obj {
-    _$objAtom.context.enforceReadPolicy(_$objAtom);
-    _$objAtom.reportObserved();
+    _$objAtom.reportRead();
     return super.obj;
   }
 
   @override
   set obj(Map<String, dynamic> value) {
-    _$objAtom.context.conditionallyRunInAction(() {
+    _$objAtom.reportWrite(value, super.obj, () {
       super.obj = value;
-      _$objAtom.reportChanged();
-    }, _$objAtom, name: '${_$objAtom.name}_set');
+    });
   }
 
   final _$showClearIconAtom = Atom(name: '_SelectFKBase.showClearIcon');
 
   @override
   bool get showClearIcon {
-    _$showClearIconAtom.context.enforceReadPolicy(_$showClearIconAtom);
-    _$showClearIconAtom.reportObserved();
+    _$showClearIconAtom.reportRead();
     return super.showClearIcon;
   }
 
   @override
   set showClearIcon(bool value) {
-    _$showClearIconAtom.context.conditionallyRunInAction(() {
+    _$showClearIconAtom.reportWrite(value, super.showClearIcon, () {
       super.showClearIcon = value;
-      _$showClearIconAtom.reportChanged();
-    }, _$showClearIconAtom, name: '${_$showClearIconAtom.name}_set');
+    });
+  }
+
+  final _$listAtom = Atom(name: '_SelectFKBase.list');
+
+  @override
+  ObservableList<ItemSelect<dynamic>> get list {
+    _$listAtom.reportRead();
+    return super.list;
+  }
+
+  @override
+  set list(ObservableList<ItemSelect<dynamic>> value) {
+    _$listAtom.reportWrite(value, super.list, () {
+      super.list = value;
+    });
+  }
+
+  final _$listIsLoadedAtom = Atom(name: '_SelectFKBase.listIsLoaded');
+
+  @override
+  bool get listIsLoaded {
+    _$listIsLoadedAtom.reportRead();
+    return super.listIsLoaded;
+  }
+
+  @override
+  set listIsLoaded(bool value) {
+    _$listIsLoadedAtom.reportWrite(value, super.listIsLoaded, () {
+      super.listIsLoaded = value;
+    });
+  }
+
+  @override
+  String toString() {
+    return '''
+inFocus: ${inFocus},
+obj: ${obj},
+showClearIcon: ${showClearIcon},
+list: ${list},
+listIsLoaded: ${listIsLoaded}
+    ''';
   }
 }

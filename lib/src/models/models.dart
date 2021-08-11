@@ -155,10 +155,14 @@ enum ButtonsPosition { APPBAR, BOTTOM, IN_TABLE_AND_BOTTOM }
 
 class Line {
   String key;
-  Color color;
+
+  /// *Only on the list*
+  /// Wrapping text for content
+  /// Example: My enclosure: ???
+  /// Where ??? will be replaced by the content of the line
   String enclosure;
   CustomLine customLine;
-  ValorPadrao valorPadrao;
+  DefaultValue defaultValue;
 
   /// Usado para o cabeçalho em tabelas
   String name;
@@ -193,10 +197,9 @@ class Line {
   String tableTooltip;
 
   Line(this.key,
-      {this.color,
-      this.enclosure,
+      {this.enclosure,
       this.customLine,
-      this.valorPadrao,
+      this.defaultValue,
       this.name,
       this.listKeys,
       this.textStyle,
@@ -235,9 +238,8 @@ class Line {
 
     return other is Line &&
         other.key == key &&
-        other.color == color &&
         other.enclosure == enclosure &&
-        other.valorPadrao == valorPadrao &&
+        other.defaultValue == defaultValue &&
         other.name == name &&
         listEquals(other.listKeys, listKeys) &&
         other.textStyle == textStyle &&
@@ -249,9 +251,8 @@ class Line {
   @override
   int get hashCode {
     return key.hashCode ^
-        color.hashCode ^
         enclosure.hashCode ^
-        valorPadrao.hashCode ^
+        defaultValue.hashCode ^
         name.hashCode ^
         listKeys.hashCode ^
         textStyle.hashCode ^
@@ -307,7 +308,7 @@ class CustomLineData {
   });
 }
 
-typedef ValorPadrao = String Function(dynamic dados);
+typedef DefaultValue = String Function(dynamic data);
 
 class ObjFormatData {
   dynamic data;

@@ -136,13 +136,17 @@ abstract class DataSourceAny extends DataSource {
     StringBuffer stringBuffer = StringBuffer();
     if (listAll.isNotEmpty) {
       for (var key in listAll.first.keys) {
-        stringBuffer..write(key)..write(';');
+        stringBuffer
+          ..write(key)
+          ..write(';');
       }
       stringBuffer.write('\n');
     }
     for (var item in listAll) {
       for (var value in item.values) {
-        stringBuffer..write(value)..write(';');
+        stringBuffer
+          ..write(value)
+          ..write(';');
       }
       stringBuffer.write('\n');
     }
@@ -280,12 +284,12 @@ abstract class DataSourceAny extends DataSource {
       {TypeData typeData}) {
     // Apply special string formatting
     if (typeData is TDString || typeData is TDNotString) {
-      if (itemSort.line.valorPadrao != null) {
+      if (itemSort.line.defaultValue != null) {
         if (itemSort.typeSort == EnumTypeSort.ASC) {
           return temp.sortedBy((e) {
             String v = e[itemSort.line.key]?.toString()?.toLowerCase()?.trim();
             if (v.isNullOrEmpty) {
-              return itemSort.line.valorPadrao(e) ?? defaultValue;
+              return itemSort.line.defaultValue(e) ?? defaultValue;
             } else
               return v;
           });
@@ -293,7 +297,7 @@ abstract class DataSourceAny extends DataSource {
           return temp.sortedByDesc((e) {
             String v = e[itemSort.line.key]?.toString()?.toLowerCase()?.trim();
             if (v.isNullOrEmpty) {
-              return itemSort.line.valorPadrao(e) ?? defaultValue;
+              return itemSort.line.defaultValue(e) ?? defaultValue;
             } else
               return v;
           });
@@ -310,16 +314,16 @@ abstract class DataSourceAny extends DataSource {
         }
       }
     }
-    if (itemSort.line.valorPadrao != null) {
+    if (itemSort.line.defaultValue != null) {
       if (itemSort.typeSort == EnumTypeSort.ASC) {
         return temp.sortedBy((e) =>
             e[itemSort.line.key] ??
-            itemSort.line.valorPadrao(e) ??
+            itemSort.line.defaultValue(e) ??
             defaultValue);
       } else {
         return temp.sortedByDesc((e) =>
             e[itemSort.line.key] ??
-            itemSort.line.valorPadrao(e) ??
+            itemSort.line.defaultValue(e) ??
             defaultValue);
       }
     } else {
@@ -336,7 +340,8 @@ typedef FontDataAnyInterface = Future<List<Map>> Function(dynamic data);
 
 class FontDataAny extends DataSourceAny {
   FontDataAnyInterface fontData;
-  FontDataAny(this.fontData);
+  FontDataAny(this.fontData, {supportSingleLineFilter = true})
+      : super(supportSingleLineFilter: supportSingleLineFilter);
 
   @override
   Future fetchData(int limit, int offset, SelectModel selectModel,

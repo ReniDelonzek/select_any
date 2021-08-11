@@ -538,7 +538,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
       return null;
     }
     dynamic valor = (item.value == null || item.value.toString().isEmpty)
-        ? (linha.valorPadrao != null ? linha.valorPadrao(map) : item.value)
+        ? (linha.defaultValue != null ? linha.defaultValue(map) : item.value)
         : item.value;
 
     if (linha.formatData != null) {

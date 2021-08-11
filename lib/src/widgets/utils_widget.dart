@@ -102,7 +102,7 @@ class UtilsWidget {
       }
       if (item.value?.toString()?.isNullOrBlank != false) {
         return _getText(
-            linha.valorPadrao?.call(map) ?? '', onTap, linha, selectModel);
+            linha.defaultValue?.call(map) ?? '', onTap, linha, selectModel);
       }
       if (linha.typeData is TDDateTimestamp) {
         return _getText(

@@ -178,9 +178,9 @@ class SelectFKWidget extends StatelessWidget {
                                                         .obj[defaultLine.key]
                                                         .toString()
                                                         .isEmpty)
-                                                ? (defaultLine.valorPadrao !=
+                                                ? (defaultLine.defaultValue !=
                                                         null
-                                                    ? defaultLine.valorPadrao(
+                                                    ? defaultLine.defaultValue(
                                                         controller.obj)
                                                     : 'Linha vazia')
                                                 : controller.obj
@@ -198,9 +198,7 @@ class SelectFKWidget extends StatelessWidget {
                                                 style: controller.inFocus
                                                     ? TextStyle(
                                                         color: Colors.white)
-                                                    : TextStyle(
-                                                        color:
-                                                            defaultLine.color),
+                                                    : defaultLine.textStyle,
                                               )
                                             : defaultLine.customLine(
                                                 CustomLineData(

@@ -144,7 +144,7 @@ class _SelectAnyExpandedPageState extends State<SelectAnyExpandedPage> {
       return null;
     }
     dynamic valor = (item.value == null || item.value.toString().isEmpty)
-        ? (linha.valorPadrao != null ? linha.valorPadrao(map) : '')
+        ? (linha.defaultValue != null ? linha.defaultValue(map) : '')
         : item.value;
     if (linha.formatData != null) {
       valor = linha.formatData.formatData(ObjFormatData(data: valor, map: map));

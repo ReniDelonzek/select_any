@@ -7,14 +7,14 @@ packages:
       name: _fe_analyzer_shared
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "22.0.0"
+    version: "14.0.0"
   analyzer:
-    dependency: "direct overridden"
+    dependency: transitive
     description:
       name: analyzer
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.7.2"
+    version: "0.41.2"
   args:
     dependency: transitive
     description:
@@ -49,7 +49,7 @@ packages:
       name: build
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.6.3"
+    version: "1.6.2"
   build_config:
     dependency: transitive
     description:
@@ -70,7 +70,7 @@ packages:
       name: build_resolvers
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.5.4"
+    version: "1.5.3"
   build_runner:
     dependency: "direct dev"
     description:
@@ -149,34 +149,32 @@ packages:
     source: hosted
     version: "1.15.0"
   convert:
-    dependency: "direct overridden"
+    dependency: transitive
     description:
       name: convert
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.1.1"
+    version: "3.0.1"
   crypto:
-    dependency: "direct overridden"
+    dependency: transitive
     description:
       name: crypto
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.1.5"
+    version: "3.0.1"
   dart_style:
     dependency: transitive
     description:
       name: dart_style
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.3.6"
+    version: "1.3.12"
   data_table_plus:
     dependency: "direct main"
     description:
-      path: "."
-      ref: "64a0d73991c5694697fb4d77f1ab1952eba43e34"
-      resolved-ref: "64a0d73991c5694697fb4d77f1ab1952eba43e34"
-      url: "https://github.com/ReniDelonzek/data_table_plus.git"
-    source: git
+      name: data_table_plus
+      url: "https://pub.dartlang.org"
+    source: hosted
     version: "0.0.1"
   device_info:
     dependency: transitive
@@ -283,7 +281,7 @@ packages:
       name: hive
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.4.4+1"
+    version: "1.6.0-nullsafety.2"
   http:
     dependency: transitive
     description:
@@ -306,7 +304,7 @@ packages:
     source: hosted
     version: "3.1.4"
   intl:
-    dependency: "direct overridden"
+    dependency: "direct main"
     description:
       name: intl
       url: "https://pub.dartlang.org"
@@ -378,19 +376,17 @@ packages:
   msk_utils:
     dependency: "direct main"
     description:
-      path: "."
-      ref: "8c4d7ab378b853e6ea732121c14e76dee7741e14"
-      resolved-ref: "8c4d7ab378b853e6ea732121c14e76dee7741e14"
-      url: "https://github.com/ReniDelonzek/msk_utils.git"
-    source: git
-    version: "0.0.1"
+      name: msk_utils
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.3"
   package_config:
     dependency: transitive
     description:
       name: package_config
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.0"
+    version: "1.9.3"
   package_info:
     dependency: transitive
     description:
@@ -633,7 +629,7 @@ packages:
       name: web_socket_channel
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.1.0"
+    version: "1.2.0"
   win32:
     dependency: transitive
     description:

@@ -1,19 +1,15 @@
 name: select_any
 description: A flexible library for listing data in lists/tables
 version: 0.0.1
-homepage:
-publish_to: none
+repository: https://github.com/ReniDelonzek/select_any
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
   flutter: ">=1.17.0"
 
 dependencies:
-  data_table_plus:
-    git:
-      url: https://github.com/ReniDelonzek/data_table_plus.git
-      ref: 64a0d73991c5694697fb4d77f1ab1952eba43e34
-    #path: "C:/Users/reni/Downloads/Projetos/flutter/libs/data_table_2"
+  intl: ^0.17.0
+  data_table_plus: ^0.0.1
   flutter_date_pickers: ^0.2.4
   share_extend: ^1.1.9
   path_provider: ^2.0.1 
@@ -21,29 +17,19 @@ dependencies:
   bloc_pattern: ^2.5.1
   mobx: ^1.1.0
   flutter_mobx: ^1.1.0+2
-  msk_utils:
-    #path: "C:/Users/reni/Downloads/Projetos/agro/libs/msk_utils"
-    #path: /Users/reni/Downloads/Projetos/MSK/flutter/msk_plugin/msk_utils
-    git:
-      url: https://github.com/ReniDelonzek/msk_utils.git
-      ref: 8c4d7ab378b853e6ea732121c14e76dee7741e14
+  msk_utils: ^0.0.3
   flutter:
     sdk: flutter
-
-dependency_overrides:
-  intl: ^0.17.0
-  crypto: ^2.1.5
-  convert: ^2.1.1
-  analyzer: ^1.7.0
-  mobx_codegen: ^1.1.2
-  mobx: ^1.1.0
-  flutter_mobx: ^1.1.0+2
 
 dev_dependencies:
   build_runner: ^1.7.3
   mobx_codegen: ^1.1.2
   flutter_test:
     sdk: flutter
+
+# dependency_overrides:
+#   meta: "1.7.0"
+#   analyzer: "1.7.2"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

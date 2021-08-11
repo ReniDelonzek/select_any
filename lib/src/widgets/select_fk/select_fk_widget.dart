@@ -47,6 +47,9 @@ class SelectFKWidget extends StatelessWidget {
   final String defaultLabel;
   final bool showTextTitle;
 
+  /// Specifies a special title for the list screen
+  final String customListTitle;
+
   SelectFKWidget(
       this.title, this.id, this.lines, this.controller, this.dataSource,
       {this.defaultLine,
@@ -61,7 +64,8 @@ class SelectFKWidget extends StatelessWidget {
       this.height = 45,
       this.customColor,
       this.defaultLabel,
-      this.showTextTitle = true}) {
+      this.showTextTitle = true,
+      this.customListTitle}) {
     if (this.defaultLine == null) {
       this.defaultLine = lines.first;
     }
@@ -72,7 +76,7 @@ class SelectFKWidget extends StatelessWidget {
       element.closePage = true;
     });
     controller.selectModel = SelectModel(
-        title, id, lines, dataSource, TypeSelect.SIMPLE,
+        customListTitle ?? title, id, lines, dataSource, TypeSelect.SIMPLE,
         openSearchAutomatically: !UtilsPlatform.isMobile,
         actions: actions,
         buttons: buttons,

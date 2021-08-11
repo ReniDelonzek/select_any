@@ -13,15 +13,15 @@ A complete and flexible library for viewing data in tables or lists
 
 ### Large Screens
 
-<img src="https://github.com/ReniDelonzek/select_any/blob/master/screenshots/Captura%20de%20Tela%202021-08-11%20%C3%A0s%2013.33.30.png">
-<img src="https://github.com/ReniDelonzek/select_any/blob/master/screenshots/Captura%20de%20Tela%202021-08-11%20%C3%A0s%2013.32.06.png">
+<img src="https://github.com/ReniDelonzek/select_any/blob/master/screenshots/Captura%20de%20Tela%202021-08-11%20%C3%A0s%2013.33.30.png?raw=true">
+<img src="https://github.com/ReniDelonzek/select_any/blob/master/screenshots/Captura%20de%20Tela%202021-08-11%20%C3%A0s%2013.32.06.png?raw=true">
 
 ### Small Screens
 
  <table>
   <tr>
-    <td><img width="280px" src="https://github.com/ReniDelonzek/select_any/blob/master/screenshots/Captura%20de%20Tela%202021-08-11%20%C3%A0s%2013.32.44.png"></td>
-    <td><img width="280px" src="https://github.com/ReniDelonzek/select_any/blob/master/screenshots/Captura%20de%20Tela%202021-08-11%20%C3%A0s%2013.33.41.png"></td>
+    <td><img width="280px" src="https://github.com/ReniDelonzek/select_any/blob/master/screenshots/Captura%20de%20Tela%202021-08-11%20%C3%A0s%2013.32.44.png?raw=true"></td>
+    <td><img width="280px" src="https://github.com/ReniDelonzek/select_any/blob/master/screenshots/Captura%20de%20Tela%202021-08-11%20%C3%A0s%2013.33.41.png?raw=true"></td>
   </tr>
  </table>
  

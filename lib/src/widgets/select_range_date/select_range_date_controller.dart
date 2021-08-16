@@ -9,11 +9,11 @@ class SelectRangeDateController = _SelectRangeDateController
 
 abstract class _SelectRangeDateController with Store {
   @observable
-  DateTime initialDate;
+  DateTime? initialDate;
   @observable
-  DateTime finalDate;
+  DateTime? finalDate;
   @observable
-  DatePeriod period;
+  DatePeriod? period;
   @computed
   String get data {
     if (initialDate != null && finalDate != null) {
@@ -24,7 +24,7 @@ abstract class _SelectRangeDateController with Store {
 
   _SelectRangeDateController() {
     if (initialDate != null && finalDate != null) {
-      period = DatePeriod(initialDate, finalDate);
+      period = DatePeriod(initialDate!, finalDate!);
     }
   }
 

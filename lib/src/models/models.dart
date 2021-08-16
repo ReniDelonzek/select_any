@@ -21,7 +21,7 @@ enum TypeSelect {
 }
 
 class SelectModel {
-  /// 0 selecao simples, 1 selecao multipla, 2 acao
+  /// Selection type
   TypeSelect typeSelect;
 
   /// Titulo a ser exibido na parte superior
@@ -32,23 +32,23 @@ class SelectModel {
 
   /// Chave do id de cada linha
   String id;
-  List<FilterBase> filters;
+  List<FilterBase>? filters;
 
   /// Ações que serão selecionáveis após o clique em cada item
-  List<ActionSelect> actions;
+  List<ActionSelect>? actions;
 
   /// Botões que apareceram no canto inferior direito
-  List<ActionSelect> buttons;
+  List<ActionSelect>? buttons;
 
   /// Indica a fonte dos dados a ser exibidos
   DataSource dataSource;
 
   /// Uma lista dos ids que devem iniciar pré-selecionados
   @Deprecated("Use preSelected")
-  List<int> selectedItens;
+  List<int>? selectedItens;
 
   /// Uma lista dos ids que devem iniciar pré-selecionados
-  List<ItemSelect> preSelected;
+  List<ItemSelect>? preSelected;
 
   // ignore: deprecated_member_use_from_same_package
   /// define se os itens já selecionados que constam na lista [selectedItens] ou [preSelected]
@@ -56,16 +56,16 @@ class SelectModel {
   bool showPreSelected;
 
   /// Caso a fonte de daos principal falhe, tenta buscar os dados da segunda fonte
-  DataSource alternativeDataSource;
+  DataSource? alternativeDataSource;
 
   /// Caso seja true, abre a pesquisa automaticamente
-  bool openSearchAutomatically;
+  bool? openSearchAutomatically;
 
   /// caso true, não carrega os dados automaticamente, exibindo um botão na tela para fazer isso
   bool confirmToLoadData;
 
   /// Indica se o botão de selecionar todos ficará visível ou não
-  bool allowSelectAll;
+  bool? allowSelectAll;
 
   /// Indica se devem aparecer os campos de filtro para a tabela (EXPERIMENTAL)
   bool showFiltersInput;
@@ -85,34 +85,32 @@ class SelectModel {
       this.confirmToLoadData = false,
       this.allowSelectAll,
       this.showFiltersInput = true,
-      this.theme}) {
+      this.theme =
+          const SelectModelTheme(tableTheme: SelectModelThemeTable())}) {
     if (openSearchAutomatically == null) {
       openSearchAutomatically = !UtilsPlatform.isMobile;
-    }
-    if (theme == null) {
-      theme = SelectModelTheme(tableTheme: SelectModelThemeTable());
     }
   }
 }
 
 class SelectModelTheme {
-  final SelectModelThemeTable tableTheme;
+  final SelectModelThemeTable? tableTheme;
 
   /// Indicates whether the title should be in the center
   final bool centerTitle;
 
   /// Color AppBar
-  final Color appBarBackgroundColor;
+  final Color? appBarBackgroundColor;
 
-  final Color backgroundColor;
+  final Color? backgroundColor;
 
   final ButtonsPosition buttonsPosition;
 
-  final TextStyle defaultTextStyle;
+  final TextStyle? defaultTextStyle;
 
-  final Color defaultIconActionColor;
+  final Color? defaultIconActionColor;
 
-  final EdgeInsets paddingAppBarActions;
+  final EdgeInsets? paddingAppBarActions;
 
   const SelectModelTheme(
       {this.tableTheme,
@@ -133,22 +131,22 @@ class SelectModelThemeTable {
   final bool showTableInCard;
 
   /// Custom width column
-  final Map<int, TableColumnWidth> widthTableColumns;
+  final Map<int, TableColumnWidth>? widthTableColumns;
 
-  final TextStyle headerTextStyle;
+  final TextStyle? headerTextStyle;
 
-  final Color bottomIconsColor;
+  final Color? bottomIconsColor;
 
   /// Table padding
   final EdgeInsetsGeometry tablePadding;
+
   const SelectModelThemeTable(
       {this.headerColor = const Color(0xFF00823A),
       this.showTableInCard = true,
       this.widthTableColumns,
       this.tablePadding = const EdgeInsets.only(left: 16, right: 16),
       this.headerTextStyle,
-      this.bottomIconsColor})
-      : assert(showTableInCard != null);
+      this.bottomIconsColor});
 }
 
 enum ButtonsPosition { APPBAR, BOTTOM, IN_TABLE_AND_BOTTOM }
@@ -160,41 +158,41 @@ class Line {
   /// Wrapping text for content
   /// Example: My enclosure: ???
   /// Where ??? will be replaced by the content of the line
-  String enclosure;
-  CustomLine customLine;
-  DefaultValue defaultValue;
+  String? enclosure;
+  CustomLine? customLine;
+  DefaultValue? defaultValue;
 
   /// Usado para o cabeçalho em tabelas
-  String name;
+  String? name;
 
   /// Caso seja != null, infica que o resultado é uma lista, e as quais linhas devem ser exibidas
-  List<Line> listKeys;
+  List<Line>? listKeys;
 
   /// Define o estilo do texto a ser apresentado
-  TextStyle textStyle;
+  TextStyle? textStyle;
 
   /// Você pode espeficicar uma formatação a ser aplicada
-  FormatData formatData;
+  FormatData? formatData;
 
-  FilterBase filter;
+  FilterBase? filter;
 
-  TypeData typeData;
+  TypeData? typeData;
 
   int maxLines;
 
-  int minLines;
+  int? minLines;
 
   bool enableSorting;
 
-  bool showTextInTableScroll;
+  bool? showTextInTableScroll;
 
   /// Indicates whether the line must support filters specific to it
-  bool enableLineFilter;
+  bool? enableLineFilter;
 
   /// Show sizedbox when empty row
   bool showSizedBoxWhenEmpty;
 
-  String tableTooltip;
+  String? tableTooltip;
 
   Line(this.key,
       {this.enclosure,
@@ -210,10 +208,9 @@ class Line {
       this.minLines,
       this.enableSorting = true,
       this.showTextInTableScroll,
-      this.enableLineFilter = true,
+      this.enableLineFilter,
       this.showSizedBoxWhenEmpty = false,
-      this.tableTooltip})
-      : assert(key != null) {
+      this.tableTooltip}) {
     if (typeData is TDDateTimestamp && filter == null) {
       filter = FilterRangeDate();
       if (formatData == null) {
@@ -226,7 +223,7 @@ class Line {
     }
     if (name == null) {
       final pascalWords = RegExp(r"(?:[A-Z]+|^)[a-z]*");
-      List<String> getPascalWords(String input) =>
+      List<String?> getPascalWords(String input) =>
           pascalWords.allMatches(input).map((m) => m[0]).toList();
       name = getPascalWords(key).join(' ').upperCaseFirst();
     }
@@ -301,7 +298,7 @@ typedef CustomLine = Widget Function(CustomLineData);
 
 class CustomLineData {
   dynamic data;
-  int typeScreen;
+  int? typeScreen;
   CustomLineData({
     this.data,
     this.typeScreen,
@@ -312,7 +309,7 @@ typedef DefaultValue = String Function(dynamic data);
 
 class ObjFormatData {
   dynamic data;
-  Map map;
+  Map? map;
   ObjFormatData({this.data, this.map});
 }
 
@@ -323,13 +320,13 @@ abstract class FormatData {
 }
 
 class FormatDataDate extends FormatData {
-  String inputFormat;
-  String outputFormat;
+  late String inputFormat;
+  late String outputFormat;
 
   @override
   String formatData(ObjFormatData obj) {
     try {
-      String data;
+      String? data;
       if (obj.data is String) {
         data = obj.data;
       } else {
@@ -372,8 +369,8 @@ class FormatDataAny extends FormatData {
 }
 
 class FormatDataMoney extends FormatData {
-  String locale;
-  String symbol;
+  String? locale;
+  String? symbol;
   int maxDecimalDigits;
 
   FormatDataMoney({this.locale, this.symbol, this.maxDecimalDigits = 2});
@@ -393,9 +390,9 @@ abstract class FilterBase {
 }
 
 class FilterRangeDate extends FilterBase {
-  DateTime dateMin;
-  DateTime dateMax;
-  DateTime dateDefault;
+  DateTime? dateMin;
+  DateTime? dateMax;
+  DateTime? dateDefault;
   FilterRangeDate({
     this.dateMin,
     this.dateMax,
@@ -404,14 +401,14 @@ class FilterRangeDate extends FilterBase {
 }
 
 class FilterSelectItem {
-  FontDataFilterBase fontDataFilter;
+  FontDataFilterBase? fontDataFilter;
 
   FilterSelectItem({this.fontDataFilter});
 }
 
 class ItemDataFilter {
-  String label;
-  int id;
+  String? label;
+  int? id;
 }
 
 abstract class FontDataFilterBase {
@@ -432,7 +429,7 @@ abstract class DataSource = _DataSourceBase with _$DataSource;
 
 abstract class _DataSourceBase with Store {
   /// Indica a chave (id) dessa fonte de dados
-  final String id;
+  final String? id;
 
   /// Indica o tempo de delay (em ms) entre a digitação do usuário e a busca dos dados
   /// É util para econimizar banda
@@ -458,28 +455,28 @@ abstract class _DataSourceBase with Store {
       this.supportSingleLineFilter = false});
 
   Future<Stream<ResponseData>> getList(
-      int limit, int offset, SelectModel selectModel,
-      {Map data,
+      int? limit, int offset, SelectModel? selectModel,
+      {Map? data,
       bool refresh = false,
-      ItemSort itemSort,
-      GroupFilterExp filter});
+      ItemSort? itemSort,
+      GroupFilterExp? filter});
 
   Future<Stream<ResponseData>> getListSearch(
-      String text, int limit, int offset, SelectModel selectModel,
-      {Map data,
-      bool refresh,
+      String text, int? limit, int offset, SelectModel? selectModel,
+      {Map? data,
+      bool? refresh,
       TypeSearch typeSearch = TypeSearch.CONTAINS,
-      ItemSort itemSort});
+      ItemSort? itemSort});
 
   List<ItemSelectTable> generateList(
-      List data, int offset, SelectModel selectModel) {
+      List data, int offset, SelectModel? selectModel) {
     ObservableList<ItemSelectTable> lista = ObservableList();
     offset = offset.abs();
-    for (Map a in data) {
+    for (Map a in data as Iterable<Map<dynamic, dynamic>>) {
       // ignore: deprecated_member_use_from_same_package
-      bool preSelecionado = selectModel.selectedItens != null &&
+      bool preSelecionado = selectModel!.selectedItens != null &&
           // ignore: deprecated_member_use_from_same_package
-          selectModel.selectedItens
+          selectModel.selectedItens!
               .any((element) => element == a[selectModel.id]);
       if (!preSelecionado) {
         preSelecionado = selectModel.preSelected
@@ -494,7 +491,7 @@ abstract class _DataSourceBase with Store {
           if (line.listKeys != null) {
             String lineValue = "";
             for (Map map2 in a[line.key]) {
-              for (Line linha2 in line.listKeys) {
+              for (Line linha2 in line.listKeys!) {
                 var ret = map2.getLineValue(linha2.key);
                 lineValue += '$ret, ';
               }
@@ -503,9 +500,9 @@ abstract class _DataSourceBase with Store {
               //remove a ultima virgula
               lineValue = lineValue.substring(0, lineValue.length - 2);
             }
-            itemSelect.strings[line.key] = lineValue;
+            itemSelect.strings![line.key] = lineValue;
           } else {
-            itemSelect.strings[line.key] = a.getLineValue(line.key);
+            itemSelect.strings![line.key] = a.getLineValue(line.key);
           }
         }
 
@@ -523,37 +520,37 @@ abstract class _DataSourceBase with Store {
     return lista;
   }
 
-  Future exportData(SelectModel selectModel);
+  Future exportData(SelectModel? selectModel);
 
   Future clear();
 
-  bool filterTypeSearch(TypeSearch typeSearch, dynamic value, String text) {
+  bool filterTypeSearch(TypeSearch typeSearch, dynamic value, String? text) {
     if (typeSearch == TypeSearch.CONTAINS) {
-      return removeDiacritics(value.toString()).toLowerCase()?.contains(text) ==
+      return removeDiacritics(value.toString()).toLowerCase().contains(text!) ==
           true;
     } else if (typeSearch == TypeSearch.BEGINSWITH) {
       return removeDiacritics(value.toString())
               .toLowerCase()
-              ?.startsWith(text) ==
+              .startsWith(text!) ==
           true;
     } else if (typeSearch == TypeSearch.ENDSWITH) {
-      return removeDiacritics(value.toString()).toLowerCase()?.endsWith(text) ==
+      return removeDiacritics(value.toString()).toLowerCase().endsWith(text!) ==
           true;
     } else if (typeSearch == TypeSearch.NOTCONTAINS) {
-      return removeDiacritics(value.toString()).toLowerCase()?.contains(text) !=
+      return removeDiacritics(value.toString()).toLowerCase().contains(text!) !=
           true;
     }
     return false;
   }
 
-  GroupFilterExp convertFiltersToLowerCase(GroupFilterExp filter) {
+  GroupFilterExp? convertFiltersToLowerCase(GroupFilterExp? filter) {
     if (filter != null) {
-      for (var group in filter.filterExps) {
+      for (var group in filter.filterExps!) {
         if (group is GroupFilterExp) {
-          group = convertFiltersToLowerCase(group);
+          group = convertFiltersToLowerCase(group)!;
         } else if (group is FilterExpCollun) {
           if (group.value is String) {
-            group.value = group.value?.toString()?.toLowerCase();
+            group.value = group.value.toString().toLowerCase();
           }
         }
       }
@@ -563,13 +560,13 @@ abstract class _DataSourceBase with Store {
 }
 
 class ResponseData {
-  int total;
-  Exception exception;
+  int? total;
+  Exception? exception;
   List<ItemSelectTable> data;
 
   /// Campo opcional, indica o filtro aplicado na resposta
   /// Usado para comparar se a resposta ainda é válida de acordo com o input
-  String filter;
+  String? filter;
 
   /// Indica o range que esse retorno atende
   /// Por ex: 1-10
@@ -577,15 +574,15 @@ class ResponseData {
   int end;
   ResponseData(
       {this.exception,
-      @required this.data,
+      required this.data,
       this.total,
       this.filter,
-      @required this.start,
-      @required this.end});
+      required this.start,
+      required this.end});
 }
 
 class ItemSelectTable extends ItemSelect {
-  int position;
+  int? position;
   ItemSelectTable({
     this.position,
   });
@@ -593,19 +590,19 @@ class ItemSelectTable extends ItemSelect {
 
 class ActionSelect {
   /// Keys das colunas a serem enviadas, e o nome como elas devem ir
-  Map<String, String> keys;
-  String description;
-  PageRoute route;
-  Widget page;
-  FunctionAction function;
+  Map<String, String>? keys;
+  String? description;
+  PageRoute? route;
+  Widget? page;
+  FunctionAction? function;
 
   /// Tem um papel igual da função, esta porém atualiza a tela quando recebe um resultado verdadeiro
-  FunctionActionUpd functionUpd;
-  Widget icon;
+  FunctionActionUpd? functionUpd;
+  Widget? icon;
 
   /// Indica se a tela deve ser fechada ou não
   bool closePage;
-  bool enabled;
+  bool? enabled;
 
   ActionSelect(
       {this.description,
@@ -633,14 +630,14 @@ class ItemSelectExpanded = _ItemSelectExpandedBase with _$ItemSelectExpanded;
 
 class DataFunction {
   dynamic data;
-  int index;
-  BuildContext context;
+  int? index;
+  BuildContext? context;
   DataFunction({this.data, this.index, this.context});
 }
 
 abstract class _ItemSelectExpandedBase extends ItemSelect with Store {
   @observable
-  ObservableList<ItemSelectExpanded> items = ObservableList();
+  ObservableList<ItemSelectExpanded>? items = ObservableList();
   @observable
   bool isExpanded = false;
 
@@ -652,7 +649,7 @@ enum TypeSearch { CONTAINS, BEGINSWITH, ENDSWITH, NOTCONTAINS }
 abstract class FilterExp {}
 
 class FilterExpCollun extends FilterExp {
-  Line line;
+  Line? line;
   dynamic value;
   TypeSearch typeSearch;
   FilterExpCollun(
@@ -660,15 +657,15 @@ class FilterExpCollun extends FilterExp {
 }
 
 class FilterExpRangeCollun extends FilterExp {
-  Line line;
-  DateTime dateStart;
-  DateTime dateEnd;
+  Line? line;
+  DateTime? dateStart;
+  DateTime? dateEnd;
   FilterExpRangeCollun({this.line, this.dateStart, this.dateEnd});
 }
 
 class GroupFilterExp extends FilterExp {
-  OperatorFilterEx operatorEx;
-  List<FilterExp> filterExps;
+  OperatorFilterEx? operatorEx;
+  List<FilterExp>? filterExps;
   GroupFilterExp({
     this.operatorEx,
     this.filterExps,
@@ -690,9 +687,9 @@ extension ExEnumTypeSort on EnumTypeSort {
 }
 
 class ItemSort {
-  EnumTypeSort typeSort;
-  Line line;
-  int indexLine;
+  EnumTypeSort? typeSort;
+  Line? line;
+  int? indexLine;
   ItemSort({this.typeSort, this.line, this.indexLine});
 
   @override

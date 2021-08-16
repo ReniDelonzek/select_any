@@ -36,13 +36,13 @@ mixin _$ItemSelectExpanded on _ItemSelectExpandedBase, Store {
   final _$itemsAtom = Atom(name: '_ItemSelectExpandedBase.items');
 
   @override
-  ObservableList<ItemSelectExpanded> get items {
+  ObservableList<ItemSelectExpanded>? get items {
     _$itemsAtom.reportRead();
     return super.items;
   }
 
   @override
-  set items(ObservableList<ItemSelectExpanded> value) {
+  set items(ObservableList<ItemSelectExpanded>? value) {
     _$itemsAtom.reportWrite(value, super.items, () {
       super.items = value;
     });

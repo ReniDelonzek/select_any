@@ -6,9 +6,9 @@ import 'select_any_controller.dart';
 import 'select_any_page.dart';
 
 class SelectAnyModule extends ModuleWidget {
-  final Map data;
-  final SelectModel model;
-  final SelectAnyController controller;
+  final Map? data;
+  final SelectModel? model;
+  final SelectAnyController? controller;
   final bool showBackButton;
 
   SelectAnyModule(this.model,

@@ -6,7 +6,7 @@ import 'package:select_any/src/models/models.dart';
 import 'select_any_expanded_page.dart';
 
 class SelectAnyExpandedModule extends ModuleWidget {
-  final Map data;
+  final Map? data;
   final SelectModel model;
   final ObservableList<ItemSelectExpanded> itens;
 

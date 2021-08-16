@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart' show IterableExtension;
 import 'package:diacritic/diacritic.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -22,8 +23,8 @@ abstract class _SelectAnyBase with Store {
   int typeDiplay = UtilsPlatform.isMobile ? 1 : 2;
   @observable
   String searchText = "";
-  String title;
-  Map data;
+  String? title;
+  Map? data;
   @computed
   ObservableList<ItemSelectTable> get listaExibida {
     if (searchText.isEmpty) {
@@ -32,11 +33,9 @@ abstract class _SelectAnyBase with Store {
     ObservableList<ItemSelectTable> tempList = ObservableList();
     String text = removeDiacritics(searchText.toLowerCase());
     for (int i = 0; i < list.length; i++) {
-      for (var value in list[i].strings.values) {
+      for (var value in list[i].strings!.values) {
         if (value != null) {
-          if (removeDiacritics(value.toString())
-                  .toLowerCase()
-                  ?.contains(text) ==
+          if (removeDiacritics(value.toString()).toLowerCase().contains(text) ==
               true) {
             tempList.add(list[i]);
             break;
@@ -50,8 +49,8 @@ abstract class _SelectAnyBase with Store {
   @observable
   Icon searchIcon = new Icon(Icons.search);
   @observable
-  Widget appBarTitle;
-  DataSource actualDataSource;
+  Widget? appBarTitle;
+  DataSource? actualDataSource;
 
   /// Cria uma nova variavel, pois se usar a do model,
   /// ela mantém as configurações mesmo depois de sair da tela
@@ -61,7 +60,7 @@ abstract class _SelectAnyBase with Store {
   /// Indica se a o tipo de tela deve ser trocado de acordo com o tamanho de tela ou não
   final bool dynamicScreen;
 
-  SelectModel selectModel;
+  SelectModel? selectModel;
   @observable
   int page = 1;
   @observable
@@ -84,7 +83,7 @@ abstract class _SelectAnyBase with Store {
 
   /// Indica a quantidade de itens que estaram disponíveis na página
   @observable
-  int quantityItensPage = 10;
+  int? quantityItensPage = 10;
 
   /// Indica que mais dados estão sendo carregados
   @observable
@@ -101,20 +100,20 @@ abstract class _SelectAnyBase with Store {
   bool showSearch = true;
 
   bool get showLineFilter =>
-      selectModel.showFiltersInput == true &&
+      selectModel!.showFiltersInput == true &&
       actualDataSource?.supportSingleLineFilter != false;
 
-  ItemSort itemSort;
+  ItemSort? itemSort;
 
   _SelectAnyBase({this.dynamicScreen = true});
 
-  init(String title, SelectModel selectModel, Map data) {
+  init(String title, SelectModel? selectModel, Map? data) {
     this.selectModel = selectModel;
     this.data = data;
     appBarTitle = Text(title);
 
-    UtilsHive.getInstance().getBox('select_utils').then((value) async {
-      int newValue =
+    UtilsHive.getInstance()!.getBox('select_utils').then((value) async {
+      int? newValue =
           (await value.get('quantityItensPage')) ?? quantityItensPage;
       if (newValue != quantityItensPage &&
           inList(getNumberItemsPerPage, newValue)) {
@@ -138,19 +137,19 @@ abstract class _SelectAnyBase with Store {
   void dispose() {
     list.clear();
     filter.clear();
-    actualDataSource?.listData?.clear();
+    actualDataSource?.listData.clear();
     actualDataSource?.clear();
     loaded = false;
   }
 
-  setDataSource({int offset, bool refresh = false}) async {
+  setDataSource({int? offset, bool refresh = false}) async {
     showSearch = true;
     try {
       GroupFilterExp groupFilterExp = buildFilterExpression();
-      showSearch = groupFilterExp.filterExps.isEmpty;
+      showSearch = groupFilterExp.filterExps!.isEmpty;
       loading = true;
-      offset ??= (page - 1) * quantityItensPage;
-      (await actualDataSource.getList(quantityItensPage, offset, selectModel,
+      offset ??= (page - 1) * quantityItensPage!;
+      (await actualDataSource!.getList(quantityItensPage, offset, selectModel,
               data: data,
               refresh: refresh,
               itemSort: itemSort,
@@ -159,11 +158,11 @@ abstract class _SelectAnyBase with Store {
         error = null;
         if (filter.text.trim().isEmpty) {
           /// Caso seja -1, não remove nada pois ela deve retornar todos os registros
-          if (offset > -1) {
+          if (offset! > -1) {
             /// Remove todos os registros que o id não consta no range retornado
             list.removeWhere((element) {
-              return element.position <= event.end &&
-                  element.position >= event.start &&
+              return element.position! <= event.end &&
+                  element.position! >= event.start &&
                   !event.data.any((e2) {
                     return e2.id == element.id;
                   });
@@ -189,7 +188,7 @@ abstract class _SelectAnyBase with Store {
           });
           loading = false;
           loadingMore = false;
-          total = event.total;
+          total = event.total ?? 0;
         }
       }, onError: (error) {
         print(error);
@@ -206,14 +205,14 @@ abstract class _SelectAnyBase with Store {
     }
   }
 
-  setDataSourceSearch({int offset, bool refresh = false}) async {
+  setDataSourceSearch({int? offset, bool refresh = false}) async {
     showSearch = true;
     try {
       inicializarFonteDados();
       loading = true;
       String text = removeDiacritics(filter.text.trim()).toLowerCase();
-      (await actualDataSource.getListSearch(text, quantityItensPage,
-              offset ?? (page - 1) * quantityItensPage, selectModel,
+      (await actualDataSource!.getListSearch(text, quantityItensPage,
+              offset ?? (page - 1) * quantityItensPage!, selectModel,
               data: data,
               refresh: refresh,
               typeSearch: typeSearch,
@@ -226,8 +225,8 @@ abstract class _SelectAnyBase with Store {
             text == event.filter) {
           /// Remove todos os registros que o id não consta no range retornado
           list.removeWhere((element) {
-            return element.position <= event.end &&
-                element.position >= event.start &&
+            return element.position! <= event.end &&
+                element.position! >= event.start &&
                 !event.data.any((e2) {
                   return e2.id == element.id;
                 });
@@ -251,7 +250,7 @@ abstract class _SelectAnyBase with Store {
               list.add(item);
             }
           });
-          total = event.total;
+          total = event.total ?? 0;
           loading =
               !(removeDiacritics(filter.text.trim()).toLowerCase() == text);
         }
@@ -275,7 +274,7 @@ abstract class _SelectAnyBase with Store {
     if (confirmToLoadData) {
       confirmToLoadData = false;
       if (actualDataSource == null) {
-        actualDataSource = selectModel.dataSource;
+        actualDataSource = selectModel!.dataSource;
       }
     }
   }
@@ -300,10 +299,10 @@ abstract class _SelectAnyBase with Store {
     --total;
   }
 
-  int get getOffSet => typeDiplay == 1 ? -1 : (page - 1) * quantityItensPage;
+  int get getOffSet => typeDiplay == 1 ? -1 : (page - 1) * quantityItensPage!;
 
   export() {
-    actualDataSource.exportData(selectModel);
+    actualDataSource!.exportData(selectModel);
   }
 
   /// Executa a pesquisa caso o texto seja diferente ou reload seja true
@@ -320,14 +319,13 @@ abstract class _SelectAnyBase with Store {
         /// Usa para guardar o valor original
         String tempSearchText = searchText;
         Future.delayed(
-            Duration(milliseconds: selectModel.dataSource.searchDelay ?? 300),
-            () {
+            Duration(milliseconds: selectModel!.dataSource.searchDelay), () {
           /// Só executa a pesquisa se o input não tiver mudado
           if (tempSearchText == filter.text.trim()) {
             list.clear();
             page = 1;
             setDataSourceSearch(
-                offset: selectModel.dataSource.supportPaginate
+                offset: selectModel!.dataSource.supportPaginate
                     ? null
                     : typeDiplay == 1
                         ? -1
@@ -338,7 +336,7 @@ abstract class _SelectAnyBase with Store {
     }
   }
 
-  updateTypeSearch(TypeSearch newType) {
+  updateTypeSearch(TypeSearch? newType) {
     if (newType != null && newType != typeSearch) {
       page = 1;
       typeSearch = newType;
@@ -353,29 +351,27 @@ abstract class _SelectAnyBase with Store {
   GroupFilterExp buildFilterExpression() {
     List<FilterExp> exps = [];
     filterControllers.forEach((key, value) {
-      Line line = selectModel.lines
-          .firstWhere((element) => element.key == key, orElse: () => null);
+      Line? line =
+          selectModel!.lines.firstWhereOrNull((element) => element.key == key);
       if (line == null) {
         return;
       }
       if (line.filter != null) {
         if (line.filter is FilterRangeDate &&
             ((value as SelectRangeDateWidget).controller.initialDate != null ||
-                (value as SelectRangeDateWidget).controller.finalDate !=
-                    null)) {
+                value.controller.finalDate != null)) {
           exps.add(FilterExpRangeCollun(
               line: line,
-              dateStart:
-                  (value as SelectRangeDateWidget).controller.initialDate,
-              dateEnd: (value as SelectRangeDateWidget).controller.finalDate));
+              dateStart: value.controller.initialDate,
+              dateEnd: value.controller.finalDate));
         }
       } else {
         if (value is Padding) {
           if (value.child is TextField) {
-            if ((value.child as TextField).controller.text.trim().isNotEmpty) {
+            if ((value.child as TextField).controller!.text.trim().isNotEmpty) {
               exps.add(FilterExpCollun(
                   line: line,
-                  value: (value.child as TextField).controller.text.trim(),
+                  value: (value.child as TextField).controller!.text.trim(),
                   typeSearch: typeSearch));
             }
           }
@@ -385,7 +381,7 @@ abstract class _SelectAnyBase with Store {
     return GroupFilterExp(filterExps: exps, operatorEx: OperatorFilterEx.AND);
   }
 
-  setCorretDataSource({int offset, bool refresh = false}) {
+  setCorretDataSource({int? offset, bool refresh = false}) {
     if (filter.text.isEmpty) {
       setDataSource(offset: offset, refresh: refresh);
     } else {
@@ -399,7 +395,7 @@ abstract class _SelectAnyBase with Store {
         value.controller.clear();
       } else if (value is Padding) {
         if (value.child is TextField) {
-          (value.child as TextField).controller.clear();
+          (value.child as TextField).controller!.clear();
         }
       }
     });

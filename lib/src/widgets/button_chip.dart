@@ -5,10 +5,10 @@ import 'package:select_any/src/utils/utils_color.dart';
 class ButtonChip extends StatelessWidget {
   final String title;
   final bool isSelected;
-  final GestureTapCallback onTap;
-  final Color textColor;
+  final GestureTapCallback? onTap;
+  final Color? textColor;
   final EdgeInsetsGeometry padding;
-  final TextStyle textStyle;
+  final TextStyle? textStyle;
 
   ButtonChip(this.title,
       {this.isSelected = false,

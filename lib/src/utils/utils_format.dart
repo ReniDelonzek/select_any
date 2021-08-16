@@ -2,7 +2,7 @@ import 'package:msk_utils/msk_utils.dart';
 import 'package:intl/intl.dart';
 
 class UtilsFormat {
-  static String formatMoney(double value,
+  static String formatMoney(double? value,
       {int maxDecimalDigits = 4,
       int minDecimalDigits = 2,
       String locale = 'pt_BR',

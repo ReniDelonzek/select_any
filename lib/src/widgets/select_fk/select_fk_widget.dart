@@ -8,9 +8,9 @@ import 'package:select_any/src/widgets/button_chip.dart';
 
 import 'select_fk_controller.dart';
 
-typedef SelectedFK = Future<bool> Function(Map<String, dynamic> obj, Function);
+typedef SelectedFK = Future<bool> Function(Map<String, dynamic>? obj, Function);
 
-typedef ValidationSelect = Future<bool> Function(Map<String, dynamic> obj);
+typedef ValidationSelect = Future<bool> Function(Map<String, dynamic>? obj);
 
 typedef ConvertValue = Future<Map<String, dynamic>> Function(dynamic obj);
 
@@ -26,29 +26,29 @@ class SelectFKWidget extends StatelessWidget {
 
   /// Dispara toda fez que um registro é selecionado
   /// Caso retorne false, a seleção é cancelada
-  final SelectedFK selectedFK;
-  final ValidationSelect preValidationSelect;
-  final List<ActionSelect> actions;
-  final List<ActionSelect> buttons;
-  Line defaultLine;
+  final SelectedFK? selectedFK;
+  final ValidationSelect? preValidationSelect;
+  final List<ActionSelect>? actions;
+  final List<ActionSelect>? buttons;
+  Line? defaultLine;
   final bool isRequired;
 
   /// Custom theme
-  SelectModelTheme theme;
+  SelectModelTheme? theme;
 
   final TypeView typeView;
 
   /// Caso seja necessário aplicar alguma conversão do valor selecionado
-  final ConvertValue convertValue;
+  final ConvertValue? convertValue;
 
   ///
   final double height;
-  final Color customColor;
-  final String defaultLabel;
+  final Color? customColor;
+  final String? defaultLabel;
   final bool showTextTitle;
 
   /// Specifies a special title for the list screen
-  final String customListTitle;
+  final String? customListTitle;
 
   SelectFKWidget(
       this.title, this.id, this.lines, this.controller, this.dataSource,
@@ -80,7 +80,7 @@ class SelectFKWidget extends StatelessWidget {
         openSearchAutomatically: !UtilsPlatform.isMobile,
         actions: actions,
         buttons: buttons,
-        theme: theme);
+        theme: theme ?? SelectModelTheme());
     if (isRequired == true) {
       controller.checkSingleRow();
     }
@@ -171,26 +171,27 @@ class SelectFKWidget extends StatelessWidget {
                                         String valor = controller.obj == null
                                             ? (defaultLabel ??
                                                 'Toque para selecionar')
-                                            : (controller.obj[
-                                                            defaultLine.key] ==
+                                            : (controller.obj![
+                                                            defaultLine!.key] ==
                                                         null ||
                                                     controller
-                                                        .obj[defaultLine.key]
+                                                        .obj![defaultLine!.key]
                                                         .toString()
                                                         .isEmpty)
-                                                ? (defaultLine.defaultValue !=
+                                                ? (defaultLine!.defaultValue !=
                                                         null
-                                                    ? defaultLine.defaultValue(
+                                                    ? defaultLine!
+                                                            .defaultValue!(
                                                         controller.obj)
                                                     : 'Linha vazia')
                                                 : controller.obj
                                                     .getLineValue(
-                                                        defaultLine.key)
+                                                        defaultLine!.key)
                                                     .toString();
-                                        return defaultLine.customLine == null
+                                        return defaultLine!.customLine == null
                                             ? Text(
-                                                (defaultLine.enclosure != null
-                                                    ? defaultLine.enclosure
+                                                (defaultLine!.enclosure != null
+                                                    ? defaultLine!.enclosure!
                                                         .replaceAll(
                                                             '???', valor)
                                                     : valor),
@@ -198,9 +199,9 @@ class SelectFKWidget extends StatelessWidget {
                                                 style: controller.inFocus
                                                     ? TextStyle(
                                                         color: Colors.white)
-                                                    : defaultLine.textStyle,
+                                                    : defaultLine!.textStyle,
                                               )
-                                            : defaultLine.customLine(
+                                            : defaultLine!.customLine!(
                                                 CustomLineData(
                                                     data: controller.obj));
                                       },
@@ -210,7 +211,7 @@ class SelectFKWidget extends StatelessWidget {
                               ),
                               AnimatedCrossFade(
                                 firstChild: Container(
-                                  height: height ?? 45,
+                                  height: height,
                                   child: IconButton(
                                       icon: Icon(Icons.close),
                                       tooltip: 'Limpar',
@@ -271,12 +272,12 @@ class SelectFKWidget extends StatelessWidget {
                     Radio(
                       value: element.object,
                       groupValue: controller.obj,
-                      onChanged: (value) {
+                      onChanged: (dynamic value) {
                         _validateSelectList(element.object);
                       },
                     ),
                     SizedBox(width: 8),
-                    Text(element.strings.values.first ?? '',
+                    Text(element.strings!.values.first ?? '',
                         style: theme.textTheme.subtitle1)
                   ],
                 ),
@@ -290,7 +291,7 @@ class SelectFKWidget extends StatelessWidget {
         .map((element) => Padding(
               padding: const EdgeInsets.only(top: 8),
               child: ButtonChip(
-                '${element.strings.values.first ?? ''}',
+                '${element.strings!.values.first ?? ''}',
                 isSelected: controller.obj == element.object,
                 onTap: () {
                   _validateSelectList(element.object);
@@ -313,7 +314,7 @@ class SelectFKWidget extends StatelessWidget {
 
   void _validateResult(res) async {
     if (selectedFK != null) {
-      if (await selectedFK(res, (bool b) {
+      if (await selectedFK!(res, (bool b) {
             if (b == true) {
               _convertValue(res);
             }
@@ -328,12 +329,12 @@ class SelectFKWidget extends StatelessWidget {
 
   Future<bool> _preValidate() async {
     return (preValidationSelect == null ||
-        await preValidationSelect(controller.obj) == true);
+        await preValidationSelect!(controller.obj) == true);
   }
 
   Future<void> _convertValue(res) async {
     if (convertValue != null) {
-      res = await convertValue(res);
+      res = await convertValue!(res);
     }
     controller.obj = res;
   }

@@ -5,11 +5,13 @@ import 'package:select_any/src/utils/utils_file.dart';
 import 'package:select_any/select_any.dart';
 
 abstract class DataSourceAny extends DataSource {
-  List<Map<String, dynamic>> listAll;
-  ItemSort _actualySort;
+  List<Map<String, dynamic>>? listAll;
+  ItemSort? _actualySort;
 
   DataSourceAny(
-      {String id, bool allowExport = true, bool supportSingleLineFilter = true})
+      {String? id,
+      bool allowExport = true,
+      bool supportSingleLineFilter = true})
       : super(
             id: id,
             allowExport: allowExport,
@@ -17,16 +19,16 @@ abstract class DataSourceAny extends DataSource {
 
   @override
   Future<Stream<ResponseData>> getList(
-    int limit,
+    int? limit,
     int offset,
-    SelectModel selectModel, {
-    Map data,
+    SelectModel? selectModel, {
+    Map? data,
     bool refresh = false,
-    ItemSort itemSort,
-    GroupFilterExp filter,
+    ItemSort? itemSort,
+    GroupFilterExp? filter,
   }) async {
     if (listAll == null ||
-        listAll.isEmpty ||
+        listAll!.isEmpty ||
         refresh == true ||
         // Caso o itemSort tenha sido anulado, atualiza a lista para restaurar a formatação padrão
         (itemSort == null && _actualySort != null)) {
@@ -35,16 +37,16 @@ abstract class DataSourceAny extends DataSource {
     }
 
     if (itemSort != _actualySort) {
-      listAll = applySortFilters(itemSort, selectModel.id, listAll);
+      listAll = applySortFilters(itemSort, selectModel!.id, listAll);
     }
 
     filter = convertFiltersToLowerCase(filter);
 
-    List<Map<String, dynamic>> tempList = [];
-    if (filter != null && filter.filterExps.isNotEmpty) {
-      for (int i = 0; i < listAll.length; i++) {
-        if (applyGroupFilterExp(filter, listAll[i])) {
-          tempList.add(listAll[i]);
+    List<Map<String, dynamic>>? tempList = [];
+    if (filter != null && filter.filterExps!.isNotEmpty) {
+      for (int i = 0; i < listAll!.length; i++) {
+        if (applyGroupFilterExp(filter, listAll![i])) {
+          tempList.add(listAll![i]);
         }
       }
     } else {
@@ -57,16 +59,16 @@ abstract class DataSourceAny extends DataSource {
         total: tempList?.length ?? 0,
         data: generateList(subList, offset, selectModel),
         start: offset,
-        end: offset + limit));
+        end: offset + limit!));
   }
 
   List<Map<String, dynamic>> getSubList(
-      int offset, int limit, List<Map<String, dynamic>> tempList) {
+      int offset, int? limit, List<Map<String, dynamic>>? tempList) {
     List<Map<String, dynamic>> subList = [];
     if (tempList == null) return subList;
     if (offset == -1) {
       subList = tempList;
-    } else if (limit > 0 && limit + offset < tempList.length) {
+    } else if (limit! > 0 && limit + offset < tempList.length) {
       subList = tempList.sublist(offset, limit + offset);
     } else if (offset < tempList.length) {
       subList = tempList.sublist(offset);
@@ -78,25 +80,25 @@ abstract class DataSourceAny extends DataSource {
 
   @override
   Future<Stream<ResponseData>> getListSearch(
-      String text, int limit, int offset, SelectModel selectModel,
-      {Map data,
-      bool refresh = false,
+      String text, int? limit, int offset, SelectModel? selectModel,
+      {Map? data,
+      bool? refresh = false,
       TypeSearch typeSearch = TypeSearch.CONTAINS,
-      ItemSort itemSort}) async {
-    if (listAll == null || listAll.isEmpty || refresh == true) {
+      ItemSort? itemSort}) async {
+    if (listAll == null || listAll!.isEmpty || refresh == true) {
       await fetchData(limit, offset, selectModel, data: data);
     }
-    List<Map<String, dynamic>> tempList =
-        applyFilterList(typeSearch, listAll, text);
+    List<Map<String, dynamic>>? tempList =
+        applyFilterList(typeSearch, listAll!, text);
 
-    tempList = applySortFilters(itemSort, selectModel.id, tempList);
+    tempList = applySortFilters(itemSort, selectModel!.id, tempList);
 
     List<Map<String, dynamic>> subList = getSubList(offset, limit, tempList);
     return Stream.value(ResponseData(
-        total: tempList.length,
+        total: tempList!.length,
         data: generateList(subList, offset, selectModel),
         start: offset,
-        end: offset + limit,
+        end: offset + limit!,
         filter: text));
   }
 
@@ -106,7 +108,7 @@ abstract class DataSourceAny extends DataSource {
     for (int i = 0; i < list.length; i++) {
       if (typeSearch == TypeSearch.NOTCONTAINS) {
         bool contains = false;
-        for (var value in listAll[i].values) {
+        for (var value in listAll![i].values) {
           if (value != null) {
             if (removeDiacritics(value.toString())
                 .toLowerCase()
@@ -117,13 +119,13 @@ abstract class DataSourceAny extends DataSource {
           }
         }
         if (!contains) {
-          tempList.add(listAll[i]);
+          tempList.add(listAll![i]);
         }
       } else {
-        for (var value in listAll[i].values) {
+        for (var value in listAll![i].values) {
           if (value != null) {
             if (filterTypeSearch(typeSearch, value, text)) {
-              tempList.add(listAll[i]);
+              tempList.add(listAll![i]);
               break;
             }
           }
@@ -133,17 +135,17 @@ abstract class DataSourceAny extends DataSource {
     return tempList;
   }
 
-  Future exportData(SelectModel selectModel) async {
+  Future exportData(SelectModel? selectModel) async {
     StringBuffer stringBuffer = StringBuffer();
-    if (listAll.isNotEmpty) {
-      for (var key in listAll.first.keys) {
+    if (listAll!.isNotEmpty) {
+      for (var key in listAll!.first.keys) {
         stringBuffer
           ..write(key)
           ..write(';');
       }
       stringBuffer.write('\n');
     }
-    for (var item in listAll) {
+    for (var item in listAll!) {
       for (var value in item.values) {
         stringBuffer
           ..write(value)
@@ -152,12 +154,13 @@ abstract class DataSourceAny extends DataSource {
       stringBuffer.write('\n');
     }
     UtilsFile.saveFileString(stringBuffer.toString(),
-        dirComplementar: '${selectModel.title}',
+        dirComplementar: '${selectModel!.title}',
         fileName: '${DateTime.now().string('dd-MM-yyyy HH-mm-ss')}.csv');
     return;
   }
 
-  Future fetchData(int limit, int offset, SelectModel selectModel, {Map data});
+  Future fetchData(int? limit, int offset, SelectModel? selectModel,
+      {Map? data});
 
   @override
   Future clear() async {
@@ -167,15 +170,15 @@ abstract class DataSourceAny extends DataSource {
 
   bool applyGroupFilterExp(
       GroupFilterExp groupFilterExp, Map<String, dynamic> map) {
-    bool filterAndOk;
-    for (var filter in groupFilterExp.filterExps) {
+    bool? filterAndOk;
+    for (var filter in groupFilterExp.filterExps!) {
       if (groupFilterExp.operatorEx == OperatorFilterEx.OR) {
         /// Como é uma expressão or, caso esse filtro seja verdadeiro sempre retorna true
 
         if (filter is FilterExpCollun) {
-          var value = map[filter.line.key];
-          if (filter.line.formatData != null) {
-            value = filter.line.formatData
+          var value = map[filter.line!.key];
+          if (filter.line!.formatData != null) {
+            value = filter.line!.formatData!
                 .formatData(ObjFormatData(data: value, map: map));
           }
           if (filterTypeSearch(filter.typeSearch, value, filter.value)) {
@@ -189,9 +192,9 @@ abstract class DataSourceAny extends DataSource {
       } else if (groupFilterExp.operatorEx == OperatorFilterEx.AND) {
         /// Expressão AND seta filterAndOk = true caso seja true, caso seja falso retorna false na função,
         if (filter is FilterExpCollun) {
-          var value = map[filter.line.key];
-          if (filter.line.formatData != null) {
-            value = filter.line.formatData
+          var value = map[filter.line!.key];
+          if (filter.line!.formatData != null) {
+            value = filter.line!.formatData!
                 .formatData(ObjFormatData(data: value, map: map));
           }
           if (filterTypeSearch(filter.typeSearch, value, filter.value)) {
@@ -206,10 +209,10 @@ abstract class DataSourceAny extends DataSource {
             return false;
           }
         } else if (filter is FilterExpRangeCollun) {
-          if (map[filter.line.key] != null &&
-              map[filter.line.key] >
+          if (map[filter.line!.key] != null &&
+              map[filter.line!.key] >
                   (filter.dateStart?.millisecondsSinceEpoch ?? 0) &&
-              map[filter.line.key] <
+              map[filter.line!.key] <
                   (filter.dateEnd?.millisecondsSinceEpoch ??
                       double.maxFinite.toInt())) {
             filterAndOk = true;
@@ -223,53 +226,52 @@ abstract class DataSourceAny extends DataSource {
   }
 
   bool compareValues(value1, value2) {
-    return removeDiacritics(value1.toString())
-            .toLowerCase()
-            ?.contains(value2) ==
-        true;
+    if (value1 == null || value2 == null) return value1 == value2;
+    return removeDiacritics(value1.toString()).toLowerCase().contains(value2);
   }
 
-  List<Map<String, dynamic>> applySortFilters(
-      ItemSort itemSort, String keyId, List<Map<String, dynamic>> list) {
+  List<Map<String, dynamic>>? applySortFilters(
+      ItemSort? itemSort, String keyId, List<Map<String, dynamic>>? list) {
     _actualySort = itemSort;
     try {
-      if (itemSort != null && list.isNotEmpty) {
+      if (itemSort != null && list!.isNotEmpty) {
         //DateTime datetime = DateTime.now();
 
         /// Maintain a consistent order for the list
-        var temp = list.sortedBy((e) => e[keyId]);
-        TypeData typeData = itemSort.line.typeData;
+        var temp = list.sortedBy((e) => e![keyId]);
+        TypeData? typeData = itemSort.line!.typeData;
         if (typeData == null) {
           /// If you have at least one string, consider everything as a string
           /// The other types of data require that they all have the same type
-          if (list.any((element) => element[itemSort.line.key] is String)) {
+          if (list.any((element) => element[itemSort.line!.key] is String)) {
             typeData = TDString();
           } else if (list
-              .every((element) => element[itemSort.line.key] is num)) {
+              .every((element) => element[itemSort.line!.key] is num)) {
             typeData = TDNumber();
           } else if (list
-              .every((element) => element[itemSort.line.key] is bool)) {
+              .every((element) => element[itemSort.line!.key] is bool)) {
             typeData = TDBoolean();
           } else {
             typeData = TDNotString();
           }
 
           // Save the data type so you don't need to scroll through the list again
-          itemSort.line.typeData = typeData;
+          itemSort.line!.typeData = typeData;
         }
 
         if (typeData is TDString || typeData is TDNotString) {
-          list = _sort(temp, itemSort, '', typeData: typeData);
+          list = _sort(temp as List<Map<String, dynamic>>, itemSort, '',
+              typeData: typeData);
         } else if (typeData is TDNumber) {
-          list = _sort(temp, itemSort, 0);
+          list = _sort(temp as List<Map<String, dynamic>>, itemSort, 0);
         } else if (typeData is TDBoolean) {
-          list = _sort(temp, itemSort, false);
+          list = _sort(temp as List<Map<String, dynamic>>, itemSort, false);
         } else if (typeData is TDDateTimestamp) {
-          list = _sort(temp, itemSort, 0);
+          list = _sort(temp as List<Map<String, dynamic>>, itemSort, 0);
         } else if (typeData is TDDateString) {
-          list = _sort(temp, itemSort, '');
+          list = _sort(temp as List<Map<String, dynamic>>, itemSort, '');
         } else {
-          list = _sort(temp, itemSort, null);
+          list = _sort(temp as List<Map<String, dynamic>>, itemSort, null);
         }
         //debugPrint(
         //    'Sort in: ${DateTime.now().difference(datetime).inMilliseconds}');
@@ -282,56 +284,58 @@ abstract class DataSourceAny extends DataSource {
 
   static List<Map<String, dynamic>> _sort(
       List<Map<String, dynamic>> temp, ItemSort itemSort, dynamic defaultValue,
-      {TypeData typeData}) {
+      {TypeData? typeData}) {
     // Apply special string formatting
     if (typeData is TDString || typeData is TDNotString) {
-      if (itemSort.line.defaultValue != null) {
+      if (itemSort.line!.defaultValue != null) {
         if (itemSort.typeSort == EnumTypeSort.ASC) {
           return temp.sortedBy((e) {
-            String v = e[itemSort.line.key]?.toString()?.toLowerCase()?.trim();
+            String? v = e![itemSort.line!.key]?.toString().toLowerCase().trim();
             if (v.isNullOrEmpty) {
-              return itemSort.line.defaultValue(e) ?? defaultValue;
+              return itemSort.line!.defaultValue!(e);
             } else
               return v;
-          });
+          }) as List<Map<String, dynamic>>;
         } else {
           return temp.sortedByDesc((e) {
-            String v = e[itemSort.line.key]?.toString()?.toLowerCase()?.trim();
+            String? v = e![itemSort.line!.key]?.toString().toLowerCase().trim();
             if (v.isNullOrEmpty) {
-              return itemSort.line.defaultValue(e) ?? defaultValue;
+              return itemSort.line!.defaultValue!(e);
             } else
               return v;
-          });
+          }) as List<Map<String, dynamic>>;
         }
       } else {
         if (itemSort.typeSort == EnumTypeSort.ASC) {
           return temp.sortedBy((e) =>
-              e[itemSort.line.key]?.toString()?.toLowerCase()?.trim() ??
-              defaultValue);
+              e![itemSort.line!.key]?.toString().toLowerCase().trim() ??
+              defaultValue) as List<Map<String, dynamic>>;
         } else {
           return temp.sortedByDesc((e) =>
-              e[itemSort.line.key]?.toString()?.toLowerCase()?.trim() ??
-              defaultValue);
+              e![itemSort.line!.key]?.toString().toLowerCase().trim() ??
+              defaultValue) as List<Map<String, dynamic>>;
         }
       }
     }
-    if (itemSort.line.defaultValue != null) {
+    if (itemSort.line!.defaultValue != null) {
       if (itemSort.typeSort == EnumTypeSort.ASC) {
         return temp.sortedBy((e) =>
-            e[itemSort.line.key] ??
-            itemSort.line.defaultValue(e) ??
-            defaultValue);
+            e![itemSort.line!.key] ??
+            itemSort.line!.defaultValue!(e) ??
+            defaultValue) as List<Map<String, dynamic>>;
       } else {
         return temp.sortedByDesc((e) =>
-            e[itemSort.line.key] ??
-            itemSort.line.defaultValue(e) ??
-            defaultValue);
+            e![itemSort.line!.key] ??
+            itemSort.line!.defaultValue!(e) ??
+            defaultValue) as List<Map<String, dynamic>>;
       }
     } else {
       if (itemSort.typeSort == EnumTypeSort.ASC) {
-        return temp.sortedBy((e) => e[itemSort.line.key] ?? defaultValue);
+        return temp.sortedBy((e) => e![itemSort.line!.key] ?? defaultValue)
+            as List<Map<String, dynamic>>;
       } else {
-        return temp.sortedByDesc((e) => e[itemSort.line.key] ?? defaultValue);
+        return temp.sortedByDesc((e) => e![itemSort.line!.key] ?? defaultValue)
+            as List<Map<String, dynamic>>;
       }
     }
   }
@@ -345,9 +349,9 @@ class FontDataAny extends DataSourceAny {
       : super(supportSingleLineFilter: supportSingleLineFilter);
 
   @override
-  Future fetchData(int limit, int offset, SelectModel selectModel,
-      {Map data}) async {
-    listAll = await fontData(data);
+  Future fetchData(int? limit, int offset, SelectModel? selectModel,
+      {Map? data}) async {
+    listAll = await (fontData(data) as Future<List<Map<String, dynamic>>?>);
     return;
   }
 }

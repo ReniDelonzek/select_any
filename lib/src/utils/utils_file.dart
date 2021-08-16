@@ -8,10 +8,10 @@ import 'package:share_extend/share_extend.dart';
 
 class UtilsFile {
   static saveFileString(String s,
-      {String fileName,
-      String extensionFile,
-      String dirComplementar,
-      String contentExport,
+      {String? fileName,
+      String? extensionFile,
+      String? dirComplementar,
+      String? contentExport,
       bool openExplorer = true}) async {
     String directory;
     String separator = "/";
@@ -24,7 +24,7 @@ class UtilsFile {
       if (UtilsPlatform.isIOS) {
         directory = (await getTemporaryDirectory()).absolute.path;
       } else {
-        directory = (await getExternalStorageDirectory()).absolute.path;
+        directory = (await getExternalStorageDirectory())!.absolute.path;
       }
     }
     if (dirComplementar != null) {
@@ -52,10 +52,10 @@ class UtilsFile {
   }
 
   static Future<File> saveFileBytes(List<int> bytes,
-      {String fileName,
-      String extensionFile,
-      String dirExtra,
-      String contentExport,
+      {String? fileName,
+      String? extensionFile,
+      String? dirExtra,
+      String? contentExport,
       bool openExplorer = true}) async {
     String directory;
     String separator = "/";
@@ -68,7 +68,7 @@ class UtilsFile {
       if (UtilsPlatform.isIOS) {
         directory = (await getTemporaryDirectory()).absolute.path;
       } else {
-        directory = (await getExternalStorageDirectory()).absolute.path;
+        directory = (await getExternalStorageDirectory())!.absolute.path;
       }
     }
     if (dirExtra != null) {
@@ -84,7 +84,7 @@ class UtilsFile {
       fileName = '${DateTime.now().millisecondsSinceEpoch}';
     }
     if (extensionFile != null && extensionFile.isNotEmpty) {
-      fileName += extensionFile != null ? extensionFile : '';
+      fileName += extensionFile;
     }
     file = io.File('${dir.path}$separator$fileName');
     if ((await file.exists()) == false) {
@@ -102,7 +102,7 @@ class UtilsFile {
   }
 
   static openFileOrDirectory(String filePath, String directoryPath,
-      {String contentExport}) async {
+      {String? contentExport}) async {
     if (UtilsPlatform.isWeb) {
       return;
     }

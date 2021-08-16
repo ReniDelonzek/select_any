@@ -27,13 +27,13 @@ mixin _$SelectAnyExpandedController on _SelectAnyExpandedBase, Store {
   final _$appBarTitleAtom = Atom(name: '_SelectAnyExpandedBase.appBarTitle');
 
   @override
-  Widget get appBarTitle {
+  Widget? get appBarTitle {
     _$appBarTitleAtom.reportRead();
     return super.appBarTitle;
   }
 
   @override
-  set appBarTitle(Widget value) {
+  set appBarTitle(Widget? value) {
     _$appBarTitleAtom.reportWrite(value, super.appBarTitle, () {
       super.appBarTitle = value;
     });
@@ -57,13 +57,13 @@ mixin _$SelectAnyExpandedController on _SelectAnyExpandedBase, Store {
   final _$streamAtom = Atom(name: '_SelectAnyExpandedBase.stream');
 
   @override
-  Stream<dynamic> get stream {
+  Stream<dynamic>? get stream {
     _$streamAtom.reportRead();
     return super.stream;
   }
 
   @override
-  set stream(Stream<dynamic> value) {
+  set stream(Stream<dynamic>? value) {
     _$streamAtom.reportWrite(value, super.stream, () {
       super.stream = value;
     });

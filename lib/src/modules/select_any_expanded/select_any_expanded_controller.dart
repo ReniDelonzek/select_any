@@ -25,13 +25,13 @@ abstract class _SelectAnyExpandedBase with Store {
   @observable
   Icon searchIcon = new Icon(Icons.search);
   @observable
-  Widget appBarTitle;
+  Widget? appBarTitle;
   ObservableList<ItemSelect> listaOriginal = new ObservableList();
   @observable
   ObservableList<ItemSelect> listaExibida = new ObservableList();
-  DataSource fonteDadoAtual;
+  DataSource? fonteDadoAtual;
   @observable
-  Stream stream;
+  Stream? stream;
 
   /// Cria uma nova variavel, pois se usar a do model,
   /// ela mantém as configurações mesmo depois de sair da tela
@@ -49,11 +49,11 @@ abstract class _SelectAnyExpandedBase with Store {
         List<ItemSelect> tempList = [];
         String text = removeDiacritics(searchText.toLowerCase());
         for (int i = 0; i < listaOriginal.length; i++) {
-          for (var value in listaOriginal[i].strings.values) {
+          for (var value in listaOriginal[i].strings!.values) {
             if (value != null) {
               if (removeDiacritics(value.toString())
                       .toLowerCase()
-                      ?.contains(text) ==
+                      .contains(text) ==
                   true) {
                 tempList.add(listaOriginal[i]);
                 break;

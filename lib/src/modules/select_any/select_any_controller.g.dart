@@ -9,7 +9,7 @@ part of 'select_any_controller.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic
 
 mixin _$SelectAnyController on _SelectAnyBase, Store {
-  Computed<ObservableList<ItemSelectTable>> _$listaExibidaComputed;
+  Computed<ObservableList<ItemSelectTable>>? _$listaExibidaComputed;
 
   @override
   ObservableList<ItemSelectTable> get listaExibida =>
@@ -66,13 +66,13 @@ mixin _$SelectAnyController on _SelectAnyBase, Store {
   final _$appBarTitleAtom = Atom(name: '_SelectAnyBase.appBarTitle');
 
   @override
-  Widget get appBarTitle {
+  Widget? get appBarTitle {
     _$appBarTitleAtom.reportRead();
     return super.appBarTitle;
   }
 
   @override
-  set appBarTitle(Widget value) {
+  set appBarTitle(Widget? value) {
     _$appBarTitleAtom.reportWrite(value, super.appBarTitle, () {
       super.appBarTitle = value;
     });
@@ -158,13 +158,13 @@ mixin _$SelectAnyController on _SelectAnyBase, Store {
       Atom(name: '_SelectAnyBase.quantityItensPage');
 
   @override
-  int get quantityItensPage {
+  int? get quantityItensPage {
     _$quantityItensPageAtom.reportRead();
     return super.quantityItensPage;
   }
 
   @override
-  set quantityItensPage(int value) {
+  set quantityItensPage(int? value) {
     _$quantityItensPageAtom.reportWrite(value, super.quantityItensPage, () {
       super.quantityItensPage = value;
     });

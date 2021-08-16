@@ -3,7 +3,7 @@ import 'package:msk_utils/utils/utils_platform.dart';
 
 class FailWidget extends StatelessWidget {
   final String message;
-  final Object error;
+  final Object? error;
 
   FailWidget(this.message, {this.error});
 

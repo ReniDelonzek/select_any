@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart' show IterableExtension;
 import 'package:data_table_plus/data_table_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:msk_utils/extensions/date.dart';
@@ -9,32 +10,32 @@ import 'package:select_any/src/widgets/my_snack_bar.dart';
 
 class UtilsWidget {
   static DataRow generateDataRow(
-      SelectModel selectModel,
+      SelectModel? selectModel,
       int index,
       ItemSelect itemSelect,
       BuildContext context,
-      Map data,
-      Function(ItemSelect, bool, int index) onSelected,
+      Map? data,
+      Function(ItemSelect, bool?, int index) onSelected,
       Function reloadData,
       int typeScreen,
-      DataSource dataSource,
+      DataSource? dataSource,
       {bool generateActions = true}) {
     List<DataCell> cells = [];
-    for (MapEntry mapEntry in itemSelect.strings.entries) {
+    for (MapEntry mapEntry in itemSelect.strings!.entries) {
       cells.add(DataCell(getLinha(
-          selectModel,
+          selectModel!,
           mapEntry,
           itemSelect.object is Map ? itemSelect.object : itemSelect.strings,
           typeScreen, () {
-        onSelected(itemSelect, !(itemSelect.isSelected ?? false), index);
+        onSelected(itemSelect, !(itemSelect.isSelected), index);
       })));
     }
-    if (generateActions && selectModel.actions?.isNotEmpty == true) {
+    if (generateActions && selectModel!.actions?.isNotEmpty == true) {
       List<Widget> widgets = [];
-      for (ActionSelect action in selectModel.actions) {
+      for (ActionSelect action in selectModel.actions!) {
         widgets.add(IconButton(
           splashRadius: 24,
-          color: selectModel.theme?.defaultIconActionColor,
+          color: selectModel.theme.defaultIconActionColor,
           tooltip: action.description,
           icon: action.icon ?? Text(action.description ?? 'Ação'),
           onPressed: () {
@@ -55,18 +56,18 @@ class UtilsWidget {
             (b) {
           onSelected(itemSelect, b, index);
         },
-        selected: itemSelect.isSelected ?? false);
+        selected: itemSelect.isSelected);
     return dataRow;
   }
 
   static List<DataColumn> generateDataColumn(SelectModel selectModel,
-      {bool generateActions = true, Function(int, bool) onSort}) {
+      {bool generateActions = true, Function(int, bool)? onSort}) {
     return selectModel.lines
         .map((e) => DataColumn(
             tooltip: e.tableTooltip,
             onSort: e.enableSorting ? onSort : null,
-            label: Text(e.name ?? e.key.upperCaseFirstLower(),
-                style: selectModel.theme?.tableTheme?.headerTextStyle ??
+            label: Text(e.name ?? e.key.upperCaseFirstLower()!,
+                style: selectModel.theme.tableTheme?.headerTextStyle ??
                     TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -76,7 +77,7 @@ class UtilsWidget {
           ? [
               DataColumn(
                   label: Text('Ações',
-                      style: selectModel.theme?.tableTheme?.headerTextStyle ??
+                      style: selectModel.theme.tableTheme?.headerTextStyle ??
                           TextStyle(
                               fontWeight: FontWeight.bold,
                               color: Colors.white)))
@@ -84,23 +85,23 @@ class UtilsWidget {
           : []);
   }
 
-  static Widget getLinha(SelectModel selectModel, MapEntry item, Map map,
+  static Widget getLinha(SelectModel selectModel, MapEntry item, Map? map,
       int typeScreen, Function onTap) {
-    Line linha = selectModel.lines
-        .firstWhere((linha) => linha.key == item.key, orElse: () => null);
+    Line? linha =
+        selectModel.lines.firstWhereOrNull((linha) => linha.key == item.key);
     if (linha != null && linha.customLine != null) {
       return linha
-          .customLine(CustomLineData(data: map, typeScreen: typeScreen));
+          .customLine!(CustomLineData(data: map, typeScreen: typeScreen));
     } else {
-      if (linha.formatData != null) {
+      if (linha!.formatData != null) {
         return _getText(
-            linha.formatData
+            linha.formatData!
                 .formatData(ObjFormatData(data: item.value, map: map)),
             onTap,
             linha,
             selectModel);
       }
-      if (item.value?.toString()?.isNullOrBlank != false) {
+      if (item.value?.toString().isNullOrBlank != false) {
         return _getText(
             linha.defaultValue?.call(map) ?? '', onTap, linha, selectModel);
       }
@@ -117,40 +118,40 @@ class UtilsWidget {
   }
 
   static Widget _getText(
-      String value, Function onTap, Line linha, SelectModel selectModel) {
-    if ((linha?.maxLines ?? 1) > 3 || linha.showTextInTableScroll == true) {
+      String? value, Function onTap, Line? linha, SelectModel selectModel) {
+    if ((linha?.maxLines ?? 1) > 3 || linha!.showTextInTableScroll == true) {
       return SingleChildScrollView(
           child: Padding(
         padding: const EdgeInsets.only(top: 2, bottom: 2),
-        child: _selectableText(value, onTap, linha, selectModel),
+        child: _selectableText(value, onTap, linha!, selectModel),
       ));
     } else
       return _selectableText(value, onTap, linha, selectModel);
   }
 
   static Widget _selectableText(
-      String value, Function onTap, Line linha, SelectModel selectModel) {
+      String? value, Function onTap, Line linha, SelectModel selectModel) {
     return SelectableText(value ?? '',
-        style: linha.textStyle ?? selectModel?.theme?.defaultTextStyle,
-        maxLines: linha?.maxLines,
-        minLines: linha?.minLines,
-        onTap: onTap,
+        style: linha.textStyle ?? selectModel.theme.defaultTextStyle,
+        maxLines: linha.maxLines,
+        minLines: linha.minLines,
+        onTap: onTap as void Function()?,
         scrollPhysics: const NeverScrollableScrollPhysics());
   }
 
   static void onAction(
       BuildContext context,
-      ItemSelect itemSelect,
-      int index,
+      ItemSelect? itemSelect,
+      int? index,
       ActionSelect acao,
-      Map data,
+      Map? data,
       Function reloadData,
-      DataSource dataSource) async {
+      DataSource? dataSource) async {
     if (acao.function != null) {
       if (acao.closePage) {
         Navigator.pop(context);
       }
-      acao.function(
+      acao.function!(
           DataFunction(data: itemSelect, index: index, context: context));
     }
     if (acao.functionUpd != null) {
@@ -158,7 +159,7 @@ class UtilsWidget {
         Navigator.pop(context);
       }
 
-      var res = await acao.functionUpd(
+      var res = await acao.functionUpd!(
           DataFunction(data: itemSelect, index: index, context: context));
       if (res == true) {
         reloadData();
@@ -166,11 +167,11 @@ class UtilsWidget {
     } else if (acao.route != null || acao.page != null) {
       Map<String, dynamic> dados = Map();
       if (acao.keys?.entries != null) {
-        for (MapEntry dado in acao.keys.entries) {
+        for (MapEntry dado in acao.keys!.entries) {
           if (itemSelect != null &&
               (itemSelect.object as Map).containsKey(dado.key)) {
             dados.addAll({dado.value: itemSelect.object[dado.key]});
-          } else if (data.containsKey(dado.key)) {
+          } else if (data!.containsKey(dado.key)) {
             dados.addAll({dado.value: data[dado.key]});
           }
         }
@@ -186,9 +187,9 @@ class UtilsWidget {
           : RouteSettings();
 
       var res = await Navigator.of(context).push(acao.route != null
-          ? acao.route
+          ? acao.route!
           : new MaterialPageRoute(
-              builder: (_) => acao.page, settings: settings));
+              builder: (_) => acao.page!, settings: settings));
 
       if (res != null && res != false) {
         if (acao.closePage) {
@@ -216,19 +217,19 @@ class UtilsWidget {
       BuildContext context,
       ItemSelect itemSelect,
       int index,
-      List<ActionSelect> actions,
-      Map data,
+      List<ActionSelect>? actions,
+      Map? data,
       Function reloadData,
-      DataSource dataSource) {
+      DataSource? dataSource) {
     showModalBottomSheet(
         context: context,
         builder: (BuildContext bc) {
           return Container(
             child: new Wrap(
-              children: actions
+              children: actions!
                   .map((acao) => new ListTile(
                       leading: acao.icon,
-                      title: new Text(acao.description),
+                      title: new Text(acao.description!),
                       onTap: () {
                         Navigator.pop(context);
                         UtilsWidget.onAction(context, itemSelect, index, acao,
@@ -245,16 +246,16 @@ class UtilsWidget {
       ItemSelect itemSelect,
       int index,
       SelectModel selectModel,
-      Map data,
+      Map? data,
       Function onDataUpdate,
-      DataSource dataSource) {
+      DataSource? dataSource) {
     if (selectModel.typeSelect == TypeSelect.ACTION &&
         selectModel.actions != null) {
-      if (selectModel.actions.length > 1) {
+      if (selectModel.actions!.length > 1) {
         UtilsWidget.exibirListaAcoes(context, itemSelect, index,
             selectModel.actions, data, onDataUpdate, dataSource);
-      } else if (selectModel.actions.isNotEmpty) {
-        ActionSelect acao = selectModel.actions?.first;
+      } else if (selectModel.actions!.isNotEmpty) {
+        ActionSelect? acao = selectModel.actions?.first;
         if (acao != null) {
           UtilsWidget.onAction(
               context, itemSelect, index, acao, data, onDataUpdate, dataSource);
@@ -272,15 +273,15 @@ class UtilsWidget {
       ItemSelect itemSelect,
       int index,
       SelectModel selectModel,
-      Map data,
+      Map? data,
       Function onDataUpdate,
-      DataSource dataSource) {
+      DataSource? dataSource) {
     if (selectModel.actions != null) {
-      if (selectModel.actions.length > 1) {
+      if (selectModel.actions!.length > 1) {
         UtilsWidget.exibirListaAcoes(context, itemSelect, index,
             selectModel.actions, data, onDataUpdate, dataSource);
       } else {
-        ActionSelect acao = selectModel.actions?.first;
+        ActionSelect? acao = selectModel.actions?.first;
         if (acao != null) {
           UtilsWidget.onAction(
               context, itemSelect, index, acao, data, onDataUpdate, dataSource);
@@ -296,7 +297,7 @@ class UtilsWidget {
     }
   }
 
-  static Future<TypeSearch> showDialogChangeTypeSearch(
+  static Future<TypeSearch?> showDialogChangeTypeSearch(
       BuildContext context, TypeSearch actualType) async {
     return await showDialog(
         context: context,
@@ -349,12 +350,12 @@ class UtilsWidget {
 
 showSnackMessage(BuildContext context, String message) {
   if (UtilsPlatform.isMobile) {
-    ScaffoldMessenger.maybeOf(context).showSnackBar(SnackBar(
+    ScaffoldMessenger.maybeOf(context)!.showSnackBar(SnackBar(
       content: Text(message),
       behavior: SnackBarBehavior.floating,
     ));
   } else {
-    ScaffoldMessenger.maybeOf(context).showSnackBar(MySnackBar(
+    ScaffoldMessenger.maybeOf(context)!.showSnackBar(MySnackBar(
       content: Text(message),
       behavior: SnackBarBehavior.floating,
     ));

@@ -6,7 +6,7 @@ import 'package:msk_utils/extensions/date.dart';
 
 import 'select_range_date_controller.dart';
 
-typedef RangeDateChanged(DateTime dataInicial, DateTime dataFinal);
+typedef RangeDateChanged(DateTime? dataInicial, DateTime? dataFinal);
 
 typedef List<DateTime> DatasNaoSelecionaveis();
 
@@ -15,11 +15,11 @@ class SelectRangeDateWidget extends StatelessWidget {
   final SelectRangeDateController controller;
 
   final String formatDate;
-  DateTime dateMin;
-  DateTime dateMax;
-  final DateTime dateStart;
-  final DateTime dateEnd;
-  final DatasNaoSelecionaveis unselectableDays;
+  DateTime? dateMin;
+  DateTime? dateMax;
+  final DateTime? dateStart;
+  final DateTime? dateEnd;
+  final DatasNaoSelecionaveis? unselectableDays;
 
   final RangeDateChanged onChanged;
   SelectRangeDateWidget(this.controller, this.onChanged,
@@ -56,9 +56,7 @@ class SelectRangeDateWidget extends StatelessWidget {
             padding: EdgeInsets.only(left: 15, right: 15),
             alignment: Alignment.center,
             child: Text(
-              this.controller.data != null
-                  ? this.controller.data
-                  : 'Selecione as datas',
+              this.controller.data,
               maxLines: 2,
             ),
           ),
@@ -71,16 +69,16 @@ class SelectRangeDateWidget extends StatelessWidget {
     // recupera as datas aqui para nao precisar recuperar pra cada um dos dias ali em baixo
     List<DateTime> localUnselectableDays = [];
     if (unselectableDays != null) {
-      localUnselectableDays = unselectableDays();
+      localUnselectableDays = unselectableDays!();
     }
     if (controller.initialDate != null && controller.finalDate != null) {
       // Verifica se o intervalo selecionado não está em algum dia que não é permitido
       int qtdDaysInterval =
-          controller.finalDate.difference(controller.initialDate).inDays;
+          controller.finalDate!.difference(controller.initialDate!).inDays;
       for (int i = 0; i <= qtdDaysInterval; i++) {
         if (localUnselectableDays.any((day) {
           return day.string('dd-MM-yyyy') ==
-              controller.initialDate
+              controller.initialDate!
                   .add(Duration(days: i))
                   .string('dd-MM-yyyy');
         })) {
@@ -96,9 +94,9 @@ class SelectRangeDateWidget extends StatelessWidget {
         builder: (context) => AlertDialog(
               content: Observer(
                 builder: (_) => RangePicker(
-                  lastDate: dateMax,
-                  firstDate: dateMin.subtract(Duration(days: 2)),
-                  selectedPeriod: controller.period,
+                  lastDate: dateMax!,
+                  firstDate: dateMin!.subtract(Duration(days: 2)),
+                  selectedPeriod: controller.period!,
                   onChanged: (DatePeriod datePediod) {
                     controller.period = datePediod;
                     this.controller.initialDate = DateTime(
@@ -115,18 +113,15 @@ class SelectRangeDateWidget extends StatelessWidget {
                   },
                   selectableDayPredicate: (day) {
                     // solução alternativa usada para poder limpar o range de selecao
-                    if (day.isBefore(dateMin)) {
+                    if (day.isBefore(dateMin!)) {
                       return false;
                     }
-                    if (localUnselectableDays != null) {
-                      return !localUnselectableDays.any((element) =>
-                          element.string('dd-MM-yyyy') ==
-                          day.string('dd-MM-yyyy'));
-                    }
-                    return true;
+                    return !localUnselectableDays.any((element) =>
+                        element.string('dd-MM-yyyy') ==
+                        day.string('dd-MM-yyyy'));
                   },
                   onSelectionError: (day) {
-                    ScaffoldMessenger.maybeOf(context).showSnackBar(SnackBar(
+                    ScaffoldMessenger.maybeOf(context)!.showSnackBar(SnackBar(
                         content: Text('Esse período não está disponível')));
                   },
                 ),
@@ -157,8 +152,8 @@ class SelectRangeDateWidget extends StatelessWidget {
   _clearSelection() {
     // seta o periodo como os dias antes da data minima, o que causa um problema na seleção
     // e faz o range de selecao ficar vazio
-    controller.period = DatePeriod(dateMin.subtract(Duration(days: 2)),
-        dateMin.subtract(Duration(days: 1)));
+    controller.period = DatePeriod(dateMin!.subtract(Duration(days: 2)),
+        dateMin!.subtract(Duration(days: 1)));
     controller.initialDate = null;
     controller.finalDate = null;
     onChanged(this.controller.initialDate, this.controller.finalDate);

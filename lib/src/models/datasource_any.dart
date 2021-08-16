@@ -54,7 +54,7 @@ abstract class DataSourceAny extends DataSource {
     List<Map<String, dynamic>> subList = getSubList(offset, limit, tempList);
 
     return Stream.value(ResponseData(
-        total: tempList.length,
+        total: tempList?.length ?? 0,
         data: generateList(subList, offset, selectModel),
         start: offset,
         end: offset + limit));
@@ -63,6 +63,7 @@ abstract class DataSourceAny extends DataSource {
   List<Map<String, dynamic>> getSubList(
       int offset, int limit, List<Map<String, dynamic>> tempList) {
     List<Map<String, dynamic>> subList = [];
+    if (tempList == null) return subList;
     if (offset == -1) {
       subList = tempList;
     } else if (limit > 0 && limit + offset < tempList.length) {

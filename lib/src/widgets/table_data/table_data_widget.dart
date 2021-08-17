@@ -164,7 +164,7 @@ class TableDataWidget extends StatelessWidget {
 
             int i = 0;
             for (var element in subList) {
-              rows.add(UtilsWidget.generateDataRow(controller!.selectModel, i,
+              rows.add(UtilsWidget.generateDataRow(controller!.selectModel!, i,
                   element, context, controller!.data,
                   (ItemSelect itemSelect, bool? b, int index) {
                 if (controller!.selectModel!.typeSelect == TypeSelect.SIMPLE) {

@@ -10,7 +10,7 @@ import 'package:select_any/src/widgets/my_snack_bar.dart';
 
 class UtilsWidget {
   static DataRow generateDataRow(
-      SelectModel? selectModel,
+      SelectModel selectModel,
       int index,
       ItemSelect itemSelect,
       BuildContext context,
@@ -23,14 +23,14 @@ class UtilsWidget {
     List<DataCell> cells = [];
     for (MapEntry mapEntry in itemSelect.strings!.entries) {
       cells.add(DataCell(getLinha(
-          selectModel!,
+          selectModel,
           mapEntry,
           itemSelect.object is Map ? itemSelect.object : itemSelect.strings,
           typeScreen, () {
         onSelected(itemSelect, !(itemSelect.isSelected), index);
       })));
     }
-    if (generateActions && selectModel!.actions?.isNotEmpty == true) {
+    if (generateActions && selectModel.actions?.isNotEmpty == true) {
       List<Widget> widgets = [];
       for (ActionSelect action in selectModel.actions!) {
         widgets.add(IconButton(

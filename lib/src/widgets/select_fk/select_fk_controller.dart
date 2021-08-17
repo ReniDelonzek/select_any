@@ -53,11 +53,11 @@ abstract class _SelectFKBase with Store {
   void updateList() {
     list.clear();
     listIsLoaded = false;
-    carregarDados();
+    loadData();
   }
 
   /// Carrega os dados da lista, caso ainda não tenham sido carregados
-  carregarDados() {
+  loadData() {
     if (!listIsLoaded) {
       /// Pode ser null caso o widget não tenha sido construído ainda
       selectModel?.dataSource.getList(-1, -1, selectModel).then((value) {

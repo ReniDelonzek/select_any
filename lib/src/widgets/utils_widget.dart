@@ -67,7 +67,7 @@ class UtilsWidget {
             tooltip: e.tableTooltip,
             onSort: e.enableSorting ? onSort : null,
             label: Text(e.name ?? e.key.upperCaseFirstLower()!,
-                style: selectModel.theme.tableTheme?.headerTextStyle ??
+                style: selectModel.theme.tableTheme.headerTextStyle ??
                     TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -77,7 +77,7 @@ class UtilsWidget {
           ? [
               DataColumn(
                   label: Text('Ações',
-                      style: selectModel.theme.tableTheme?.headerTextStyle ??
+                      style: selectModel.theme.tableTheme.headerTextStyle ??
                           TextStyle(
                               fontWeight: FontWeight.bold,
                               color: Colors.white)))

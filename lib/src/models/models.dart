@@ -94,7 +94,7 @@ class SelectModel {
 }
 
 class SelectModelTheme {
-  final SelectModelThemeTable? tableTheme;
+  final SelectModelThemeTable tableTheme;
 
   /// Indicates whether the title should be in the center
   final bool centerTitle;
@@ -113,7 +113,7 @@ class SelectModelTheme {
   final EdgeInsets? paddingAppBarActions;
 
   const SelectModelTheme(
-      {this.tableTheme,
+      {this.tableTheme = const SelectModelThemeTable(),
       this.centerTitle = true,
       this.appBarBackgroundColor,
       this.backgroundColor,
@@ -125,7 +125,7 @@ class SelectModelTheme {
 
 class SelectModelThemeTable {
   /// Header color
-  final Color headerColor;
+  final Color? headerColor;
 
   /// Indicates whether the table should be displayed inside a card.
   final bool showTableInCard;
@@ -187,7 +187,7 @@ class Line {
   bool? showTextInTableScroll;
 
   /// Indicates whether the line must support filters specific to it
-  bool? enableLineFilter;
+  bool enableLineFilter;
 
   /// Show sizedbox when empty row
   bool showSizedBoxWhenEmpty;
@@ -208,7 +208,7 @@ class Line {
       this.minLines,
       this.enableSorting = true,
       this.showTextInTableScroll,
-      this.enableLineFilter,
+      this.enableLineFilter = true,
       this.showSizedBoxWhenEmpty = false,
       this.tableTooltip}) {
     if (typeData is TDDateTimestamp && filter == null) {

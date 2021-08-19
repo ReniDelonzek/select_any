@@ -187,7 +187,7 @@ class Line {
   bool? showTextInTableScroll;
 
   /// Indicates whether the line must support filters specific to it
-  bool enableLineFilter;
+  bool? enableLineFilter;
 
   /// Show sizedbox when empty row
   bool showSizedBoxWhenEmpty;
@@ -208,7 +208,7 @@ class Line {
       this.minLines,
       this.enableSorting = true,
       this.showTextInTableScroll,
-      this.enableLineFilter = true,
+      this.enableLineFilter,
       this.showSizedBoxWhenEmpty = false,
       this.tableTooltip}) {
     if (typeData is TDDateTimestamp && filter == null) {

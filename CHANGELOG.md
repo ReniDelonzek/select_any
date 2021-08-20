@@ -9,3 +9,7 @@
 ## 0.0.3-dev.1
 
 * Null safety
+
+## 0.0.3-dev.2
+
+* Small fixes

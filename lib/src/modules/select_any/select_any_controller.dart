@@ -71,6 +71,7 @@ abstract class _SelectAnyBase with Store {
   var error;
   @observable
   bool loading = false;
+  @observable
   bool loaded = false;
   FocusNode focusNodeSearch = FocusNode();
 
@@ -105,6 +106,8 @@ abstract class _SelectAnyBase with Store {
       actualDataSource?.supportSingleLineFilter != false;
 
   ItemSort itemSort;
+  @observable
+  GroupFilterExp actualFilters;
 
   _SelectAnyBase({this.dynamicScreen = true});
 
@@ -189,6 +192,7 @@ abstract class _SelectAnyBase with Store {
           });
           loading = false;
           loadingMore = false;
+          loaded = true;
           total = event.total;
         }
       }, onError: (error) {
@@ -254,6 +258,7 @@ abstract class _SelectAnyBase with Store {
           total = event.total;
           loading =
               !(removeDiacritics(filter.text.trim()).toLowerCase() == text);
+          loaded = true;
         }
       }, onError: (error) {
         print(error);
@@ -359,30 +364,43 @@ abstract class _SelectAnyBase with Store {
         return;
       }
       if (line.filter != null) {
-        if (line.filter is FilterRangeDate &&
-            ((value as SelectRangeDateWidget).controller.initialDate != null ||
-                (value as SelectRangeDateWidget).controller.finalDate !=
-                    null)) {
-          exps.add(FilterExpRangeCollun(
-              line: line,
-              dateStart:
-                  (value as SelectRangeDateWidget).controller.initialDate,
-              dateEnd: (value as SelectRangeDateWidget).controller.finalDate));
-        }
-      } else {
-        if (value is Padding) {
-          if (value.child is TextField) {
-            if ((value.child as TextField).controller.text.trim().isNotEmpty) {
-              exps.add(FilterExpCollun(
-                  line: line,
-                  value: (value.child as TextField).controller.text.trim(),
-                  typeSearch: typeSearch));
-            }
+        if (line.filter is FilterRangeDate) {
+          if (((value as SelectRangeDateWidget).controller.initialDate !=
+                  null ||
+              (value as SelectRangeDateWidget).controller.finalDate != null)) {
+            exps.add(FilterExpRangeCollun(
+                line: line,
+                dateStart:
+                    (value as SelectRangeDateWidget).controller.initialDate,
+                dateEnd:
+                    (value as SelectRangeDateWidget).controller.finalDate));
+          }
+        } else if (line.filter.selectedValue != null) {
+          if (line.filter is FilterSelectItem) {
+            exps.add(FilterSelectColumn(
+                line: line,
+                value: (line.filter as FilterSelectItem)
+                    .selectedValue
+                    .value
+                    ?.toString()
+                    ?.toLowerCase(),
+                customKey: (line.filter as FilterSelectItem).keyFilterId,
+                valueId:
+                    (line.filter as FilterSelectItem).selectedValue.idValue,
+                typeSearch: TypeSearch.CONTAINS));
+          } else if (line.filter is FilterText &&
+              line.filter.selectedValue.toString().isNotEmpty) {
+            exps.add(FilterExpColumn(
+                line: line,
+                value: line.filter.selectedValue.value,
+                typeSearch: typeSearch));
           }
         }
       }
     });
-    return GroupFilterExp(filterExps: exps, operatorEx: OperatorFilterEx.AND);
+    actualFilters =
+        GroupFilterExp(filterExps: exps, operatorEx: OperatorFilterEx.AND);
+    return actualFilters;
   }
 
   setCorretDataSource({int offset, bool refresh = false}) {
@@ -393,6 +411,7 @@ abstract class _SelectAnyBase with Store {
     }
   }
 
+  /// TODO fazer limpeza filtro selecao
   clearFilters() {
     filterControllers.forEach((key, value) {
       if (value is SelectRangeDateWidget) {

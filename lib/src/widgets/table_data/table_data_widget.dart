@@ -1,6 +1,7 @@
 import 'package:data_table_plus/data_table_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:msk_utils/extensions/list.dart';
 import 'package:msk_utils/models/item_select.dart';
 import 'package:msk_utils/utils/utils_hive.dart';
 import 'package:select_any/src/models/models.dart';
@@ -229,67 +230,7 @@ class TableDataWidget extends StatelessWidget {
                                     })
                                   : null,
                               sortColumnIndex: controller.itemSort?.indexLine,
-                              customRows: controller.showLineFilter
-                                  ? [
-                                      CustomRow(
-                                          index: -1,
-                                          cells: <Widget>[]
-                                            ..addAll(controller.selectModel
-                                                            .typeSelect ==
-                                                        TypeSelect.MULTIPLE &&
-                                                    rows.isNotEmpty
-                                                ? [Container()]
-                                                : [])
-                                            ..addAll(controller
-                                                .selectModel.lines
-                                                .map((e) {
-                                              if (e.enableLineFilter &&
-                                                  !controller.filterControllers
-                                                      .containsKey(e.key)) {
-                                                if (e.filter != null) {
-                                                  if (e.filter
-                                                      is FilterRangeDate) {
-                                                    controller.filterControllers[
-                                                            e.key] =
-                                                        SelectRangeDateWidget(
-                                                            SelectRangeDateController(),
-                                                            (dateMin, dateMax) {
-                                                      controller
-                                                          .onColumnFilterChanged();
-                                                    });
-                                                  }
-                                                } else {
-                                                  controller.filterControllers[
-                                                      e.key] = Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            left: 8,
-                                                            right: 8,
-                                                            top: 2,
-                                                            bottom: 3),
-                                                    child: TextField(
-                                                      controller:
-                                                          TextEditingController(),
-                                                      decoration: InputDecoration(
-                                                          hintText:
-                                                              '${e.name ?? e.key}'),
-                                                      onChanged: (text) {
-                                                        controller
-                                                            .onColumnFilterChanged();
-                                                      },
-                                                    ),
-                                                  );
-                                                }
-                                              }
-                                              return Container(
-                                                  height: 48,
-                                                  child: controller
-                                                          .filterControllers[
-                                                      e.key]);
-                                            }).toList()),
-                                          typeCustomRow: TypeCustomRow.ADD)
-                                    ]
-                                  : [],
+                              customRows: getCustomRows(rows),
                               decoration: BoxDecoration(),
                               sortAscending: controller.itemSort?.typeSort !=
                                   EnumTypeSort.DESC,
@@ -402,6 +343,112 @@ class TableDataWidget extends StatelessWidget {
             ],
           );
         }),
+        _bottomContent(context)
+      ],
+    );
+  }
+
+  List<CustomRow> getCustomRows(List<DataRow> rows) {
+    return controller.showLineFilter
+        ? [
+            CustomRow(
+                index: -1,
+                cells: <Widget>[]
+                  ..addAll(controller.selectModel.typeSelect ==
+                              TypeSelect.MULTIPLE &&
+                          rows.isNotEmpty
+                      ? [Container()]
+                      : [])
+                  ..addAll(controller.selectModel.lines.map((e) {
+                    if (e.enableLineFilter &&
+                        !controller.filterControllers.containsKey(e.key)) {
+                      if (e.filter != null) {
+                        if (e.filter is FilterRangeDate) {
+                          controller.filterControllers[e.key] =
+                              SelectRangeDateWidget(SelectRangeDateController(),
+                                  (dateMin, dateMax) {
+                            controller.onColumnFilterChanged();
+                          });
+                        } else if (e.filter is FilterSelectItem) {
+                          controller.filterControllers[e.key] =
+                              Observer(builder: (_) {
+                            return FutureBuilder<List<ItemDataFilter>>(
+                                future: (e.filter as FilterSelectItem)
+                                    .fontDataFilter
+                                    .getList(controller.actualFilters,
+                                        controller.filter.text),
+                                builder: (_, snap) {
+                                  if (snap.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return SizedBox();
+                                  }
+                                  if (snap.hasError)
+                                    return Text('Falha ao carregar');
+                                  return Observer(
+                                    builder: (_) => Padding(
+                                      padding: const EdgeInsets.only(
+                                        bottom: 3,
+                                        left: 8,
+                                        right: 8,
+                                      ),
+                                      child: DropdownButtonFormField(
+                                          onChanged: (value) {
+                                            (e.filter as FilterSelectItem)
+                                                    .selectedValue =
+                                                snap.data.firstWhereOrNull(
+                                                    (element) =>
+                                                        element.value == value);
+                                            controller.onColumnFilterChanged();
+                                          },
+                                          value: (e.filter as FilterSelectItem)
+                                              .selectedValue
+                                              ?.value,
+                                          items: snap.data
+                                              .map((e) => DropdownMenuItem(
+                                                  value: e.value,
+                                                  child: Text(e.label ?? '')))
+                                              .toList()),
+                                    ),
+                                  );
+                                });
+                          });
+                        } else if (e.filter is FilterText) {
+                          controller.filterControllers[e.key] = Padding(
+                            padding: const EdgeInsets.only(
+                                left: 8, right: 8, top: 2, bottom: 3),
+                            child: TextField(
+                              controller: TextEditingController(),
+                              decoration: InputDecoration(
+                                  hintText: '${e.name ?? e.key}'),
+                              onChanged: (text) {
+                                e.filter.selectedValue =
+                                    ItemDataFilter(value: text.trim());
+                                controller.onColumnFilterChanged();
+                              },
+                            ),
+                          );
+                        }
+                      }
+                    }
+                    return Container(
+                        height: 48, child: controller.filterControllers[e.key]);
+                  }).toList()),
+                typeCustomRow: TypeCustomRow.ADD)
+          ]
+        : [];
+  }
+
+  Widget _bottomContent(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        controller.selectModel.tableBottomBuilder != null
+            ? Observer(builder: (_) {
+                return controller.selectModel.tableBottomBuilder(
+                    TableBottomBuilderArgs(
+                        context, controller.actualFilters, controller.loaded));
+              })
+            : SizedBox(),
         Container(
             alignment: Alignment.bottomRight,
             child: Padding(

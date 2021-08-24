@@ -27,9 +27,9 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
-# dependency_overrides:
-#   meta: "1.7.0"
-#   analyzer: "1.7.2"
+dependency_overrides:
+  meta: "1.7.0"
+  analyzer: "1.7.2"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

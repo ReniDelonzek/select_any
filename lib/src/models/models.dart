@@ -20,6 +20,19 @@ enum TypeSelect {
   ACTION
 }
 
+class TableBottomBuilderArgs {
+  BuildContext context;
+  GroupFilterExp filter;
+  bool isLoaded;
+  TableBottomBuilderArgs(
+    this.context,
+    this.filter,
+    this.isLoaded,
+  );
+}
+
+typedef Widget TableBottomBuilder(TableBottomBuilderArgs args);
+
 class SelectModel {
   /// 0 selecao simples, 1 selecao multipla, 2 acao
   TypeSelect typeSelect;
@@ -73,6 +86,9 @@ class SelectModel {
   /// Custom theme
   SelectModelTheme theme;
 
+  /// Widget to fill the bottom left corner of the table
+  TableBottomBuilder tableBottomBuilder;
+
   SelectModel(this.title, this.id, this.lines, this.dataSource, this.typeSelect,
       {this.filters,
       this.actions,
@@ -85,7 +101,8 @@ class SelectModel {
       this.confirmToLoadData = false,
       this.allowSelectAll,
       this.showFiltersInput = true,
-      this.theme}) {
+      this.theme,
+      this.tableBottomBuilder}) {
     if (openSearchAutomatically == null) {
       openSearchAutomatically = !UtilsPlatform.isMobile;
     }
@@ -214,11 +231,15 @@ class Line {
       this.showSizedBoxWhenEmpty = false,
       this.tableTooltip})
       : assert(key != null) {
-    if (typeData is TDDateTimestamp && filter == null) {
-      filter = FilterRangeDate();
-      if (formatData == null) {
-        formatData =
-            FormatDataTimestamp((typeData as TDDateTimestamp).outputFormat);
+    if (filter == null) {
+      if (typeData is TDDateTimestamp) {
+        filter = FilterRangeDate();
+        if (formatData == null) {
+          formatData =
+              FormatDataTimestamp((typeData as TDDateTimestamp).outputFormat);
+        }
+      } else {
+        filter = FilterText();
       }
     }
     if (enableLineFilter == null && customLine != null) {
@@ -388,8 +409,12 @@ class FormatDataMoney extends FormatData {
   }
 }
 
-abstract class FilterBase {
-  FilterBase();
+abstract class FilterBase = _FilterBaseBase with _$FilterBase;
+
+abstract class _FilterBaseBase with Store {
+  _FilterBaseBase();
+  @observable
+  ItemDataFilter selectedValue;
 }
 
 class FilterRangeDate extends FilterBase {
@@ -403,28 +428,40 @@ class FilterRangeDate extends FilterBase {
   });
 }
 
-class FilterSelectItem {
+class FilterSelectItem extends FilterBase {
   FontDataFilterBase fontDataFilter;
 
-  FilterSelectItem({this.fontDataFilter});
+  /// custom key for filters by id
+  String keyFilterId;
+
+  FilterSelectItem(this.fontDataFilter, {this.keyFilterId});
+}
+
+class FilterText extends FilterBase {
+  FilterText();
 }
 
 class ItemDataFilter {
   String label;
-  int id;
+  dynamic value;
+  dynamic idValue;
+  ItemDataFilter({this.label, @required this.value, this.idValue});
 }
 
 abstract class FontDataFilterBase {
-  Future<List<ItemDataFilter>> getList();
+  Future<List<ItemDataFilter>> getList(
+      GroupFilterExp filters, String textSearch);
 }
 
-class FontDataFilterStatic extends FontDataFilterBase {
-  List<ItemDataFilter> list;
-  FontDataFilterStatic(this.list);
+class FontDataFilterAny extends FontDataFilterBase {
+  Future<List<ItemDataFilter>> Function(
+      GroupFilterExp filters, String textSearch) list;
+  FontDataFilterAny(this.list);
 
   @override
-  Future<List<ItemDataFilter>> getList() async {
-    return list;
+  Future<List<ItemDataFilter>> getList(
+      GroupFilterExp filters, String textSearch) async {
+    return list(filters, textSearch);
   }
 }
 
@@ -527,7 +564,10 @@ abstract class _DataSourceBase with Store {
 
   Future clear();
 
-  bool filterTypeSearch(TypeSearch typeSearch, dynamic value, String text) {
+  bool filterTypeSearch(TypeSearch typeSearch, dynamic value, dynamic text) {
+    if (!(text is String)) {
+      text = text?.toString();
+    }
     if (typeSearch == TypeSearch.CONTAINS) {
       return removeDiacritics(value.toString()).toLowerCase()?.contains(text) ==
           true;
@@ -551,7 +591,7 @@ abstract class _DataSourceBase with Store {
       for (var group in filter.filterExps) {
         if (group is GroupFilterExp) {
           group = convertFiltersToLowerCase(group);
-        } else if (group is FilterExpCollun) {
+        } else if (group is FilterExpColumn) {
           if (group.value is String) {
             group.value = group.value?.toString()?.toLowerCase();
           }
@@ -651,11 +691,11 @@ enum TypeSearch { CONTAINS, BEGINSWITH, ENDSWITH, NOTCONTAINS }
 
 abstract class FilterExp {}
 
-class FilterExpCollun extends FilterExp {
+class FilterExpColumn extends FilterExp {
   Line line;
   dynamic value;
   TypeSearch typeSearch;
-  FilterExpCollun(
+  FilterExpColumn(
       {this.line, this.value, this.typeSearch = TypeSearch.CONTAINS});
 }
 
@@ -673,6 +713,20 @@ class GroupFilterExp extends FilterExp {
     this.operatorEx,
     this.filterExps,
   });
+}
+
+class FilterSelectColumn extends FilterExp {
+  Line line;
+  dynamic value;
+  TypeSearch typeSearch;
+  String customKey;
+  dynamic valueId;
+  FilterSelectColumn(
+      {this.line,
+      this.value,
+      this.typeSearch = TypeSearch.CONTAINS,
+      this.customKey,
+      this.valueId});
 }
 
 enum OperatorFilterEx { AND, OR }

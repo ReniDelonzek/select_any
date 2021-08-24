@@ -154,6 +154,21 @@ mixin _$SelectAnyController on _SelectAnyBase, Store {
     });
   }
 
+  final _$loadedAtom = Atom(name: '_SelectAnyBase.loaded');
+
+  @override
+  bool get loaded {
+    _$loadedAtom.reportRead();
+    return super.loaded;
+  }
+
+  @override
+  set loaded(bool value) {
+    _$loadedAtom.reportWrite(value, super.loaded, () {
+      super.loaded = value;
+    });
+  }
+
   final _$quantityItensPageAtom =
       Atom(name: '_SelectAnyBase.quantityItensPage');
 
@@ -200,6 +215,21 @@ mixin _$SelectAnyController on _SelectAnyBase, Store {
     });
   }
 
+  final _$actualFiltersAtom = Atom(name: '_SelectAnyBase.actualFilters');
+
+  @override
+  GroupFilterExp get actualFilters {
+    _$actualFiltersAtom.reportRead();
+    return super.actualFilters;
+  }
+
+  @override
+  set actualFilters(GroupFilterExp value) {
+    _$actualFiltersAtom.reportWrite(value, super.actualFilters, () {
+      super.actualFilters = value;
+    });
+  }
+
   final _$_SelectAnyBaseActionController =
       ActionController(name: '_SelectAnyBase');
 
@@ -226,9 +256,11 @@ page: ${page},
 total: ${total},
 list: ${list},
 loading: ${loading},
+loaded: ${loaded},
 quantityItensPage: ${quantityItensPage},
 loadingMore: ${loadingMore},
 showSearch: ${showSearch},
+actualFilters: ${actualFilters},
 listaExibida: ${listaExibida}
     ''';
   }

@@ -14,3 +14,5 @@ export 'package:select_any/src/widgets/select_fk/select_fk_controller.dart';
 export 'package:select_any/src/widgets/button_chip.dart';
 
 export 'package:select_any/src/widgets/my_snack_bar.dart';
+
+export 'package:select_any/src/utils/utils_filter.dart';

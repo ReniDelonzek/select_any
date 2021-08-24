@@ -172,7 +172,7 @@ abstract class DataSourceAny extends DataSource {
       if (groupFilterExp.operatorEx == OperatorFilterEx.OR) {
         /// Como é uma expressão or, caso esse filtro seja verdadeiro sempre retorna true
 
-        if (filter is FilterExpCollun) {
+        if (filter is FilterExpColumn) {
           var value = map[filter.line.key];
           if (filter.line.formatData != null) {
             value = filter.line.formatData
@@ -181,6 +181,26 @@ abstract class DataSourceAny extends DataSource {
           if (filterTypeSearch(filter.typeSearch, value, filter.value)) {
             return true;
           }
+        } else if (filter is FilterSelectColumn) {
+          var value = map[filter.line.key];
+          if (filter.line.formatData != null) {
+            value = filter.line.formatData
+                .formatData(ObjFormatData(data: value, map: map));
+          }
+          if (filterTypeSearch(filter.typeSearch, value, filter.value)) {
+            return true;
+          }
+        } else if (filter is FilterExpRangeCollun) {
+          if (map[filter.line.key] != null &&
+              map[filter.line.key] >
+                  (filter.dateStart?.millisecondsSinceEpoch ?? 0) &&
+              map[filter.line.key] <
+                  (filter.dateEnd?.millisecondsSinceEpoch ??
+                      double.maxFinite.toInt())) {
+            return true;
+          } else {
+            return false;
+          }
         } else if (filter is GroupFilterExp) {
           if (applyGroupFilterExp(filter, map)) {
             return true;
@@ -188,7 +208,18 @@ abstract class DataSourceAny extends DataSource {
         }
       } else if (groupFilterExp.operatorEx == OperatorFilterEx.AND) {
         /// Expressão AND seta filterAndOk = true caso seja true, caso seja falso retorna false na função,
-        if (filter is FilterExpCollun) {
+        if (filter is FilterExpColumn) {
+          var value = map[filter.line.key];
+          if (filter.line.formatData != null) {
+            value = filter.line.formatData
+                .formatData(ObjFormatData(data: value, map: map));
+          }
+          if (filterTypeSearch(filter.typeSearch, value, filter.value)) {
+            filterAndOk = true;
+          } else {
+            return false;
+          }
+        } else if (filter is FilterSelectColumn) {
           var value = map[filter.line.key];
           if (filter.line.formatData != null) {
             value = filter.line.formatData
@@ -234,8 +265,6 @@ abstract class DataSourceAny extends DataSource {
     _actualySort = itemSort;
     try {
       if (itemSort != null && list.isNotEmpty) {
-        //DateTime datetime = DateTime.now();
-
         /// Maintain a consistent order for the list
         var temp = list.sortedBy((e) => e[keyId]);
         TypeData typeData = itemSort.line.typeData;
@@ -271,8 +300,6 @@ abstract class DataSourceAny extends DataSource {
         } else {
           list = _sort(temp, itemSort, null);
         }
-        //debugPrint(
-        //    'Sort in: ${DateTime.now().difference(datetime).inMilliseconds}');
       }
     } catch (error, stackTrace) {
       UtilsSentry.reportError(error, stackTrace);

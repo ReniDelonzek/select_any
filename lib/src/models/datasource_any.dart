@@ -267,26 +267,7 @@ abstract class DataSourceAny extends DataSource {
       if (itemSort != null && list.isNotEmpty) {
         /// Maintain a consistent order for the list
         var temp = list.sortedBy((e) => e[keyId]);
-        TypeData typeData = itemSort.line.typeData;
-        if (typeData == null) {
-          /// If you have at least one string, consider everything as a string
-          /// The other types of data require that they all have the same type
-          if (list.any((element) => element[itemSort.line.key] is String)) {
-            typeData = TDString();
-          } else if (list
-              .every((element) => element[itemSort.line.key] is num)) {
-            typeData = TDNumber();
-          } else if (list
-              .every((element) => element[itemSort.line.key] is bool)) {
-            typeData = TDBoolean();
-          } else {
-            typeData = TDNotString();
-          }
-
-          // Save the data type so you don't need to scroll through the list again
-          itemSort.line.typeData = typeData;
-        }
-
+        final TypeData typeData = itemSort.line.typeData;
         if (typeData is TDString || typeData is TDNotString) {
           list = _sort(temp, itemSort, '', typeData: typeData);
         } else if (typeData is TDNumber) {

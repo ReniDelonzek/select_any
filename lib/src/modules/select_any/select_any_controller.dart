@@ -133,21 +133,16 @@ abstract class _SelectAnyBase with Store {
     return values.any((element) => element == value);
   }
 
-  @action
-  void setList(List<ItemSelectTable> list) {
-    this.list.addAll(ObservableList.of(list));
-  }
-
   void dispose() {
     list.clear();
     filter.clear();
     actualDataSource?.listData?.clear();
     actualDataSource?.clear();
     loaded = false;
+    clearFilters();
   }
 
   setDataSource({int offset, bool refresh = false}) async {
-    showSearch = true;
     try {
       GroupFilterExp groupFilterExp = buildFilterExpression();
       showSearch = groupFilterExp.filterExps.isEmpty;
@@ -194,6 +189,7 @@ abstract class _SelectAnyBase with Store {
           loadingMore = false;
           loaded = true;
           total = event.total;
+          setDataType();
         }
       }, onError: (error) {
         print(error);
@@ -389,7 +385,7 @@ abstract class _SelectAnyBase with Store {
                     (line.filter as FilterSelectItem).selectedValue.idValue,
                 typeSearch: TypeSearch.CONTAINS));
           } else if (line.filter is FilterText &&
-              line.filter.selectedValue.toString().isNotEmpty) {
+              line.filter.selectedValue.value.toString().isNotEmpty) {
             exps.add(FilterExpColumn(
                 line: line,
                 value: line.filter.selectedValue.value,
@@ -411,7 +407,6 @@ abstract class _SelectAnyBase with Store {
     }
   }
 
-  /// TODO fazer limpeza filtro selecao
   clearFilters() {
     filterControllers.forEach((key, value) {
       if (value is SelectRangeDateWidget) {
@@ -421,6 +416,9 @@ abstract class _SelectAnyBase with Store {
           (value.child as TextField).controller.clear();
         }
       }
+    });
+    selectModel.lines.forEach((e) {
+      e.filter?.selectedValue = null;
     });
     setCorretDataSource();
   }
@@ -436,5 +434,31 @@ abstract class _SelectAnyBase with Store {
       page = 1;
     }
     filter.clear();
+  }
+
+  /// Seta o tipo das colunas onde ele estiver null
+  void setDataType() {
+    if (list.isNotEmpty) {
+      selectModel.lines.forEach((line) {
+        TypeData typeData = line.typeData;
+        if (typeData == null) {
+          /// If you have at least one string, consider everything as a string
+          /// The other types of data require that they all have the same type
+          if (list.any((element) => element.object[line.key] is String)) {
+            typeData = TDString();
+          } else if (list.every((element) => element.object[line.key] is num)) {
+            typeData = TDNumber();
+          } else if (list
+              .every((element) => element.object[line.key] is bool)) {
+            typeData = TDBoolean();
+          } else {
+            typeData = TDNotString();
+          }
+
+          // Save the data type so you don't need to scroll through the list again
+          line.typeData = typeData;
+        }
+      });
+    }
   }
 }

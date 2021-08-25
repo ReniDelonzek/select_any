@@ -1,5 +1,6 @@
 import 'package:data_table_plus/data_table_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:msk_utils/extensions/list.dart';
 import 'package:msk_utils/models/item_select.dart';
@@ -384,6 +385,7 @@ class TableDataWidget extends StatelessWidget {
                                   }
                                   if (snap.hasError)
                                     return Text('Falha ao carregar');
+
                                   return Observer(
                                     builder: (_) => Padding(
                                       padding: const EdgeInsets.only(
@@ -393,21 +395,42 @@ class TableDataWidget extends StatelessWidget {
                                       ),
                                       child: DropdownButtonFormField(
                                           onChanged: (value) {
-                                            (e.filter as FilterSelectItem)
-                                                    .selectedValue =
-                                                snap.data.firstWhereOrNull(
-                                                    (element) =>
-                                                        element.value == value);
-                                            controller.onColumnFilterChanged();
+                                            /// Limpa o input
+                                            if (value == null) {
+                                              if ((e.filter as FilterSelectItem)
+                                                      .selectedValue !=
+                                                  null) {
+                                                (e.filter as FilterSelectItem)
+                                                    .selectedValue = null;
+                                                controller
+                                                    .onColumnFilterChanged();
+                                              }
+                                              return;
+                                            }
+                                            final newValue = snap.data
+                                                .firstWhereOrNull((element) =>
+                                                    element.value == value);
+                                            if (newValue?.value !=
+                                                (e.filter as FilterSelectItem)
+                                                    .selectedValue
+                                                    ?.value) {
+                                              (e.filter as FilterSelectItem)
+                                                  .selectedValue = newValue;
+                                              controller
+                                                  .onColumnFilterChanged();
+                                            }
                                           },
                                           value: (e.filter as FilterSelectItem)
                                               .selectedValue
                                               ?.value,
-                                          items: snap.data
+                                          items: [
+                                            DropdownMenuItem<dynamic>(
+                                                value: null, child: Text(''))
+                                          ]..addAll(snap.data
                                               .map((e) => DropdownMenuItem(
                                                   value: e.value,
                                                   child: Text(e.label ?? '')))
-                                              .toList()),
+                                              .toList())),
                                     ),
                                   );
                                 });
@@ -420,10 +443,16 @@ class TableDataWidget extends StatelessWidget {
                               controller: TextEditingController(),
                               decoration: InputDecoration(
                                   hintText: '${e.name ?? e.key}'),
+                              inputFormatters: e.typeData is TDNumber
+                                  ? [FilteringTextInputFormatter.digitsOnly]
+                                  : [],
                               onChanged: (text) {
-                                e.filter.selectedValue =
-                                    ItemDataFilter(value: text.trim());
-                                controller.onColumnFilterChanged();
+                                if (e.filter.selectedValue?.toString() !=
+                                    text.trim()) {
+                                  e.filter.selectedValue =
+                                      ItemDataFilter(value: text.trim());
+                                  controller.onColumnFilterChanged();
+                                }
                               },
                             ),
                           );
@@ -446,7 +475,11 @@ class TableDataWidget extends StatelessWidget {
             ? Observer(builder: (_) {
                 return controller.selectModel.tableBottomBuilder(
                     TableBottomBuilderArgs(
-                        context, controller.actualFilters, controller.loaded));
+                        context,
+                        controller.actualFilters,
+                        controller.loaded,
+                        controller.actualDataSource,
+                        controller.list));
               })
             : SizedBox(),
         Container(

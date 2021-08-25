@@ -230,20 +230,6 @@ mixin _$SelectAnyController on _SelectAnyBase, Store {
     });
   }
 
-  final _$_SelectAnyBaseActionController =
-      ActionController(name: '_SelectAnyBase');
-
-  @override
-  void setList(List<ItemSelectTable> list) {
-    final _$actionInfo = _$_SelectAnyBaseActionController.startAction(
-        name: '_SelectAnyBase.setList');
-    try {
-      return super.setList(list);
-    } finally {
-      _$_SelectAnyBaseActionController.endAction(_$actionInfo);
-    }
-  }
-
   @override
   String toString() {
     return '''

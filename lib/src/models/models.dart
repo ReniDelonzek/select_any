@@ -24,10 +24,14 @@ class TableBottomBuilderArgs {
   BuildContext context;
   GroupFilterExp filter;
   bool isLoaded;
+  DataSource actualDataSource;
+  List<ItemSelectTable> partialData;
   TableBottomBuilderArgs(
     this.context,
     this.filter,
     this.isLoaded,
+    this.actualDataSource,
+    this.partialData
   );
 }
 
@@ -178,7 +182,11 @@ class Line {
   /// Example: My enclosure: ???
   /// Where ??? will be replaced by the content of the line
   String enclosure;
+
+  /// Build Custom Widget
   CustomLine customLine;
+
+  /// Default value where value is null or empty
   DefaultValue defaultValue;
 
   /// Usado para o cabeçalho em tabelas
@@ -211,7 +219,12 @@ class Line {
   /// Show sizedbox when empty row
   bool showSizedBoxWhenEmpty;
 
+  /// Custom table tooltip
   String tableTooltip;
+
+  /// Indicate the line is the result of aggregate.
+  /// It is useful for building SQL queries correctly
+  bool isAgregate;
 
   Line(this.key,
       {this.enclosure,
@@ -229,7 +242,8 @@ class Line {
       this.showTextInTableScroll,
       this.enableLineFilter = true,
       this.showSizedBoxWhenEmpty = false,
-      this.tableTooltip})
+      this.tableTooltip,
+      this.isAgregate = false})
       : assert(key != null) {
     if (filter == null) {
       if (typeData is TDDateTimestamp) {
@@ -284,12 +298,6 @@ class Line {
 }
 
 abstract class TypeData {}
-
-class TDText extends TypeData {}
-
-class TDNumberInt extends TypeData {}
-
-class TDNumberDecimal extends TypeData {}
 
 abstract class TDDate extends TypeData {
   String outputFormat;
@@ -689,21 +697,25 @@ abstract class _ItemSelectExpandedBase extends ItemSelect with Store {
 
 enum TypeSearch { CONTAINS, BEGINSWITH, ENDSWITH, NOTCONTAINS }
 
-abstract class FilterExp {}
+abstract class FilterExp {
+  Line line;
+
+  FilterExp({this.line});
+}
 
 class FilterExpColumn extends FilterExp {
-  Line line;
   dynamic value;
   TypeSearch typeSearch;
   FilterExpColumn(
-      {this.line, this.value, this.typeSearch = TypeSearch.CONTAINS});
+      {Line line, this.value, this.typeSearch = TypeSearch.CONTAINS})
+      : super(line: line);
 }
 
 class FilterExpRangeCollun extends FilterExp {
-  Line line;
   DateTime dateStart;
   DateTime dateEnd;
-  FilterExpRangeCollun({this.line, this.dateStart, this.dateEnd});
+  FilterExpRangeCollun({Line line, this.dateStart, this.dateEnd})
+      : super(line: line);
 }
 
 class GroupFilterExp extends FilterExp {
@@ -716,17 +728,17 @@ class GroupFilterExp extends FilterExp {
 }
 
 class FilterSelectColumn extends FilterExp {
-  Line line;
   dynamic value;
   TypeSearch typeSearch;
   String customKey;
   dynamic valueId;
   FilterSelectColumn(
-      {this.line,
+      {Line line,
       this.value,
       this.typeSearch = TypeSearch.CONTAINS,
       this.customKey,
-      this.valueId});
+      this.valueId})
+      : super(line: line);
 }
 
 enum OperatorFilterEx { AND, OR }

@@ -139,7 +139,7 @@ abstract class _SelectAnyBase with Store {
     actualDataSource?.listData?.clear();
     actualDataSource?.clear();
     loaded = false;
-    clearFilters();
+    clearFilters(callDataSource: false);
   }
 
   setDataSource({int offset, bool refresh = false}) async {
@@ -407,7 +407,7 @@ abstract class _SelectAnyBase with Store {
     }
   }
 
-  clearFilters() {
+  clearFilters({bool callDataSource = true}) {
     filterControllers.forEach((key, value) {
       if (value is SelectRangeDateWidget) {
         value.controller.clear();
@@ -420,7 +420,9 @@ abstract class _SelectAnyBase with Store {
     selectModel.lines.forEach((e) {
       e.filter?.selectedValue = null;
     });
-    setCorretDataSource();
+    if (callDataSource) {
+      setCorretDataSource();
+    }
   }
 
   onColumnFilterChanged() {

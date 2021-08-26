@@ -20,6 +20,18 @@ enum TypeSelect {
   ACTION
 }
 
+class TableBottomBuilderArgs {
+  BuildContext context;
+  GroupFilterExp filter;
+  bool isLoaded;
+  DataSource? actualDataSource;
+  List<ItemSelectTable> partialData;
+  TableBottomBuilderArgs(this.context, this.filter, this.isLoaded,
+      this.actualDataSource, this.partialData);
+}
+
+typedef Widget TableBottomBuilder(TableBottomBuilderArgs args);
+
 class SelectModel {
   /// Selection type
   TypeSelect typeSelect;
@@ -73,6 +85,9 @@ class SelectModel {
   /// Custom theme
   SelectModelTheme theme;
 
+  /// Widget to fill the bottom left corner of the table
+  TableBottomBuilder? tableBottomBuilder;
+
   SelectModel(this.title, this.id, this.lines, this.dataSource, this.typeSelect,
       {this.filters,
       this.actions,
@@ -85,8 +100,8 @@ class SelectModel {
       this.confirmToLoadData = false,
       this.allowSelectAll,
       this.showFiltersInput = true,
-      this.theme =
-          const SelectModelTheme(tableTheme: SelectModelThemeTable())}) {
+      this.theme = const SelectModelTheme(tableTheme: SelectModelThemeTable()),
+      this.tableBottomBuilder}) {
     if (openSearchAutomatically == null) {
       openSearchAutomatically = !UtilsPlatform.isMobile;
     }
@@ -159,7 +174,11 @@ class Line {
   /// Example: My enclosure: ???
   /// Where ??? will be replaced by the content of the line
   String? enclosure;
+
+  /// Build Custom Widget
   CustomLine? customLine;
+
+  /// Default value where value is null or empty
   DefaultValue? defaultValue;
 
   /// Usado para o cabeçalho em tabelas
@@ -192,7 +211,12 @@ class Line {
   /// Show sizedbox when empty row
   bool showSizedBoxWhenEmpty;
 
+  /// Custom table tooltip
   String? tableTooltip;
+
+  /// Indicate the line is the result of aggregate.
+  /// It is useful for building SQL queries correctly
+  bool isAgregate;
 
   Line(this.key,
       {this.enclosure,
@@ -210,12 +234,18 @@ class Line {
       this.showTextInTableScroll,
       this.enableLineFilter,
       this.showSizedBoxWhenEmpty = false,
-      this.tableTooltip}) {
-    if (typeData is TDDateTimestamp && filter == null) {
-      filter = FilterRangeDate();
-      if (formatData == null) {
-        formatData =
-            FormatDataTimestamp((typeData as TDDateTimestamp).outputFormat);
+      this.tableTooltip,
+      this.isAgregate = false})
+      : assert(key != null) {
+    if (filter == null) {
+      if (typeData is TDDateTimestamp) {
+        filter = FilterRangeDate();
+        if (formatData == null) {
+          formatData =
+              FormatDataTimestamp((typeData as TDDateTimestamp).outputFormat);
+        }
+      } else {
+        filter = FilterText();
       }
     }
     if (enableLineFilter == null && customLine != null) {
@@ -260,12 +290,6 @@ class Line {
 }
 
 abstract class TypeData {}
-
-class TDText extends TypeData {}
-
-class TDNumberInt extends TypeData {}
-
-class TDNumberDecimal extends TypeData {}
 
 abstract class TDDate extends TypeData {
   String outputFormat;
@@ -385,8 +409,12 @@ class FormatDataMoney extends FormatData {
   }
 }
 
-abstract class FilterBase {
-  FilterBase();
+abstract class FilterBase = _FilterBaseBase with _$FilterBase;
+
+abstract class _FilterBaseBase with Store {
+  _FilterBaseBase();
+  @observable
+  ItemDataFilter? selectedValue;
 }
 
 class FilterRangeDate extends FilterBase {
@@ -400,28 +428,40 @@ class FilterRangeDate extends FilterBase {
   });
 }
 
-class FilterSelectItem {
-  FontDataFilterBase? fontDataFilter;
+class FilterSelectItem extends FilterBase {
+  FontDataFilterBase fontDataFilter;
 
-  FilterSelectItem({this.fontDataFilter});
+  /// custom key for filters by id
+  String? keyFilterId;
+
+  FilterSelectItem(this.fontDataFilter, {this.keyFilterId});
+}
+
+class FilterText extends FilterBase {
+  FilterText();
 }
 
 class ItemDataFilter {
   String? label;
-  int? id;
+  dynamic value;
+  dynamic idValue;
+  ItemDataFilter({this.label, @required this.value, this.idValue});
 }
 
 abstract class FontDataFilterBase {
-  Future<List<ItemDataFilter>> getList();
+  Future<List<ItemDataFilter>> getList(
+      GroupFilterExp filters, String textSearch);
 }
 
-class FontDataFilterStatic extends FontDataFilterBase {
-  List<ItemDataFilter> list;
-  FontDataFilterStatic(this.list);
+class FontDataFilterAny extends FontDataFilterBase {
+  Future<List<ItemDataFilter>> Function(
+      GroupFilterExp filters, String textSearch) list;
+  FontDataFilterAny(this.list);
 
   @override
-  Future<List<ItemDataFilter>> getList() async {
-    return list;
+  Future<List<ItemDataFilter>> getList(
+      GroupFilterExp filters, String textSearch) async {
+    return list(filters, textSearch);
   }
 }
 
@@ -524,7 +564,10 @@ abstract class _DataSourceBase with Store {
 
   Future clear();
 
-  bool filterTypeSearch(TypeSearch typeSearch, dynamic value, String? text) {
+  bool filterTypeSearch(TypeSearch typeSearch, dynamic value, dynamic text) {
+    if (!(text is String)) {
+      text = text?.toString();
+    }
     if (typeSearch == TypeSearch.CONTAINS) {
       return removeDiacritics(value.toString()).toLowerCase().contains(text!) ==
           true;
@@ -547,8 +590,8 @@ abstract class _DataSourceBase with Store {
     if (filter != null) {
       for (var group in filter.filterExps!) {
         if (group is GroupFilterExp) {
-          group = convertFiltersToLowerCase(group)!;
-        } else if (group is FilterExpCollun) {
+          group = convertFiltersToLowerCase(group);
+        } else if (group is FilterExpColumn) {
           if (group.value is String) {
             group.value = group.value.toString().toLowerCase();
           }
@@ -646,21 +689,25 @@ abstract class _ItemSelectExpandedBase extends ItemSelect with Store {
 
 enum TypeSearch { CONTAINS, BEGINSWITH, ENDSWITH, NOTCONTAINS }
 
-abstract class FilterExp {}
-
-class FilterExpCollun extends FilterExp {
+abstract class FilterExp {
   Line? line;
+
+  FilterExp({this.line});
+}
+
+class FilterExpColumn extends FilterExp {
   dynamic value;
   TypeSearch typeSearch;
-  FilterExpCollun(
-      {this.line, this.value, this.typeSearch = TypeSearch.CONTAINS});
+  FilterExpColumn(
+      {required Line line, this.value, this.typeSearch = TypeSearch.CONTAINS})
+      : super(line: line);
 }
 
 class FilterExpRangeCollun extends FilterExp {
-  Line? line;
   DateTime? dateStart;
   DateTime? dateEnd;
-  FilterExpRangeCollun({this.line, this.dateStart, this.dateEnd});
+  FilterExpRangeCollun({required Line line, this.dateStart, this.dateEnd})
+      : super(line: line);
 }
 
 class GroupFilterExp extends FilterExp {
@@ -670,6 +717,20 @@ class GroupFilterExp extends FilterExp {
     this.operatorEx,
     this.filterExps,
   });
+}
+
+class FilterSelectColumn extends FilterExp {
+  dynamic value;
+  TypeSearch typeSearch;
+  String? customKey;
+  dynamic valueId;
+  FilterSelectColumn(
+      {required Line line,
+      this.value,
+      this.typeSearch = TypeSearch.CONTAINS,
+      this.customKey,
+      this.valueId})
+      : super(line: line);
 }
 
 enum OperatorFilterEx { AND, OR }

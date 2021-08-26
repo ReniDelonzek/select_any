@@ -70,6 +70,7 @@ abstract class _SelectAnyBase with Store {
   var error;
   @observable
   bool loading = false;
+  @observable
   bool loaded = false;
   FocusNode focusNodeSearch = FocusNode();
 
@@ -104,6 +105,8 @@ abstract class _SelectAnyBase with Store {
       actualDataSource?.supportSingleLineFilter != false;
 
   ItemSort? itemSort;
+  @observable
+  GroupFilterExp? actualFilters;
 
   _SelectAnyBase({this.dynamicScreen = true});
 
@@ -129,21 +132,16 @@ abstract class _SelectAnyBase with Store {
     return values.any((element) => element == value);
   }
 
-  @action
-  void setList(List<ItemSelectTable> list) {
-    this.list.addAll(ObservableList.of(list));
-  }
-
   void dispose() {
     list.clear();
     filter.clear();
     actualDataSource?.listData.clear();
     actualDataSource?.clear();
     loaded = false;
+    clearFilters(callDataSource: false);
   }
 
   setDataSource({int? offset, bool refresh = false}) async {
-    showSearch = true;
     try {
       GroupFilterExp groupFilterExp = buildFilterExpression();
       showSearch = groupFilterExp.filterExps!.isEmpty;
@@ -188,7 +186,9 @@ abstract class _SelectAnyBase with Store {
           });
           loading = false;
           loadingMore = false;
+          loaded = true;
           total = event.total ?? 0;
+          setDataType();
         }
       }, onError: (error) {
         print(error);
@@ -253,6 +253,7 @@ abstract class _SelectAnyBase with Store {
           total = event.total ?? 0;
           loading =
               !(removeDiacritics(filter.text.trim()).toLowerCase() == text);
+          loaded = true;
         }
       }, onError: (error) {
         print(error);
@@ -357,28 +358,41 @@ abstract class _SelectAnyBase with Store {
         return;
       }
       if (line.filter != null) {
-        if (line.filter is FilterRangeDate &&
-            ((value as SelectRangeDateWidget).controller.initialDate != null ||
-                value.controller.finalDate != null)) {
-          exps.add(FilterExpRangeCollun(
-              line: line,
-              dateStart: value.controller.initialDate,
-              dateEnd: value.controller.finalDate));
-        }
-      } else {
-        if (value is Padding) {
-          if (value.child is TextField) {
-            if ((value.child as TextField).controller!.text.trim().isNotEmpty) {
-              exps.add(FilterExpCollun(
-                  line: line,
-                  value: (value.child as TextField).controller!.text.trim(),
-                  typeSearch: typeSearch));
-            }
+        if (line.filter is FilterRangeDate) {
+          if (((value as SelectRangeDateWidget).controller.initialDate !=
+                  null ||
+              (value).controller.finalDate != null)) {
+            exps.add(FilterExpRangeCollun(
+                line: line,
+                dateStart: (value).controller.initialDate,
+                dateEnd: (value).controller.finalDate));
+          }
+        } else if (line.filter!.selectedValue != null) {
+          if (line.filter is FilterSelectItem) {
+            exps.add(FilterSelectColumn(
+                line: line,
+                value: (line.filter as FilterSelectItem)
+                    .selectedValue!
+                    .value
+                    ?.toString()
+                    .toLowerCase(),
+                customKey: (line.filter as FilterSelectItem).keyFilterId,
+                valueId:
+                    (line.filter as FilterSelectItem).selectedValue!.idValue,
+                typeSearch: TypeSearch.CONTAINS));
+          } else if (line.filter is FilterText &&
+              line.filter!.selectedValue!.value.toString().isNotEmpty) {
+            exps.add(FilterExpColumn(
+                line: line,
+                value: line.filter!.selectedValue!.value,
+                typeSearch: typeSearch));
           }
         }
       }
     });
-    return GroupFilterExp(filterExps: exps, operatorEx: OperatorFilterEx.AND);
+    actualFilters =
+        GroupFilterExp(filterExps: exps, operatorEx: OperatorFilterEx.AND);
+    return actualFilters!;
   }
 
   setCorretDataSource({int? offset, bool refresh = false}) {
@@ -389,7 +403,7 @@ abstract class _SelectAnyBase with Store {
     }
   }
 
-  clearFilters() {
+  clearFilters({bool callDataSource = true}) {
     filterControllers.forEach((key, value) {
       if (value is SelectRangeDateWidget) {
         value.controller.clear();
@@ -399,7 +413,12 @@ abstract class _SelectAnyBase with Store {
         }
       }
     });
-    setCorretDataSource();
+    selectModel?.lines.forEach((e) {
+      e.filter?.selectedValue = null;
+    });
+    if (callDataSource) {
+      setCorretDataSource();
+    }
   }
 
   onColumnFilterChanged() {
@@ -413,5 +432,31 @@ abstract class _SelectAnyBase with Store {
       page = 1;
     }
     filter.clear();
+  }
+
+  /// Seta o tipo das colunas onde ele estiver null
+  void setDataType() {
+    if (list.isNotEmpty) {
+      selectModel?.lines.forEach((line) {
+        TypeData? typeData = line.typeData;
+        if (typeData == null) {
+          /// If you have at least one string, consider everything as a string
+          /// The other types of data require that they all have the same type
+          if (list.any((element) => element.object[line.key] is String)) {
+            typeData = TDString();
+          } else if (list.every((element) => element.object[line.key] is num)) {
+            typeData = TDNumber();
+          } else if (list
+              .every((element) => element.object[line.key] is bool)) {
+            typeData = TDBoolean();
+          } else {
+            typeData = TDNotString();
+          }
+
+          // Save the data type so you don't need to scroll through the list again
+          line.typeData = typeData;
+        }
+      });
+    }
   }
 }

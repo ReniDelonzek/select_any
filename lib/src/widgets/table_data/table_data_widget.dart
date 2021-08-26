@@ -1,6 +1,8 @@
 import 'package:data_table_plus/data_table_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:msk_utils/extensions/list.dart';
 import 'package:msk_utils/models/item_select.dart';
 import 'package:msk_utils/utils/utils_hive.dart';
 import 'package:select_any/src/models/models.dart';
@@ -11,28 +13,28 @@ import 'package:select_any/src/widgets/select_range_date/select_range_date_widge
 import 'package:select_any/src/widgets/utils_widget.dart';
 
 class TableDataWidget extends StatelessWidget {
-  final SelectAnyController? controller;
+  final SelectAnyController controller;
 
   TableDataWidget(SelectModel selectModel,
       {Key? key, required this.controller, bool carregarDados = true})
       : super(key: key) {
-    controller!.selectModel = selectModel;
+    controller.selectModel = selectModel;
     if (selectModel.preSelected != null) {
-      controller!.selectedList = selectModel.preSelected!.toSet();
+      controller.selectedList = selectModel.preSelected!.toSet();
     }
 
     if (carregarDados) {
-      controller!.actualDataSource = selectModel.dataSource;
-      controller!.setDataSource();
+      controller.actualDataSource = selectModel.dataSource;
+      controller.setDataSource();
     }
   }
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: controller!.selectModel!.theme.tableTheme.tablePadding,
+      padding: controller.selectModel!.theme.tableTheme.tablePadding,
       child: SingleChildScrollView(
           child:
-              controller!.selectModel!.theme.tableTheme.showTableInCard != false
+              controller.selectModel!.theme.tableTheme.showTableInCard != false
                   ? Card(child: _buildContent(context))
                   : _buildContent(context)),
     );
@@ -40,17 +42,17 @@ class TableDataWidget extends StatelessWidget {
 
   Widget _buildContent(BuildContext context) {
     List<Widget> buttons = [];
-    if (controller!.selectModel!.buttons != null &&
-        controller!.selectModel!.theme.buttonsPosition ==
+    if (controller.selectModel!.buttons != null &&
+        controller.selectModel!.theme.buttonsPosition ==
             ButtonsPosition.IN_TABLE_AND_BOTTOM) {
-      buttons.addAll(controller!.selectModel!.buttons!
+      buttons.addAll(controller.selectModel!.buttons!
           .map((e) => IconButton(
                 splashRadius: 24,
                 icon: e.icon ?? Icon(Icons.add),
                 tooltip: e.description,
                 onPressed: () {
-                  UtilsWidget.onAction(context, null, null, e, controller!.data,
-                      controller!.reloadData, controller!.actualDataSource);
+                  UtilsWidget.onAction(context, null, null, e, controller.data,
+                      controller.reloadData, controller.actualDataSource);
                 },
               ))
           .toList());
@@ -75,19 +77,19 @@ class TableDataWidget extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Observer(builder: (_) {
-                          if (!controller!.showSearch) {
+                          if (!controller.showSearch) {
                             return SizedBox();
                           }
                           return Row(mainAxisSize: MainAxisSize.min, children: [
                             Container(
                                 width: 300,
                                 child: TextField(
-                                  focusNode: controller!.focusNodeSearch,
+                                  focusNode: controller.focusNodeSearch,
                                   decoration:
                                       InputDecoration(hintText: 'Pesquisar'),
-                                  controller: controller!.filter,
+                                  controller: controller.filter,
                                   onChanged: (text) {
-                                    controller!.filtroPesquisaModificado();
+                                    controller.filtroPesquisaModificado();
                                   },
                                 )),
                             SizedBox(width: 8),
@@ -97,8 +99,8 @@ class TableDataWidget extends StatelessWidget {
                                 onPressed: () async {
                                   var newType = await UtilsWidget
                                       .showDialogChangeTypeSearch(
-                                          context, controller!.typeSearch);
-                                  controller!.updateTypeSearch(newType);
+                                          context, controller.typeSearch);
+                                  controller.updateTypeSearch(newType);
                                 },
                                 icon: Icon(
                                   Icons.saved_search,
@@ -107,7 +109,7 @@ class TableDataWidget extends StatelessWidget {
                         }),
 
                         /// fonteDadoAtual pode ser null caso o carregarDados seja false
-                        if (controller!.actualDataSource?.allowExport == true)
+                        if (controller.actualDataSource?.allowExport == true)
                           Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
@@ -117,7 +119,7 @@ class TableDataWidget extends StatelessWidget {
                                   tooltip: 'Exportar',
                                   icon: Icon(Icons.file_download),
                                   onPressed: () {
-                                    controller!.export();
+                                    controller.export();
                                   })
                             ],
                           )
@@ -128,7 +130,7 @@ class TableDataWidget extends StatelessWidget {
           ),
         ),
         Observer(builder: (_) {
-          if (controller!.confirmToLoadData) {
+          if (controller.confirmToLoadData) {
             return Center(
                 child: TextButton.icon(
                     icon: Icon(Icons.sync),
@@ -136,67 +138,67 @@ class TableDataWidget extends StatelessWidget {
                     onPressed: () {
                       /// Aqui é vantagem usar o setState, pois toda a tela precisa ser recarregada
 
-                      controller!.confirmToLoadData = false;
-                      controller!.actualDataSource =
-                          controller!.selectModel!.dataSource;
-                      controller!.setDataSource();
+                      controller.confirmToLoadData = false;
+                      controller.actualDataSource =
+                          controller.selectModel!.dataSource;
+                      controller.setDataSource();
                     }));
           }
 
-          if (controller!.error != null) {
+          if (controller.error != null) {
             return FailWidget('Houve uma falha ao carregar os dados',
-                error: controller!.error);
+                error: controller.error);
           }
 
           /// Codigo para armazenar em variáveis partes do conteúdo
 
           List<DataRow> rows = [];
           List<ItemSelect> subList = [];
-          if (!controller!.loading) {
+          if (!controller.loading) {
             int start =
-                (controller!.page - 1).abs() * controller!.quantityItensPage!;
-            int end = controller!.page * controller!.quantityItensPage!;
+                (controller.page - 1).abs() * controller.quantityItensPage!;
+            int end = controller.page * controller.quantityItensPage!;
 
-            subList = controller!.list
+            subList = controller.list
                 .where((element) =>
                     element.position! >= start && element.position! <= end)
                 .toList();
 
             int i = 0;
             for (var element in subList) {
-              rows.add(UtilsWidget.generateDataRow(controller!.selectModel!, i,
-                  element, context, controller!.data,
+              rows.add(UtilsWidget.generateDataRow(
+                  controller.selectModel!, i, element, context, controller.data,
                   (ItemSelect itemSelect, bool? b, int index) {
-                if (controller!.selectModel!.typeSelect == TypeSelect.SIMPLE) {
+                if (controller.selectModel!.typeSelect == TypeSelect.SIMPLE) {
                   if (Navigator.maybeOf(context)?.canPop() == true) {
                     Navigator.maybeOf(context)?.pop(itemSelect.object);
                   }
                 }
-                if (controller!.selectModel!.typeSelect == TypeSelect.ACTION) {
+                if (controller.selectModel!.typeSelect == TypeSelect.ACTION) {
                   /// Gambi para evitar problemas ao usuário clicar em selecionar todos
-                  if ((controller!.lastClick + 500) <
+                  if ((controller.lastClick + 500) <
                       (DateTime.now().millisecondsSinceEpoch)) {
-                    controller!.lastClick =
+                    controller.lastClick =
                         DateTime.now().millisecondsSinceEpoch;
                     UtilsWidget.tratarOnTap(
                         context,
                         itemSelect,
                         index,
-                        controller!.selectModel!,
-                        controller!.data,
-                        controller!.reloadData,
-                        controller!.actualDataSource);
+                        controller.selectModel!,
+                        controller.data,
+                        controller.reloadData,
+                        controller.actualDataSource);
                   }
                 } else {
                   if (b!) {
-                    controller!.selectedList.add(itemSelect);
+                    controller.selectedList.add(itemSelect);
                   } else {
-                    controller!.selectedList
+                    controller.selectedList
                         .removeWhere((element) => element.id == itemSelect.id);
                   }
                   itemSelect.isSelected = b;
                 }
-              }, controller!.reloadData, 2, controller!.actualDataSource,
+              }, controller.reloadData, 2, controller.actualDataSource,
                   generateActions: false));
               i++;
             }
@@ -216,116 +218,56 @@ class TableDataWidget extends StatelessWidget {
                               BoxConstraints(minWidth: constraint.maxWidth),
                           child: DataTablePlus(
                               showCheckboxColumn:
-                                  controller!.selectModel!.typeSelect ==
+                                  controller.selectModel!.typeSelect ==
                                       TypeSelect.MULTIPLE,
-                              tableColumnsWidth: controller!.selectModel!.theme
+                              tableColumnsWidth: controller.selectModel!.theme
                                   .tableTheme.widthTableColumns,
-                              headingRowColor: controller!.selectModel!.theme
+                              headingRowColor: controller.selectModel!.theme
                                           .tableTheme.headerColor !=
                                       null
                                   ? MaterialStateColor.resolveWith((states) {
-                                      return controller!.selectModel!.theme
+                                      return controller.selectModel!.theme
                                           .tableTheme.headerColor!;
                                     })
                                   : null,
-                              sortColumnIndex: controller!.itemSort?.indexLine,
-                              customRows: controller!.showLineFilter
-                                  ? [
-                                      CustomRow(
-                                          index: -1,
-                                          cells: <Widget>[]
-                                            ..addAll(controller!.selectModel!
-                                                            .typeSelect ==
-                                                        TypeSelect.MULTIPLE &&
-                                                    rows.isNotEmpty
-                                                ? [Container()]
-                                                : [])
-                                            ..addAll(controller!
-                                                .selectModel!.lines
-                                                .map((e) {
-                                              if (e.enableLineFilter == true &&
-                                                  !controller!.filterControllers
-                                                      .containsKey(e.key)) {
-                                                if (e.filter != null) {
-                                                  if (e.filter
-                                                      is FilterRangeDate) {
-                                                    controller!.filterControllers[
-                                                            e.key] =
-                                                        SelectRangeDateWidget(
-                                                            SelectRangeDateController(),
-                                                            (dateMin, dateMax) {
-                                                      controller!
-                                                          .onColumnFilterChanged();
-                                                    });
-                                                  }
-                                                } else {
-                                                  controller!.filterControllers[
-                                                      e.key] = Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            left: 8,
-                                                            right: 8,
-                                                            top: 2,
-                                                            bottom: 3),
-                                                    child: TextField(
-                                                      controller:
-                                                          TextEditingController(),
-                                                      decoration: InputDecoration(
-                                                          hintText:
-                                                              '${e.name ?? e.key}'),
-                                                      onChanged: (text) {
-                                                        controller!
-                                                            .onColumnFilterChanged();
-                                                      },
-                                                    ),
-                                                  );
-                                                }
-                                              }
-                                              return Container(
-                                                  height: 48,
-                                                  child: controller!
-                                                          .filterControllers[
-                                                      e.key]);
-                                            }).toList()),
-                                          typeCustomRow: TypeCustomRow.ADD)
-                                    ]
-                                  : [],
+                              sortColumnIndex: controller.itemSort?.indexLine,
+                              customRows: getCustomRows(rows),
                               decoration: BoxDecoration(),
-                              sortAscending: controller!.itemSort?.typeSort !=
+                              sortAscending: controller.itemSort?.typeSort !=
                                   EnumTypeSort.DESC,
                               columns: UtilsWidget.generateDataColumn(
-                                  controller!.selectModel!,
+                                  controller.selectModel!,
                                   generateActions: false,
                                   onSort: (int index, bool sort) {
-                                if (controller!
+                                if (controller
                                     .selectModel!.lines[index].enableSorting) {
-                                  controller!.itemSort = ItemSort(
+                                  controller.itemSort = ItemSort(
                                       typeSort: sort
                                           ? EnumTypeSort.ASC
                                           : EnumTypeSort.DESC,
                                       line:
-                                          controller!.selectModel!.lines[index],
+                                          controller.selectModel!.lines[index],
                                       indexLine: index);
-                                  controller!.updateSortCollumn();
+                                  controller.updateSortCollumn();
                                 }
                               }),
                               rows: rows),
                         )),
                   );
                 })),
-                if (controller!.selectModel!.actions?.isNotEmpty == true)
+                if (controller.selectModel!.actions?.isNotEmpty == true)
                   Container(
                     child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: <Widget>[]
-                          ..addAll(controller!.showLineFilter
+                          ..addAll(controller.showLineFilter
                               ? [
                                   SizedBox(
                                     height: 48,
                                     child: IconButton(
                                       splashRadius: 24,
                                       onPressed: () {
-                                        controller!.clearFilters();
+                                        controller.clearFilters();
                                         showSnackMessage(
                                             context, 'Os filtros foram limpos');
                                       },
@@ -341,15 +283,15 @@ class TableDataWidget extends StatelessWidget {
                                   Container(
                                     height: 56,
                                     decoration: BoxDecoration(
-                                        color: controller!.selectModel!.theme
+                                        color: controller.selectModel!.theme
                                             .tableTheme.headerColor),
                                     constraints: BoxConstraints(minWidth: 60),
-                                    width: controller!
+                                    width: controller
                                             .selectModel!.actions!.length *
                                         50.0,
                                     alignment: Alignment.center,
                                     child: Text('Ações',
-                                        style: controller!.selectModel!.theme
+                                        style: controller.selectModel!.theme
                                                 .tableTheme.headerTextStyle ??
                                             TextStyle(
                                                 fontWeight: FontWeight.bold,
@@ -360,13 +302,13 @@ class TableDataWidget extends StatelessWidget {
                               );
                             } else {
                               return Row(
-                                  children: controller!.selectModel!.actions!
+                                  children: controller.selectModel!.actions!
                                       .map((acao) {
                                 return Container(
                                   height: 48,
                                   child: IconButton(
                                     splashRadius: 24,
-                                    color: controller!.selectModel!.theme
+                                    color: controller.selectModel!.theme
                                         .defaultIconActionColor,
                                     tooltip: acao.description,
                                     icon: acao.icon ??
@@ -379,9 +321,9 @@ class TableDataWidget extends StatelessWidget {
                                           subList[newIndex],
                                           index,
                                           acao,
-                                          controller!.data,
-                                          controller!.reloadData,
-                                          controller!.actualDataSource);
+                                          controller.data,
+                                          controller.reloadData,
+                                          controller.actualDataSource);
                                     },
                                   ),
                                 );
@@ -390,8 +332,8 @@ class TableDataWidget extends StatelessWidget {
                           }))),
                   )
               ]),
-              if (controller!.loading) LinearProgressIndicator(),
-              if (!controller!.loading && subList.isEmpty)
+              if (controller.loading) LinearProgressIndicator(),
+              if (!controller.loading && subList.isEmpty)
                 Center(
                     child: Padding(
                   padding: const EdgeInsets.all(25),
@@ -403,15 +345,163 @@ class TableDataWidget extends StatelessWidget {
             ],
           );
         }),
+        _bottomContent(context)
+      ],
+    );
+  }
+
+  List<CustomRow> getCustomRows(List<DataRow> rows) {
+    return controller.showLineFilter
+        ? [
+            CustomRow(
+                index: -1,
+                cells: <Widget>[]
+                  ..addAll(controller.selectModel?.typeSelect ==
+                              TypeSelect.MULTIPLE &&
+                          rows.isNotEmpty
+                      ? [Container()]
+                      : [])
+                  ..addAll(controller.selectModel?.lines.map((e) {
+                        if (e.enableLineFilter == true &&
+                            !controller.filterControllers.containsKey(e.key)) {
+                          if (e.filter != null) {
+                            if (e.filter is FilterRangeDate) {
+                              controller.filterControllers[e.key] =
+                                  SelectRangeDateWidget(
+                                      SelectRangeDateController(),
+                                      (dateMin, dateMax) {
+                                controller.onColumnFilterChanged();
+                              });
+                            } else if (e.filter is FilterSelectItem) {
+                              controller.filterControllers[e.key] =
+                                  Observer(builder: (_) {
+                                return FutureBuilder<List<ItemDataFilter>>(
+                                    future: (e.filter as FilterSelectItem)
+                                        .fontDataFilter
+                                        .getList(controller.actualFilters,
+                                            controller.filter.text),
+                                    builder: (_, snap) {
+                                      if (snap.connectionState ==
+                                          ConnectionState.waiting) {
+                                        return SizedBox();
+                                      }
+                                      if (snap.hasError || snap.data == null)
+                                        return Text('Falha ao carregar');
+
+                                      return Observer(
+                                        builder: (_) => Padding(
+                                          padding: const EdgeInsets.only(
+                                            bottom: 3,
+                                            left: 8,
+                                            right: 8,
+                                          ),
+                                          child: DropdownButtonFormField(
+                                              onChanged: (dynamic value) {
+                                                /// Limpa o input
+                                                if (value == null) {
+                                                  if ((e.filter
+                                                              as FilterSelectItem)
+                                                          .selectedValue !=
+                                                      null) {
+                                                    (e.filter
+                                                            as FilterSelectItem)
+                                                        .selectedValue = null;
+                                                    controller
+                                                        .onColumnFilterChanged();
+                                                  }
+                                                  return;
+                                                }
+                                                final newValue = snap.data
+                                                    .firstWhereOrNull(
+                                                        (element) =>
+                                                            element.value ==
+                                                            value);
+                                                if (newValue?.value !=
+                                                    (e.filter
+                                                            as FilterSelectItem)
+                                                        .selectedValue
+                                                        ?.value) {
+                                                  (e.filter as FilterSelectItem)
+                                                      .selectedValue = newValue;
+                                                  controller
+                                                      .onColumnFilterChanged();
+                                                }
+                                              },
+                                              value:
+                                                  (e.filter as FilterSelectItem)
+                                                      .selectedValue
+                                                      ?.value,
+                                              items: [
+                                                DropdownMenuItem<dynamic>(
+                                                    value: null,
+                                                    child: Text(''))
+                                              ]..addAll(snap.data!
+                                                  .map((e) => DropdownMenuItem(
+                                                      value: e.value,
+                                                      child:
+                                                          Text(e.label ?? '')))
+                                                  .toList())),
+                                        ),
+                                      );
+                                    });
+                              });
+                            } else if (e.filter is FilterText) {
+                              controller.filterControllers[e.key] = Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 8, right: 8, top: 2, bottom: 3),
+                                child: TextField(
+                                  controller: TextEditingController(),
+                                  decoration: InputDecoration(
+                                      hintText: '${e.name ?? e.key}'),
+                                  inputFormatters: e.typeData is TDNumber
+                                      ? [FilteringTextInputFormatter.digitsOnly]
+                                      : [],
+                                  onChanged: (text) {
+                                    if (e.filter!.selectedValue?.toString() !=
+                                        text.trim()) {
+                                      e.filter!.selectedValue =
+                                          ItemDataFilter(value: text.trim());
+                                      controller.onColumnFilterChanged();
+                                    }
+                                  },
+                                ),
+                              );
+                            }
+                          }
+                        }
+                        return Container(
+                            height: 48,
+                            child: controller.filterControllers[e.key]);
+                      }).toList() ??
+                      []),
+                typeCustomRow: TypeCustomRow.ADD)
+          ]
+        : [];
+  }
+
+  Widget _bottomContent(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        controller.selectModel?.tableBottomBuilder != null
+            ? Observer(builder: (_) {
+                return controller.selectModel!.tableBottomBuilder!(
+                    TableBottomBuilderArgs(
+                        context,
+                        controller.actualFilters,
+                        controller.loaded,
+                        controller.actualDataSource,
+                        controller.list));
+              })
+            : SizedBox(),
         Container(
             alignment: Alignment.bottomRight,
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Observer(builder: (_) {
-                if (controller!.list.isEmpty) return SizedBox();
+                if (controller.list.isEmpty) return SizedBox();
                 int total =
-                    ((controller!.total) / controller!.quantityItensPage!)
-                        .ceil();
+                    ((controller.total) / controller.quantityItensPage!).ceil();
 
                 return Container(
                   child: Row(
@@ -422,7 +512,7 @@ class TableDataWidget extends StatelessWidget {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Text('Linhas por Pág.',
-                                    style: controller!
+                                    style: controller
                                         .selectModel!.theme.defaultTextStyle),
                                 SizedBox(width: 16),
                                 SizedBox(
@@ -433,24 +523,23 @@ class TableDataWidget extends StatelessWidget {
                                           border: OutlineInputBorder(),
                                           contentPadding: const EdgeInsets.only(
                                               left: 16, right: 16)),
-                                      value: controller!.quantityItensPage,
+                                      value: controller.quantityItensPage,
                                       onChanged: (item) {
-                                        controller!.quantityItensPage = item;
+                                        controller.quantityItensPage = item;
 
                                         /// Caso o total de paginas seja menor do que a pagina atuali
-                                        if (((controller!.total) /
-                                                    controller!
+                                        if (((controller.total) /
+                                                    controller
                                                         .quantityItensPage!)
                                                 .ceil() <
-                                            controller!.page) {
+                                            controller.page) {
                                           /// Seta a ultima pagina como pagina atual
-                                          controller!.page =
-                                              ((controller!.total) /
-                                                      controller!
-                                                          .quantityItensPage!)
-                                                  .ceil();
+                                          controller.page = ((controller
+                                                      .total) /
+                                                  controller.quantityItensPage!)
+                                              .ceil();
                                         }
-                                        controller!.setCorretDataSource();
+                                        controller.setCorretDataSource();
 
                                         /// Salva isso no banco
                                         UtilsHive.getInstance()!
@@ -459,14 +548,12 @@ class TableDataWidget extends StatelessWidget {
                                           value.put('quantityItensPage', item);
                                         });
                                       },
-                                      items: controller!.getNumberItemsPerPage
+                                      items: controller.getNumberItemsPerPage
                                           .map((e) => DropdownMenuItem(
                                               value: e,
                                               child: Text('$e',
-                                                  style: controller!
-                                                      .selectModel!
-                                                      .theme
-                                                      .defaultTextStyle)))
+                                                  style: controller.selectModel!
+                                                      .theme.defaultTextStyle)))
                                           .toList()),
                                 ),
                                 SizedBox(width: 16)
@@ -483,7 +570,7 @@ class TableDataWidget extends StatelessWidget {
                                 ? SizedBox(
                                     /// TODO Implementar abordagem com Flexiveis
                                     width: 30 +
-                                        ((controller!.total.toString().length) *
+                                        ((controller.total.toString().length) *
                                                 12)
                                             .toDouble(),
                                     child: DropdownButtonFormField<int>(
@@ -492,7 +579,7 @@ class TableDataWidget extends StatelessWidget {
                                             contentPadding:
                                                 const EdgeInsets.all(0)),
                                         icon: SizedBox(),
-                                        style: controller!.selectModel!.theme
+                                        style: controller.selectModel!.theme
                                                 .defaultTextStyle ??
                                             TextStyle(
                                                 fontSize: 14,
@@ -500,25 +587,26 @@ class TableDataWidget extends StatelessWidget {
                                                     .textTheme
                                                     .bodyText1!
                                                     .color),
-                                        value: controller!.page,
+                                        value: controller.page,
                                         onChanged: (item) {
-                                          controller!.page = item ?? 1;
-                                          controller!.setCorretDataSource();
+                                          controller.page = item ?? 1;
+                                          controller.setCorretDataSource();
                                         },
-                                        items: List<DropdownMenuItem<int>>.generate(
+                                        items: List<
+                                                DropdownMenuItem<int>>.generate(
                                             total,
                                             (index) => DropdownMenuItem(
                                                 value: index + 1,
                                                 child: Text(
-                                                    '${(controller!.quantityItensPage! * index) + 1}-${controller!.quantityItensPage! * (index + 1)}',
-                                                    style: controller!
+                                                    '${(controller.quantityItensPage! * index) + 1}-${controller.quantityItensPage! * (index + 1)}',
+                                                    style: controller
                                                         .selectModel!
                                                         .theme
                                                         .defaultTextStyle)))),
                                   )
                                 : SizedBox(),
-                            Text('de ${(controller!.total)}',
-                                style: controller!
+                            Text('de ${(controller.total)}',
+                                style: controller
                                     .selectModel!.theme.defaultTextStyle),
                           ],
                         ),
@@ -532,48 +620,48 @@ class TableDataWidget extends StatelessWidget {
                                 splashRadius: 24,
                                 iconSize: 34,
                                 icon: Icon(Icons.first_page),
-                                color: controller!.selectModel!.theme.tableTheme
+                                color: controller.selectModel!.theme.tableTheme
                                     .bottomIconsColor,
-                                onPressed: controller!.page > 1
+                                onPressed: controller.page > 1
                                     ? () {
-                                        controller!.page = 1;
-                                        controller!.setCorretDataSource();
+                                        controller.page = 1;
+                                        controller.setCorretDataSource();
                                       }
                                     : null),
                             IconButton(
                                 splashRadius: 24,
                                 iconSize: 36,
                                 icon: Icon(Icons.keyboard_arrow_left_rounded),
-                                color: controller!.selectModel!.theme.tableTheme
+                                color: controller.selectModel!.theme.tableTheme
                                     .bottomIconsColor,
-                                onPressed: controller!.page > 1
+                                onPressed: controller.page > 1
                                     ? () {
-                                        controller!.page = controller!.page - 1;
-                                        controller!.setCorretDataSource();
+                                        controller.page = controller.page - 1;
+                                        controller.setCorretDataSource();
                                       }
                                     : null),
                             IconButton(
                                 splashRadius: 24,
                                 iconSize: 36,
                                 icon: Icon(Icons.keyboard_arrow_right_rounded),
-                                color: controller!.selectModel!.theme.tableTheme
+                                color: controller.selectModel!.theme.tableTheme
                                     .bottomIconsColor,
-                                onPressed: controller!.page < total
+                                onPressed: controller.page < total
                                     ? () {
-                                        controller!.page = controller!.page + 1;
-                                        controller!.setCorretDataSource();
+                                        controller.page = controller.page + 1;
+                                        controller.setCorretDataSource();
                                       }
                                     : null),
                             IconButton(
                                 splashRadius: 24,
                                 iconSize: 34,
-                                color: controller!.selectModel!.theme.tableTheme
+                                color: controller.selectModel!.theme.tableTheme
                                     .bottomIconsColor,
                                 icon: Icon(Icons.last_page),
-                                onPressed: controller!.page < total
+                                onPressed: controller.page < total
                                     ? () {
-                                        controller!.page = total;
-                                        controller!.setCorretDataSource();
+                                        controller.page = total;
+                                        controller.setCorretDataSource();
                                       }
                                     : null)
                           ],

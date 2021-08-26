@@ -43,7 +43,7 @@ abstract class DataSourceAny extends DataSource {
     filter = convertFiltersToLowerCase(filter);
 
     List<Map<String, dynamic>>? tempList = [];
-    if (filter != null && filter.filterExps!.isNotEmpty) {
+    if (filter != null && filter.filterExps.isNotEmpty) {
       for (int i = 0; i < listAll!.length; i++) {
         if (applyGroupFilterExp(filter, listAll![i])) {
           tempList.add(listAll![i]);
@@ -171,11 +171,11 @@ abstract class DataSourceAny extends DataSource {
   bool applyGroupFilterExp(
       GroupFilterExp groupFilterExp, Map<String, dynamic> map) {
     bool? filterAndOk;
-    for (var filter in groupFilterExp.filterExps!) {
+    for (var filter in groupFilterExp.filterExps) {
       if (groupFilterExp.operatorEx == OperatorFilterEx.OR) {
         /// Como é uma expressão or, caso esse filtro seja verdadeiro sempre retorna true
 
-        if (filter is FilterExpCollun) {
+        if (filter is FilterExpColumn) {
           var value = map[filter.line!.key];
           if (filter.line!.formatData != null) {
             value = filter.line!.formatData!
@@ -184,6 +184,26 @@ abstract class DataSourceAny extends DataSource {
           if (filterTypeSearch(filter.typeSearch, value, filter.value)) {
             return true;
           }
+        } else if (filter is FilterSelectColumn) {
+          var value = map[filter.line!.key];
+          if (filter.line!.formatData != null) {
+            value = filter.line!.formatData!
+                .formatData(ObjFormatData(data: value, map: map));
+          }
+          if (filterTypeSearch(filter.typeSearch, value, filter.value)) {
+            return true;
+          }
+        } else if (filter is FilterExpRangeCollun) {
+          if (map[filter.line!.key] != null &&
+              map[filter.line!.key] >
+                  (filter.dateStart?.millisecondsSinceEpoch ?? 0) &&
+              map[filter.line!.key] <
+                  (filter.dateEnd?.millisecondsSinceEpoch ??
+                      double.maxFinite.toInt())) {
+            return true;
+          } else {
+            return false;
+          }
         } else if (filter is GroupFilterExp) {
           if (applyGroupFilterExp(filter, map)) {
             return true;
@@ -191,7 +211,18 @@ abstract class DataSourceAny extends DataSource {
         }
       } else if (groupFilterExp.operatorEx == OperatorFilterEx.AND) {
         /// Expressão AND seta filterAndOk = true caso seja true, caso seja falso retorna false na função,
-        if (filter is FilterExpCollun) {
+        if (filter is FilterExpColumn) {
+          var value = map[filter.line!.key];
+          if (filter.line!.formatData != null) {
+            value = filter.line!.formatData!
+                .formatData(ObjFormatData(data: value, map: map));
+          }
+          if (filterTypeSearch(filter.typeSearch, value, filter.value)) {
+            filterAndOk = true;
+          } else {
+            return false;
+          }
+        } else if (filter is FilterSelectColumn) {
           var value = map[filter.line!.key];
           if (filter.line!.formatData != null) {
             value = filter.line!.formatData!
@@ -234,31 +265,10 @@ abstract class DataSourceAny extends DataSource {
       ItemSort? itemSort, String keyId, List<Map<String, dynamic>>? list) {
     _actualySort = itemSort;
     try {
-      if (itemSort != null && list!.isNotEmpty) {
-        //DateTime datetime = DateTime.now();
-
+      if (itemSort != null && list != null && list.isNotEmpty) {
         /// Maintain a consistent order for the list
         var temp = list.sortedBy((e) => e![keyId]);
-        TypeData? typeData = itemSort.line!.typeData;
-        if (typeData == null) {
-          /// If you have at least one string, consider everything as a string
-          /// The other types of data require that they all have the same type
-          if (list.any((element) => element[itemSort.line!.key] is String)) {
-            typeData = TDString();
-          } else if (list
-              .every((element) => element[itemSort.line!.key] is num)) {
-            typeData = TDNumber();
-          } else if (list
-              .every((element) => element[itemSort.line!.key] is bool)) {
-            typeData = TDBoolean();
-          } else {
-            typeData = TDNotString();
-          }
-
-          // Save the data type so you don't need to scroll through the list again
-          itemSort.line!.typeData = typeData;
-        }
-
+        final TypeData? typeData = itemSort.line?.typeData;
         if (typeData is TDString || typeData is TDNotString) {
           list = _sort(temp as List<Map<String, dynamic>>, itemSort, '',
               typeData: typeData);
@@ -273,8 +283,6 @@ abstract class DataSourceAny extends DataSource {
         } else {
           list = _sort(temp as List<Map<String, dynamic>>, itemSort, null);
         }
-        //debugPrint(
-        //    'Sort in: ${DateTime.now().difference(datetime).inMilliseconds}');
       }
     } catch (error, stackTrace) {
       UtilsSentry.reportError(error, stackTrace);

@@ -146,7 +146,14 @@ abstract class DataSourceAny extends DataSource {
       stringBuffer.write('\n');
     }
     for (var item in listAll!) {
-      for (var value in item.values) {
+      for (MapEntry entry in item.entries) {
+        Line? line = selectModel?.lines
+            .firstWhereOrNull((element) => element.key == entry.key);
+        var value = entry.value;
+        if (line != null && line.formatData != null) {
+          value = line.formatData!
+              .formatData(ObjFormatData(data: value, map: item));
+        }
         stringBuffer
           ..write(value)
           ..write(';');

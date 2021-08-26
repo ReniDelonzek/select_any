@@ -22,7 +22,7 @@ enum TypeSelect {
 
 class TableBottomBuilderArgs {
   BuildContext context;
-  GroupFilterExp filter;
+  GroupFilterExp? filter;
   bool isLoaded;
   DataSource? actualDataSource;
   List<ItemSelectTable> partialData;
@@ -235,8 +235,7 @@ class Line {
       this.enableLineFilter,
       this.showSizedBoxWhenEmpty = false,
       this.tableTooltip,
-      this.isAgregate = false})
-      : assert(key != null) {
+      this.isAgregate = false}) {
     if (filter == null) {
       if (typeData is TDDateTimestamp) {
         filter = FilterRangeDate();
@@ -450,17 +449,17 @@ class ItemDataFilter {
 
 abstract class FontDataFilterBase {
   Future<List<ItemDataFilter>> getList(
-      GroupFilterExp filters, String textSearch);
+      GroupFilterExp? filters, String textSearch);
 }
 
 class FontDataFilterAny extends FontDataFilterBase {
   Future<List<ItemDataFilter>> Function(
-      GroupFilterExp filters, String textSearch) list;
+      GroupFilterExp? filters, String textSearch) list;
   FontDataFilterAny(this.list);
 
   @override
   Future<List<ItemDataFilter>> getList(
-      GroupFilterExp filters, String textSearch) async {
+      GroupFilterExp? filters, String textSearch) async {
     return list(filters, textSearch);
   }
 }
@@ -588,9 +587,9 @@ abstract class _DataSourceBase with Store {
 
   GroupFilterExp? convertFiltersToLowerCase(GroupFilterExp? filter) {
     if (filter != null) {
-      for (var group in filter.filterExps!) {
+      for (var group in filter.filterExps) {
         if (group is GroupFilterExp) {
-          group = convertFiltersToLowerCase(group);
+          group = convertFiltersToLowerCase(group)!;
         } else if (group is FilterExpColumn) {
           if (group.value is String) {
             group.value = group.value.toString().toLowerCase();
@@ -711,11 +710,11 @@ class FilterExpRangeCollun extends FilterExp {
 }
 
 class GroupFilterExp extends FilterExp {
-  OperatorFilterEx? operatorEx;
-  List<FilterExp>? filterExps;
+  OperatorFilterEx operatorEx;
+  List<FilterExp> filterExps;
   GroupFilterExp({
-    this.operatorEx,
-    this.filterExps,
+    required this.operatorEx,
+    this.filterExps = const [],
   });
 }
 

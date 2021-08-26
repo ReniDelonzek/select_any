@@ -218,13 +218,13 @@ mixin _$SelectAnyController on _SelectAnyBase, Store {
   final _$actualFiltersAtom = Atom(name: '_SelectAnyBase.actualFilters');
 
   @override
-  GroupFilterExp get actualFilters {
+  GroupFilterExp? get actualFilters {
     _$actualFiltersAtom.reportRead();
     return super.actualFilters;
   }
 
   @override
-  set actualFilters(GroupFilterExp value) {
+  set actualFilters(GroupFilterExp? value) {
     _$actualFiltersAtom.reportWrite(value, super.actualFilters, () {
       super.actualFilters = value;
     });

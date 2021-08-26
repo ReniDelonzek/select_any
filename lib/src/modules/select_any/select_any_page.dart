@@ -287,7 +287,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
     return Observer(builder: (_) {
       if (widget.controller!.typeDiplay == 2) {
         return TableDataWidget(widget._selectModel!,
-            controller: widget.controller, carregarDados: false);
+            controller: widget.controller!, carregarDados: false);
       } else {
         if (!widget.controller!.confirmToLoadData) {
           return _getStreamBody();

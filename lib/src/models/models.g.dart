@@ -12,13 +12,13 @@ mixin _$FilterBase on _FilterBaseBase, Store {
   final _$selectedValueAtom = Atom(name: '_FilterBaseBase.selectedValue');
 
   @override
-  ItemDataFilter get selectedValue {
+  ItemDataFilter? get selectedValue {
     _$selectedValueAtom.reportRead();
     return super.selectedValue;
   }
 
   @override
-  set selectedValue(ItemDataFilter value) {
+  set selectedValue(ItemDataFilter? value) {
     _$selectedValueAtom.reportWrite(value, super.selectedValue, () {
       super.selectedValue = value;
     });

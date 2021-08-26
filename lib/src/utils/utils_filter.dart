@@ -5,8 +5,8 @@ class SqlFilter {
   String query;
   List args;
   SqlFilter({
-    this.query,
-    this.args,
+    this.query = '1 = 1',
+    this.args = const [],
   });
 }
 
@@ -29,7 +29,7 @@ class UtilsFilter {
   static SqlFilter _getSQLFromGroupFilter(
       GroupFilterExp groupFilterExp, bool isAgregate, List args) {
     if (groupFilterExp.filterExps
-        .where((element) => isAgregate == element.line.isAgregate)
+        .where((element) => isAgregate == element.line?.isAgregate)
         .isEmpty) {
       args.add(1);
       return SqlFilter(query: '1 = \$${args.length}', args: args);
@@ -39,7 +39,7 @@ class UtilsFilter {
     switch (groupFilterExp.operatorEx) {
       case OperatorFilterEx.AND:
         groupFilterExp.filterExps
-            .where((element) => isAgregate == element.line.isAgregate)
+            .where((element) => isAgregate == element.line?.isAgregate)
             .forEach((element) {
           SqlFilter local = _getSQLWhereFromFilter(element, filter.args);
           filter.args = local.args;
@@ -51,7 +51,7 @@ class UtilsFilter {
         break;
       case OperatorFilterEx.OR:
         groupFilterExp.filterExps
-            .where((element) => !element.line.isAgregate)
+            .where((element) => element.line?.isAgregate != true)
             .forEach((element) {
           SqlFilter local = _getSQLWhereFromFilter(element, filter.args);
           filter.args = local.args;
@@ -70,7 +70,7 @@ class UtilsFilter {
       return _getSQLWhereFromFilter(filterExp, args);
     } else if (filterExp is FilterSelectColumn) {
       if (filterExp.customKey != null) {
-        String key = filterExp.customKey;
+        String key = filterExp.customKey!;
         switch (filterExp.typeSearch) {
           case TypeSearch.CONTAINS:
             args.add('${filterExp.valueId}');
@@ -95,33 +95,31 @@ class UtilsFilter {
             args.add('${filterExp.value}');
             return SqlFilter(
                 query:
-                    '${filterExp.line.key} = \$${args.length} COLLATE NOCASE ',
+                    '${filterExp.line!.key} = \$${args.length} COLLATE NOCASE ',
                 args: args);
           case TypeSearch.BEGINSWITH:
             args.add('${filterExp.value}%');
             return SqlFilter(
                 query:
-                    '${filterExp.line.key} LIKE \$${args.length} COLLATE NOCASE ',
+                    '${filterExp.line!.key} LIKE \$${args.length} COLLATE NOCASE ',
                 args: args);
-            break;
+
           case TypeSearch.ENDSWITH:
             args.add('%${filterExp.value}');
             return SqlFilter(
                 query:
-                    '${filterExp.line.key} LIKE \$${args.length} COLLATE NOCASE ',
+                    '${filterExp.line!.key} LIKE \$${args.length} COLLATE NOCASE ',
                 args: args);
-            break;
           case TypeSearch.NOTCONTAINS:
             args.add('${filterExp.value}');
             return SqlFilter(
                 query:
-                    '${filterExp.line.key} != \$${args.length} COLLATE NOCASE ',
+                    '${filterExp.line!.key} != \$${args.length} COLLATE NOCASE ',
                 args: args);
-            break;
         }
       }
     } else if (filterExp is FilterExpColumn) {
-      if (filterExp.line.typeData is TDNumber) {
+      if (filterExp.line!.typeData is TDNumber) {
         /// Excepcionalmente aqui, passar o valor diretamente na query,
         /// deixar para passar o valor por parâmetro faz a query não funcionar corretamente
         /// Não tem problema de injeção de dependência pois o valor é num
@@ -134,28 +132,29 @@ class UtilsFilter {
           v = '"%${v.toInt()}%"';
         }
         return SqlFilter(
-            query: 'CAST(${filterExp.line.key} AS TEXT) LIKE $v', args: args);
+            query: 'CAST(${filterExp.line!.key} AS TEXT) LIKE $v', args: args);
       } else
         switch (filterExp.typeSearch) {
           case TypeSearch.CONTAINS:
             args.add('%${filterExp.value}%');
             return SqlFilter(
-                query: '${filterExp.line.key} LIKE \$${args.length}',
+                query: '${filterExp.line!.key} LIKE \$${args.length}',
                 args: args);
           case TypeSearch.BEGINSWITH:
             args.add('${filterExp.value}%');
             return SqlFilter(
-                query: '${filterExp.line.key} LIKE \$${args.length}',
+                query: '${filterExp.line!.key} LIKE \$${args.length}',
                 args: args);
           case TypeSearch.ENDSWITH:
             args.add('%${filterExp.value}');
             return SqlFilter(
-                query: '${filterExp.line.key} LIKE \$${args.length}',
+                query: '${filterExp.line!.key} LIKE \$${args.length}',
                 args: args);
           case TypeSearch.NOTCONTAINS:
             args.add('${filterExp.value}');
             return SqlFilter(
-                query: '${filterExp.line.key} != \$${args.length}', args: args);
+                query: '${filterExp.line!.key} != \$${args.length}',
+                args: args);
         }
     } else if (filterExp is FilterExpRangeCollun) {
       args.add(filterExp.dateStart?.millisecondsSinceEpoch ?? 0);
@@ -163,7 +162,7 @@ class UtilsFilter {
           double.maxFinite.toInt());
       return SqlFilter(
           query:
-              '${filterExp.line.key} BETWEEN \$${args.length - 1} AND \$${args.length}',
+              '${filterExp.line!.key} BETWEEN \$${args.length - 1} AND \$${args.length}',
           args: args);
     }
     args.add(1);

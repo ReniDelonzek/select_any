@@ -144,7 +144,7 @@ abstract class _SelectAnyBase with Store {
   setDataSource({int? offset, bool refresh = false}) async {
     try {
       GroupFilterExp groupFilterExp = buildFilterExpression();
-      showSearch = groupFilterExp.filterExps!.isEmpty;
+      showSearch = groupFilterExp.filterExps.isEmpty;
       loading = true;
       offset ??= (page - 1) * quantityItensPage!;
       (await actualDataSource!.getList(quantityItensPage, offset, selectModel,

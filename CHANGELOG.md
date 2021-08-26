@@ -13,3 +13,8 @@
 ## 0.0.3-dev.2
 
 * Small fixes
+
+## 0.0.3-dev.3
+
+* Possibility to add bottom left table border widget
+* Selector Filter

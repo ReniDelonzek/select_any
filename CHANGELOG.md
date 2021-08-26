@@ -18,3 +18,7 @@
 
 * Possibility to add bottom left table border widget
 * Selector Filter
+
+## 0.0.3-dev.4
+
+* Small Fixes on enableLineFilter

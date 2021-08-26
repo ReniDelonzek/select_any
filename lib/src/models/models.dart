@@ -247,8 +247,8 @@ class Line {
         filter = FilterText();
       }
     }
-    if (enableLineFilter == null && customLine != null) {
-      enableLineFilter = false;
+    if (enableLineFilter == null) {
+      enableLineFilter = customLine == null;
     }
     if (name == null) {
       final pascalWords = RegExp(r"(?:[A-Z]+|^)[a-z]*");

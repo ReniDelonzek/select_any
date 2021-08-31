@@ -50,7 +50,7 @@ class SelectFKWidget extends StatelessWidget {
   /// Specifies a special title for the list screen
   final String customListTitle;
 
-  final Map<String, dynamic> selectData;
+  final Map<String, dynamic> Function() dataToSelect;
 
   SelectFKWidget(
       this.title, this.id, this.lines, this.controller, this.dataSource,
@@ -68,7 +68,7 @@ class SelectFKWidget extends StatelessWidget {
       this.defaultLabel,
       this.showTextTitle = true,
       this.customListTitle,
-      this.selectData}) {
+      this.dataToSelect}) {
     if (this.defaultLine == null) {
       this.defaultLine = lines.first;
     }
@@ -90,7 +90,7 @@ class SelectFKWidget extends StatelessWidget {
       controller.checkSingleRow();
     }
     if (typeView != TypeView.SELECTABLE) {
-      controller.carregarDados(data: selectData);
+      controller.carregarDados(data: dataToSelect?.call());
     }
   }
 
@@ -129,7 +129,7 @@ class SelectFKWidget extends StatelessWidget {
                           new MaterialPageRoute(
                               builder: (BuildContext context) =>
                                   new SelectAnyModule(controller.selectModel,
-                                      data: selectData)));
+                                      data: dataToSelect?.call())));
                       if (res != null) {
                         _validateResult(res);
                       }

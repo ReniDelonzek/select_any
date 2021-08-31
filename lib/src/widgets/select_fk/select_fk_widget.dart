@@ -50,6 +50,8 @@ class SelectFKWidget extends StatelessWidget {
   /// Specifies a special title for the list screen
   final String customListTitle;
 
+  final Map<String, dynamic> selectData;
+
   SelectFKWidget(
       this.title, this.id, this.lines, this.controller, this.dataSource,
       {this.defaultLine,
@@ -65,7 +67,8 @@ class SelectFKWidget extends StatelessWidget {
       this.customColor,
       this.defaultLabel,
       this.showTextTitle = true,
-      this.customListTitle}) {
+      this.customListTitle,
+      this.selectData}) {
     if (this.defaultLine == null) {
       this.defaultLine = lines.first;
     }
@@ -75,17 +78,19 @@ class SelectFKWidget extends StatelessWidget {
     buttons?.forEach((element) {
       element.closePage = true;
     });
-    controller.selectModel = SelectModel(
-        customListTitle ?? title, id, lines, dataSource, TypeSelect.SIMPLE,
-        openSearchAutomatically: !UtilsPlatform.isMobile,
-        actions: actions,
-        buttons: buttons,
-        theme: theme);
+    if (controller.selectModel == null) {
+      controller.selectModel = SelectModel(
+          customListTitle ?? title, id, lines, dataSource, TypeSelect.SIMPLE,
+          openSearchAutomatically: !UtilsPlatform.isMobile,
+          actions: actions,
+          buttons: buttons,
+          theme: theme);
+    }
     if (isRequired == true) {
       controller.checkSingleRow();
     }
     if (typeView != TypeView.SELECTABLE) {
-      controller.carregarDados();
+      controller.carregarDados(data: selectData);
     }
   }
 
@@ -123,7 +128,8 @@ class SelectFKWidget extends StatelessWidget {
                       var res = await Navigator.of(context).push(
                           new MaterialPageRoute(
                               builder: (BuildContext context) =>
-                                  new SelectAnyModule(controller.selectModel)));
+                                  new SelectAnyModule(controller.selectModel,
+                                      data: selectData)));
                       if (res != null) {
                         _validateResult(res);
                       }

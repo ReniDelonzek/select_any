@@ -50,17 +50,19 @@ abstract class _SelectFKBase with Store {
   }
 
   /// Atualiza a lista
-  void updateList() {
+  void updateList({Map<String, dynamic> data}) {
     list.clear();
     listIsLoaded = false;
-    carregarDados();
+    carregarDados(data: data);
   }
 
   /// Carrega os dados da lista, caso ainda não tenham sido carregados
-  carregarDados() {
+  carregarDados({Map<String, dynamic> data}) {
     if (!listIsLoaded) {
       /// Pode ser null caso o widget não tenha sido construído ainda
-      selectModel?.dataSource?.getList(-1, -1, selectModel)?.then((value) {
+      selectModel?.dataSource
+          ?.getList(-1, -1, selectModel, data: data)
+          ?.then((value) {
         value.listen((event) {
           listIsLoaded = true;
           list = ObservableList.of(event.data);

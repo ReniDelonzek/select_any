@@ -52,6 +52,9 @@ class SelectFKWidget extends StatelessWidget {
 
   final Map<String, dynamic> Function() dataToSelect;
 
+  /// Triggered when the value is cleared by the user
+  final Function cleanValue;
+
   SelectFKWidget(
       this.title, this.id, this.lines, this.controller, this.dataSource,
       {this.defaultLine,
@@ -68,7 +71,8 @@ class SelectFKWidget extends StatelessWidget {
       this.defaultLabel,
       this.showTextTitle = true,
       this.customListTitle,
-      this.dataToSelect}) {
+      this.dataToSelect,
+      this.cleanValue}) {
     if (this.defaultLine == null) {
       this.defaultLine = lines.first;
     }
@@ -309,6 +313,7 @@ class SelectFKWidget extends StatelessWidget {
   void clearObj(BuildContext context) {
     controller.clear();
     showSnackMessage(context, 'Campo limpo com sucesso');
+    cleanValue?.call();
   }
 
   void _validateSelectList(obj) async {

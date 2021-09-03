@@ -53,6 +53,7 @@ abstract class _SelectFKBase with Store {
   void updateList({Map<String, dynamic> data}) {
     list.clear();
     listIsLoaded = false;
+    selectModel?.dataSource?.clear();
     carregarDados(data: data);
   }
 

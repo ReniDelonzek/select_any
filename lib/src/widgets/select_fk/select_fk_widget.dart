@@ -55,6 +55,8 @@ class SelectFKWidget extends StatelessWidget {
   /// Triggered when the value is cleared by the user
   final Function cleanValue;
 
+  final Widget customEmptyList;
+
   SelectFKWidget(
       this.title, this.id, this.lines, this.controller, this.dataSource,
       {this.defaultLine,
@@ -72,7 +74,8 @@ class SelectFKWidget extends StatelessWidget {
       this.showTextTitle = true,
       this.customListTitle,
       this.dataToSelect,
-      this.cleanValue}) {
+      this.cleanValue,
+      this.customEmptyList}) {
     if (this.defaultLine == null) {
       this.defaultLine = lines.first;
     }
@@ -251,7 +254,11 @@ class SelectFKWidget extends StatelessWidget {
         return Center(child: CircularProgressIndicator());
       }
       if (controller.list.isEmpty) {
-        return Text('Lista vazia');
+        return customEmptyList ??
+            Padding(
+              padding: const EdgeInsets.only(left: 16, top: 8, bottom: 8),
+              child: Text('Lista vazia'),
+            );
       }
 
       return Wrap(

@@ -65,8 +65,8 @@ abstract class _SelectFKBase with Store {
           ?.getList(-1, -1, selectModel, data: data)
           ?.then((value) {
         value.listen((event) {
-          listIsLoaded = true;
           list = ObservableList.of(event.data);
+          listIsLoaded = true;
         });
       });
     }

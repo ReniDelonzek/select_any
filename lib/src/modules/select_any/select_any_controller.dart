@@ -127,8 +127,8 @@ abstract class _SelectAnyBase with Store {
       }
     });
 
-    if (selectModel.defaultFilter != null) {
-      selectModel.defaultFilter(selectModel.lines).then((value) {
+    if (selectModel.initialFilter != null) {
+      selectModel.initialFilter(selectModel.lines).then((value) {
         if (value != null) {
           if (!confirmToLoadData) {
             onColumnFilterChanged();

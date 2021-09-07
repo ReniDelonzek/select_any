@@ -89,7 +89,7 @@ class SelectModel {
   TableBottomBuilder tableBottomBuilder;
 
   /// Set default filter on table
-  Future<Line> Function(List<Line>) defaultFilter;
+  Future<Line> Function(List<Line>) initialFilter;
 
   SelectModel(this.title, this.id, this.lines, this.dataSource, this.typeSelect,
       {this.filters,
@@ -105,7 +105,7 @@ class SelectModel {
       this.showFiltersInput = true,
       this.theme,
       this.tableBottomBuilder,
-      this.defaultFilter}) {
+      this.initialFilter}) {
     if (openSearchAutomatically == null) {
       openSearchAutomatically = !UtilsPlatform.isMobile;
     }

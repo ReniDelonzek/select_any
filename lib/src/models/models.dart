@@ -582,7 +582,7 @@ abstract class _DataSourceBase with Store {
 
   bool filterTypeSearch(TypeSearch typeSearch, dynamic value, dynamic text) {
     if (!(text is String)) {
-      text = text?.toString();
+      text = text?.toString() ?? '';
     }
     if (typeSearch == TypeSearch.CONTAINS) {
       return removeDiacritics(value.toString()).toLowerCase()?.contains(text) ==

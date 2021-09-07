@@ -285,13 +285,15 @@ class SelectFKWidget extends StatelessWidget {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Radio(
-                      value: element.object,
-                      groupValue: controller.obj,
-                      onChanged: (value) {
-                        _validateSelectList(element.object);
-                      },
-                    ),
+                    Observer(builder: (_) {
+                      return Radio(
+                        value: element.object,
+                        groupValue: controller.obj,
+                        onChanged: (value) {
+                          _validateSelectList(element.object);
+                        },
+                      );
+                    }),
                     SizedBox(width: 8),
                     Text(element.strings.values.first ?? '',
                         style: theme.textTheme.subtitle1)
@@ -306,13 +308,15 @@ class SelectFKWidget extends StatelessWidget {
     return controller.list
         .map((element) => Padding(
               padding: const EdgeInsets.only(top: 8),
-              child: ButtonChip(
-                '${element.strings.values.first ?? ''}',
-                isSelected: controller.obj == element.object,
-                onTap: () {
-                  _validateSelectList(element.object);
-                },
-              ),
+              child: Observer(builder: (_) {
+                return ButtonChip(
+                  '${element.strings.values.first ?? ''}',
+                  isSelected: controller.obj == element.object,
+                  onTap: () {
+                    _validateSelectList(element.object);
+                  },
+                );
+              }),
             ))
         .toList();
   }

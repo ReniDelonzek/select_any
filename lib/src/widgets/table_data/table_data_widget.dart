@@ -368,6 +368,9 @@ class TableDataWidget extends StatelessWidget {
                           controller.filterControllers[e.key] =
                               SelectRangeDateWidget(SelectRangeDateController(),
                                   (dateMin, dateMax) {
+                            (e.filter as FilterRangeDate).selectedValueRange =
+                                ItemDataFilterRange(
+                                    start: dateMin, end: dateMax);
                             controller.onColumnFilterChanged();
                           });
                         } else if (e.filter is FilterSelectItem) {
@@ -386,8 +389,17 @@ class TableDataWidget extends StatelessWidget {
                                   if (snap.hasError)
                                     return Text('Falha ao carregar');
 
-                                  return Observer(
-                                    builder: (_) => Padding(
+                                  return Observer(builder: (_) {
+                                    if (!snap.data.any((element) =>
+                                        element.value ==
+                                        (e.filter as FilterSelectItem)
+                                            .selectedValue
+                                            ?.value)) {
+                                      (e.filter as FilterSelectItem)
+                                          .selectedValue
+                                          ?.value = null;
+                                    }
+                                    return Padding(
                                       padding: const EdgeInsets.only(
                                         bottom: 3,
                                         left: 8,
@@ -431,8 +443,8 @@ class TableDataWidget extends StatelessWidget {
                                                   value: e.value,
                                                   child: Text(e.label ?? '')))
                                               .toList())),
-                                    ),
-                                  );
+                                    );
+                                  });
                                 });
                           });
                         } else if (e.filter is FilterText) {

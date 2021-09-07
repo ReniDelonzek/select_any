@@ -26,13 +26,8 @@ class TableBottomBuilderArgs {
   bool isLoaded;
   DataSource actualDataSource;
   List<ItemSelectTable> partialData;
-  TableBottomBuilderArgs(
-    this.context,
-    this.filter,
-    this.isLoaded,
-    this.actualDataSource,
-    this.partialData
-  );
+  TableBottomBuilderArgs(this.context, this.filter, this.isLoaded,
+      this.actualDataSource, this.partialData);
 }
 
 typedef Widget TableBottomBuilder(TableBottomBuilderArgs args);
@@ -93,6 +88,9 @@ class SelectModel {
   /// Widget to fill the bottom left corner of the table
   TableBottomBuilder tableBottomBuilder;
 
+  /// Set default filter on table
+  Future<Line> Function(List<Line>) defaultFilter;
+
   SelectModel(this.title, this.id, this.lines, this.dataSource, this.typeSelect,
       {this.filters,
       this.actions,
@@ -106,7 +104,8 @@ class SelectModel {
       this.allowSelectAll,
       this.showFiltersInput = true,
       this.theme,
-      this.tableBottomBuilder}) {
+      this.tableBottomBuilder,
+      this.defaultFilter}) {
     if (openSearchAutomatically == null) {
       openSearchAutomatically = !UtilsPlatform.isMobile;
     }
@@ -420,20 +419,19 @@ class FormatDataMoney extends FormatData {
 abstract class FilterBase = _FilterBaseBase with _$FilterBase;
 
 abstract class _FilterBaseBase with Store {
-  _FilterBaseBase();
   @observable
   ItemDataFilter selectedValue;
+
+  _FilterBaseBase({this.selectedValue});
 }
 
 class FilterRangeDate extends FilterBase {
   DateTime dateMin;
   DateTime dateMax;
   DateTime dateDefault;
-  FilterRangeDate({
-    this.dateMin,
-    this.dateMax,
-    this.dateDefault,
-  });
+  ItemDataFilterRange selectedValueRange;
+  FilterRangeDate(
+      {this.dateMin, this.dateMax, this.dateDefault, this.selectedValueRange});
 }
 
 class FilterSelectItem extends FilterBase {
@@ -442,7 +440,9 @@ class FilterSelectItem extends FilterBase {
   /// custom key for filters by id
   String keyFilterId;
 
-  FilterSelectItem(this.fontDataFilter, {this.keyFilterId});
+  FilterSelectItem(this.fontDataFilter,
+      {this.keyFilterId, ItemDataFilter selectedValue})
+      : super(selectedValue: selectedValue);
 }
 
 class FilterText extends FilterBase {
@@ -454,6 +454,14 @@ class ItemDataFilter {
   dynamic value;
   dynamic idValue;
   ItemDataFilter({this.label, @required this.value, this.idValue});
+}
+
+class ItemDataFilterRange extends ItemDataFilter {
+  dynamic start;
+  dynamic end;
+
+  ItemDataFilterRange({String label, this.start, this.end})
+      : super(label: label, value: null);
 }
 
 abstract class FontDataFilterBase {

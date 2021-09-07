@@ -115,7 +115,6 @@ abstract class _SelectAnyBase with Store {
     this.selectModel = selectModel;
     this.data = data;
     appBarTitle = Text(title);
-
     UtilsHive.getInstance().getBox('select_utils').then((value) async {
       int newValue =
           (await value.get('quantityItensPage')) ?? quantityItensPage;
@@ -127,6 +126,16 @@ abstract class _SelectAnyBase with Store {
         }
       }
     });
+
+    if (selectModel.defaultFilter != null) {
+      selectModel.defaultFilter(selectModel.lines).then((value) {
+        if (value != null) {
+          if (!confirmToLoadData) {
+            onColumnFilterChanged();
+          }
+        }
+      });
+    }
   }
 
   bool inList(List values, value) {
@@ -353,23 +362,19 @@ abstract class _SelectAnyBase with Store {
 
   GroupFilterExp buildFilterExpression() {
     List<FilterExp> exps = [];
-    filterControllers.forEach((key, value) {
-      Line line = selectModel.lines
-          .firstWhere((element) => element.key == key, orElse: () => null);
-      if (line == null) {
-        return;
-      }
+    selectModel.lines.forEach((line) {
       if (line.filter != null) {
         if (line.filter is FilterRangeDate) {
-          if (((value as SelectRangeDateWidget).controller.initialDate !=
+          if (((line.filter as FilterRangeDate).selectedValueRange?.start !=
                   null ||
-              (value as SelectRangeDateWidget).controller.finalDate != null)) {
+              (line.filter as FilterRangeDate).selectedValueRange?.end !=
+                  null)) {
             exps.add(FilterExpRangeCollun(
                 line: line,
                 dateStart:
-                    (value as SelectRangeDateWidget).controller.initialDate,
+                    (line.filter as FilterRangeDate).selectedValueRange.start,
                 dateEnd:
-                    (value as SelectRangeDateWidget).controller.finalDate));
+                    (line.filter as FilterRangeDate).selectedValueRange.end));
           }
         } else if (line.filter.selectedValue != null) {
           if (line.filter is FilterSelectItem) {

@@ -188,7 +188,7 @@ class UtilsWidget {
       var res = await Navigator.of(context).push(acao.route != null
           ? acao.route
           : new MaterialPageRoute(
-              builder: (_) => acao.page, settings: settings));
+              builder: (_) => acao.page(), settings: settings));
 
       if (res != null && res != false) {
         if (acao.closePage) {

@@ -264,6 +264,11 @@ class Line {
           pascalWords.allMatches(input).map((m) => m[0]).toList();
       name = getPascalWords(key).join(' ').upperCaseFirst();
     }
+    if (enclosure != null &&
+        enclosure.isNotEmpty &&
+        !enclosure.contains('???')) {
+      enclosure += ' ???';
+    }
   }
 
   @override
@@ -652,7 +657,7 @@ class ActionSelect {
   Map<String, String> keys;
   String description;
   PageRoute route;
-  Widget page;
+  Widget Function() page;
   FunctionAction function;
 
   /// Tem um papel igual da função, esta porém atualiza a tela quando recebe um resultado verdadeiro

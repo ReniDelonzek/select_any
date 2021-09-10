@@ -213,7 +213,7 @@ class _SelectAnyExpandedPageState extends State<SelectAnyExpandedPage> {
       var res = await Navigator.of(context).push(acao.route != null
           ? acao.route
           : new MaterialPageRoute(
-              builder: (_) => acao.page, settings: settings));
+              builder: (_) => acao.page(), settings: settings));
       if (acao.closePage) {
         if (res != null) {
           if (res is Map &&

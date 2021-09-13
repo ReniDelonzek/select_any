@@ -40,9 +40,9 @@ class SelectAnyPage extends StatefulWidget {
     if (controller == null) {
       controller = SelectAnyController();
     }
-    controller.init(_selectModel.title, _selectModel, data);
-    controller.confirmToLoadData = _selectModel.confirmToLoadData;
     controller.typeDiplay = UtilsPlatform.isMobile ? 1 : 2;
+    controller.confirmToLoadData = _selectModel.confirmToLoadData;
+    controller.init(_selectModel.title, _selectModel, data);
   }
 
   @override

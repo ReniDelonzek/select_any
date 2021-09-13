@@ -111,30 +111,26 @@ abstract class _SelectAnyBase with Store {
 
   _SelectAnyBase({this.dynamicScreen = true});
 
-  init(String title, SelectModel selectModel, Map data) {
+  init(String title, SelectModel selectModel, Map data) async {
     this.selectModel = selectModel;
     this.data = data;
     appBarTitle = Text(title);
-    UtilsHive.getInstance().getBox('select_utils').then((value) async {
-      int newValue =
-          (await value.get('quantityItensPage')) ?? quantityItensPage;
-      if (newValue != quantityItensPage &&
-          inList(getNumberItemsPerPage, newValue)) {
-        quantityItensPage = newValue;
+    var box = await UtilsHive.getInstance().getBox('select_utils');
+    int newValue = (await box.get('quantityItensPage')) ?? quantityItensPage;
+    if (newValue != quantityItensPage &&
+        inList(getNumberItemsPerPage, newValue)) {
+      quantityItensPage = newValue;
+      if (!confirmToLoadData) {
+        reloadData();
+      }
+    }
+    if (selectModel.initialFilter != null) {
+      Line value = await selectModel.initialFilter(selectModel.lines);
+      if (value != null) {
         if (!confirmToLoadData) {
-          setDataSource();
+          onColumnFilterChanged();
         }
       }
-    });
-
-    if (selectModel.initialFilter != null) {
-      selectModel.initialFilter(selectModel.lines).then((value) {
-        if (value != null) {
-          if (!confirmToLoadData) {
-            onColumnFilterChanged();
-          }
-        }
-      });
     }
   }
 
@@ -175,8 +171,12 @@ abstract class _SelectAnyBase with Store {
                     return e2.id == element.id;
                   });
             });
+          } else {
+            /// Caso retorne uma quantidade diferente do que já existe na lista, limpa a mesma
+            if (list.length != event.data.length) {
+              list.clear();
+            }
           }
-
           event.data.forEach((item) {
             bool present = selectedList.any((element) => element.id == item.id);
             if (item.isSelected == true) {
@@ -432,7 +432,7 @@ abstract class _SelectAnyBase with Store {
 
   onColumnFilterChanged() {
     resetOnFiltersChanged();
-    setCorretDataSource();
+    setCorretDataSource(offset: getOffSet);
   }
 
   /// Limpa o texto da barra de pesquisa e zera a pagina

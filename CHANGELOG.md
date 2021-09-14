@@ -22,3 +22,7 @@
 ## 0.0.3-dev.4
 
 * Small Fixes on enableLineFilter
+
+## 0.0.3-dev.5
+
+* Ability to specify an initial filter

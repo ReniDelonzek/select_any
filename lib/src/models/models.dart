@@ -586,18 +586,18 @@ abstract class _DataSourceBase with Store {
       text = text?.toString() ?? '';
     }
     if (typeSearch == TypeSearch.CONTAINS) {
-      return removeDiacritics(value.toString()).toLowerCase().contains(text!) ==
+      return removeDiacritics(value.toString()).toLowerCase().contains(text) ==
           true;
     } else if (typeSearch == TypeSearch.BEGINSWITH) {
       return removeDiacritics(value.toString())
               .toLowerCase()
-              .startsWith(text!) ==
+              .startsWith(text) ==
           true;
     } else if (typeSearch == TypeSearch.ENDSWITH) {
-      return removeDiacritics(value.toString()).toLowerCase().endsWith(text!) ==
+      return removeDiacritics(value.toString()).toLowerCase().endsWith(text) ==
           true;
     } else if (typeSearch == TypeSearch.NOTCONTAINS) {
-      return removeDiacritics(value.toString()).toLowerCase().contains(text!) !=
+      return removeDiacritics(value.toString()).toLowerCase().contains(text) !=
           true;
     }
     return false;

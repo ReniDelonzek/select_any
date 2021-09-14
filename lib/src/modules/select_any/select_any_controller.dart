@@ -1,4 +1,3 @@
-import 'package:collection/collection.dart' show IterableExtension;
 import 'package:diacritic/diacritic.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -110,22 +109,27 @@ abstract class _SelectAnyBase with Store {
 
   _SelectAnyBase({this.dynamicScreen = true});
 
-  init(String title, SelectModel? selectModel, Map? data) {
+  init(String title, SelectModel selectModel, Map data) async {
     this.selectModel = selectModel;
     this.data = data;
     appBarTitle = Text(title);
-
-    UtilsHive.getInstance()!.getBox('select_utils').then((value) async {
-      int? newValue =
-          (await value.get('quantityItensPage')) ?? quantityItensPage;
-      if (newValue != quantityItensPage &&
-          inList(getNumberItemsPerPage, newValue)) {
-        quantityItensPage = newValue;
+    var box = await UtilsHive.getInstance()!.getBox('select_utils');
+    int newValue = (await box.get('quantityItensPage')) ?? quantityItensPage;
+    if (newValue != quantityItensPage &&
+        inList(getNumberItemsPerPage, newValue)) {
+      quantityItensPage = newValue;
+      if (!confirmToLoadData) {
+        reloadData();
+      }
+    }
+    if (selectModel.initialFilter != null) {
+      Line? value = await selectModel.initialFilter!(selectModel.lines);
+      if (value != null) {
         if (!confirmToLoadData) {
-          setDataSource();
+          onColumnFilterChanged();
         }
       }
-    });
+    }
   }
 
   bool inList(List values, value) {
@@ -165,8 +169,12 @@ abstract class _SelectAnyBase with Store {
                     return e2.id == element.id;
                   });
             });
+          } else {
+            /// Caso retorne uma quantidade diferente do que já existe na lista, limpa a mesma
+            if (list.length != event.data.length) {
+              list.clear();
+            }
           }
-
           event.data.forEach((item) {
             bool present = selectedList.any((element) => element.id == item.id);
             if (item.isSelected == true) {
@@ -351,21 +359,19 @@ abstract class _SelectAnyBase with Store {
 
   GroupFilterExp buildFilterExpression() {
     List<FilterExp> exps = [];
-    filterControllers.forEach((key, value) {
-      Line? line =
-          selectModel!.lines.firstWhereOrNull((element) => element.key == key);
-      if (line == null) {
-        return;
-      }
+    selectModel?.lines.forEach((line) {
       if (line.filter != null) {
         if (line.filter is FilterRangeDate) {
-          if (((value as SelectRangeDateWidget).controller.initialDate !=
+          if (((line.filter as FilterRangeDate).selectedValueRange?.start !=
                   null ||
-              (value).controller.finalDate != null)) {
+              (line.filter as FilterRangeDate).selectedValueRange?.end !=
+                  null)) {
             exps.add(FilterExpRangeCollun(
                 line: line,
-                dateStart: (value).controller.initialDate,
-                dateEnd: (value).controller.finalDate));
+                dateStart:
+                    (line.filter as FilterRangeDate).selectedValueRange?.start,
+                dateEnd:
+                    (line.filter as FilterRangeDate).selectedValueRange?.end));
           }
         } else if (line.filter!.selectedValue != null) {
           if (line.filter is FilterSelectItem) {
@@ -423,7 +429,7 @@ abstract class _SelectAnyBase with Store {
 
   onColumnFilterChanged() {
     resetOnFiltersChanged();
-    setCorretDataSource();
+    setCorretDataSource(offset: getOffSet);
   }
 
   /// Limpa o texto da barra de pesquisa e zera a pagina

@@ -88,6 +88,9 @@ class SelectModel {
   /// Widget to fill the bottom left corner of the table
   TableBottomBuilder? tableBottomBuilder;
 
+  /// Set default filter on table
+  Future<Line> Function(List<Line>)? initialFilter;
+
   SelectModel(this.title, this.id, this.lines, this.dataSource, this.typeSelect,
       {this.filters,
       this.actions,
@@ -101,7 +104,8 @@ class SelectModel {
       this.allowSelectAll,
       this.showFiltersInput = true,
       this.theme = const SelectModelTheme(tableTheme: SelectModelThemeTable()),
-      this.tableBottomBuilder}) {
+      this.tableBottomBuilder,
+      this.initialFilter}) {
     if (openSearchAutomatically == null) {
       openSearchAutomatically = !UtilsPlatform.isMobile;
     }
@@ -255,6 +259,11 @@ class Line {
       List<String?> getPascalWords(String input) =>
           pascalWords.allMatches(input).map((m) => m[0]).toList();
       name = getPascalWords(key).join(' ').upperCaseFirst();
+    }
+    if (enclosure != null &&
+        enclosure!.isNotEmpty &&
+        !enclosure!.contains('???')) {
+      enclosure = enclosure! + ' ???';
     }
   }
 
@@ -411,20 +420,19 @@ class FormatDataMoney extends FormatData {
 abstract class FilterBase = _FilterBaseBase with _$FilterBase;
 
 abstract class _FilterBaseBase with Store {
-  _FilterBaseBase();
   @observable
   ItemDataFilter? selectedValue;
+
+  _FilterBaseBase({this.selectedValue});
 }
 
 class FilterRangeDate extends FilterBase {
   DateTime? dateMin;
   DateTime? dateMax;
   DateTime? dateDefault;
-  FilterRangeDate({
-    this.dateMin,
-    this.dateMax,
-    this.dateDefault,
-  });
+  ItemDataFilterRange? selectedValueRange;
+  FilterRangeDate(
+      {this.dateMin, this.dateMax, this.dateDefault, this.selectedValueRange});
 }
 
 class FilterSelectItem extends FilterBase {
@@ -433,7 +441,9 @@ class FilterSelectItem extends FilterBase {
   /// custom key for filters by id
   String? keyFilterId;
 
-  FilterSelectItem(this.fontDataFilter, {this.keyFilterId});
+  FilterSelectItem(this.fontDataFilter,
+      {this.keyFilterId, ItemDataFilter? selectedValue})
+      : super(selectedValue: selectedValue);
 }
 
 class FilterText extends FilterBase {
@@ -445,6 +455,14 @@ class ItemDataFilter {
   dynamic value;
   dynamic idValue;
   ItemDataFilter({this.label, @required this.value, this.idValue});
+}
+
+class ItemDataFilterRange extends ItemDataFilter {
+  dynamic start;
+  dynamic end;
+
+  ItemDataFilterRange({String? label, this.start, this.end})
+      : super(label: label, value: null);
 }
 
 abstract class FontDataFilterBase {
@@ -565,7 +583,7 @@ abstract class _DataSourceBase with Store {
 
   bool filterTypeSearch(TypeSearch typeSearch, dynamic value, dynamic text) {
     if (!(text is String)) {
-      text = text?.toString();
+      text = text?.toString() ?? '';
     }
     if (typeSearch == TypeSearch.CONTAINS) {
       return removeDiacritics(value.toString()).toLowerCase().contains(text!) ==
@@ -635,7 +653,7 @@ class ActionSelect {
   Map<String, String>? keys;
   String? description;
   PageRoute? route;
-  Widget? page;
+  Widget Function()? page;
   FunctionAction? function;
 
   /// Tem um papel igual da função, esta porém atualiza a tela quando recebe um resultado verdadeiro

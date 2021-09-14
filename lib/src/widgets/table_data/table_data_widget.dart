@@ -62,8 +62,9 @@ class TableDataWidget extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 8, right: 8),
+        Container(
+          height: 54,
+          padding: const EdgeInsets.only(left: 16, right: 16),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -361,122 +362,119 @@ class TableDataWidget extends StatelessWidget {
                           rows.isNotEmpty
                       ? [Container()]
                       : [])
-                  ..addAll(controller.selectModel?.lines.map((e) {
-                        if (e.enableLineFilter == true &&
-                            !controller.filterControllers.containsKey(e.key)) {
-                          if (e.filter != null) {
-                            if (e.filter is FilterRangeDate) {
-                              controller.filterControllers[e.key] =
-                                  SelectRangeDateWidget(
-                                      SelectRangeDateController(),
-                                      (dateMin, dateMax) {
-                                controller.onColumnFilterChanged();
-                              });
-                            } else if (e.filter is FilterSelectItem) {
-                              controller.filterControllers[e.key] =
-                                  Observer(builder: (_) {
-                                return FutureBuilder<List<ItemDataFilter>>(
-                                    future: (e.filter as FilterSelectItem)
-                                        .fontDataFilter
-                                        .getList(controller.actualFilters,
-                                            controller.filter.text),
-                                    builder: (_, snap) {
-                                      if (snap.connectionState ==
-                                          ConnectionState.waiting) {
-                                        return SizedBox();
-                                      }
-                                      if (snap.hasError || snap.data == null)
-                                        return Text('Falha ao carregar');
-
-                                      return Observer(
-                                        builder: (_) => Padding(
-                                          padding: const EdgeInsets.only(
-                                            bottom: 3,
-                                            left: 8,
-                                            right: 8,
-                                          ),
-                                          child: DropdownButtonFormField(
-                                              onChanged: (dynamic value) {
-                                                /// Limpa o input
-                                                if (value == null) {
-                                                  if ((e.filter
-                                                              as FilterSelectItem)
-                                                          .selectedValue !=
-                                                      null) {
-                                                    (e.filter
-                                                            as FilterSelectItem)
-                                                        .selectedValue = null;
-                                                    controller
-                                                        .onColumnFilterChanged();
-                                                  }
-                                                  return;
-                                                }
-                                                final newValue = snap.data
-                                                    .firstWhereOrNull(
-                                                        (element) =>
-                                                            element.value ==
-                                                            value);
-                                                if (newValue?.value !=
-                                                    (e.filter
-                                                            as FilterSelectItem)
-                                                        .selectedValue
-                                                        ?.value) {
-                                                  (e.filter as FilterSelectItem)
-                                                      .selectedValue = newValue;
-                                                  controller
-                                                      .onColumnFilterChanged();
-                                                }
-                                              },
-                                              value:
-                                                  (e.filter as FilterSelectItem)
-                                                      .selectedValue
-                                                      ?.value,
-                                              items: [
-                                                DropdownMenuItem<dynamic>(
-                                                    value: null,
-                                                    child: Text(''))
-                                              ]..addAll(snap.data!
-                                                  .map((e) => DropdownMenuItem(
-                                                      value: e.value,
-                                                      child:
-                                                          Text(e.label ?? '')))
-                                                  .toList())),
-                                        ),
-                                      );
-                                    });
-                              });
-                            } else if (e.filter is FilterText) {
-                              controller.filterControllers[e.key] = Padding(
-                                padding: const EdgeInsets.only(
-                                    left: 8, right: 8, top: 2, bottom: 3),
-                                child: TextField(
-                                  controller: TextEditingController(),
-                                  decoration: InputDecoration(
-                                      hintText: '${e.name ?? e.key}'),
-                                  inputFormatters: e.typeData is TDNumber
-                                      ? [FilteringTextInputFormatter.digitsOnly]
-                                      : [],
-                                  onChanged: (text) {
-                                    if (e.filter!.selectedValue?.toString() !=
-                                        text.trim()) {
-                                      e.filter!.selectedValue =
-                                          ItemDataFilter(value: text.trim());
-                                      controller.onColumnFilterChanged();
-                                    }
-                                  },
-                                ),
-                              );
-                            }
-                          }
-                        }
-                        return Container(
-                            height: 48,
-                            child: controller.filterControllers[e.key]);
-                      }).toList() ??
-                      []),
+                  ..addAll(getFilters()),
                 typeCustomRow: TypeCustomRow.ADD)
           ]
         : [];
+  }
+
+  List<Widget> getFilters() {
+    return controller.selectModel?.lines.map((e) {
+          if (e.enableLineFilter == true &&
+              !controller.filterControllers.containsKey(e.key)) {
+            if (e.filter != null) {
+              if (e.filter is FilterRangeDate) {
+                controller.filterControllers[e.key] = SelectRangeDateWidget(
+                    SelectRangeDateController(), (dateMin, dateMax) {
+                  (e.filter as FilterRangeDate).selectedValueRange =
+                      ItemDataFilterRange(start: dateMin, end: dateMax);
+                  controller.onColumnFilterChanged();
+                });
+              } else if (e.filter is FilterSelectItem) {
+                controller.filterControllers[e.key] = Observer(builder: (_) {
+                  return FutureBuilder<List<ItemDataFilter>>(
+                      future: (e.filter as FilterSelectItem)
+                          .fontDataFilter
+                          .getList(
+                              controller.actualFilters, controller.filter.text),
+                      builder: (_, snap) {
+                        if (snap.connectionState == ConnectionState.waiting) {
+                          return SizedBox();
+                        }
+                        if (snap.hasError) return Text('Falha ao carregar');
+
+                        return Observer(builder: (_) {
+                          if (snap.data?.any((element) =>
+                                  element.value ==
+                                  (e.filter as FilterSelectItem)
+                                      .selectedValue
+                                      ?.value) !=
+                              true) {
+                            (e.filter as FilterSelectItem)
+                                .selectedValue
+                                ?.value = null;
+                          }
+                          return Padding(
+                            padding: const EdgeInsets.only(
+                              bottom: 3,
+                              left: 8,
+                              right: 8,
+                            ),
+                            child: DropdownButtonFormField<dynamic>(
+                                onChanged: (value) {
+                                  /// Limpa o input
+                                  if (value == null) {
+                                    if ((e.filter as FilterSelectItem)
+                                            .selectedValue !=
+                                        null) {
+                                      (e.filter as FilterSelectItem)
+                                          .selectedValue = null;
+                                      controller.onColumnFilterChanged();
+                                    }
+                                    return;
+                                  }
+                                  final newValue = snap.data.firstWhereOrNull(
+                                      (element) => element.value == value);
+                                  if (newValue?.value !=
+                                      (e.filter as FilterSelectItem)
+                                          .selectedValue
+                                          ?.value) {
+                                    (e.filter as FilterSelectItem)
+                                        .selectedValue = newValue;
+                                    controller.onColumnFilterChanged();
+                                  }
+                                },
+                                value: (e.filter as FilterSelectItem)
+                                    .selectedValue
+                                    ?.value,
+                                items: [
+                                  DropdownMenuItem<dynamic>(
+                                      value: null, child: Text(''))
+                                ]..addAll(snap.data!
+                                    .map((e) => DropdownMenuItem(
+                                        value: e.value,
+                                        child: Text(e.label ?? '')))
+                                    .toList())),
+                          );
+                        });
+                      });
+                });
+              } else if (e.filter is FilterText) {
+                controller.filterControllers[e.key] = Padding(
+                  padding: const EdgeInsets.only(
+                      left: 8, right: 8, top: 2, bottom: 3),
+                  child: TextField(
+                    controller: TextEditingController(),
+                    decoration: InputDecoration(hintText: '${e.name ?? e.key}'),
+                    inputFormatters: e.typeData is TDNumber
+                        ? [FilteringTextInputFormatter.digitsOnly]
+                        : [],
+                    onChanged: (text) {
+                      if (e.filter!.selectedValue?.toString() != text.trim()) {
+                        e.filter!.selectedValue =
+                            ItemDataFilter(value: text.trim());
+                        controller.onColumnFilterChanged();
+                      }
+                    },
+                  ),
+                );
+              }
+            }
+          }
+          return Container(
+              height: 48, child: controller.filterControllers[e.key]);
+        }).toList() ??
+        [];
   }
 
   Widget _bottomContent(BuildContext context) {

@@ -50,6 +50,13 @@ class SelectFKWidget extends StatelessWidget {
   /// Specifies a special title for the list screen
   final String? customListTitle;
 
+  final Map<String, dynamic> Function()? dataToSelect;
+
+  /// Triggered when the value is cleared by the user
+  final Function? cleanValue;
+
+  final Widget? customEmptyList;
+
   SelectFKWidget(
       this.title, this.id, this.lines, this.controller, this.dataSource,
       {this.defaultLine,
@@ -65,7 +72,10 @@ class SelectFKWidget extends StatelessWidget {
       this.customColor,
       this.defaultLabel,
       this.showTextTitle = true,
-      this.customListTitle}) {
+      this.customListTitle,
+      this.dataToSelect,
+      this.cleanValue,
+      this.customEmptyList}) {
     if (this.defaultLine == null) {
       this.defaultLine = lines.first;
     }
@@ -75,17 +85,19 @@ class SelectFKWidget extends StatelessWidget {
     buttons?.forEach((element) {
       element.closePage = true;
     });
-    controller.selectModel = SelectModel(
-        customListTitle ?? title, id, lines, dataSource, TypeSelect.SIMPLE,
-        openSearchAutomatically: !UtilsPlatform.isMobile,
-        actions: actions,
-        buttons: buttons,
-        theme: theme ?? SelectModelTheme());
+    if (controller.selectModel == null) {
+      controller.selectModel = SelectModel(
+          customListTitle ?? title, id, lines, dataSource, TypeSelect.SIMPLE,
+          openSearchAutomatically: !UtilsPlatform.isMobile,
+          actions: actions,
+          buttons: buttons,
+          theme: theme ?? SelectModelTheme());
+    }
     if (isRequired == true) {
       controller.checkSingleRow();
     }
     if (typeView != TypeView.SELECTABLE) {
-      controller.loadData();
+      controller.loadData(data: dataToSelect?.call());
     }
   }
 
@@ -123,7 +135,8 @@ class SelectFKWidget extends StatelessWidget {
                       var res = await Navigator.of(context).push(
                           new MaterialPageRoute(
                               builder: (BuildContext context) =>
-                                  new SelectAnyModule(controller.selectModel)));
+                                  new SelectAnyModule(controller.selectModel,
+                                      data: dataToSelect?.call())));
                       if (res != null) {
                         _validateResult(res);
                       }
@@ -242,7 +255,11 @@ class SelectFKWidget extends StatelessWidget {
         return Center(child: CircularProgressIndicator());
       }
       if (controller.list.isEmpty) {
-        return Text('Lista vazia');
+        return customEmptyList ??
+            Padding(
+              padding: const EdgeInsets.only(left: 16, top: 8, bottom: 8),
+              child: Text('Lista vazia'),
+            );
       }
 
       return Wrap(
@@ -269,13 +286,15 @@ class SelectFKWidget extends StatelessWidget {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Radio(
-                      value: element.object,
-                      groupValue: controller.obj,
-                      onChanged: (dynamic value) {
-                        _validateSelectList(element.object);
-                      },
-                    ),
+                    Observer(builder: (_) {
+                      return Radio<dynamic>(
+                        value: element.object,
+                        groupValue: controller.obj,
+                        onChanged: (value) {
+                          _validateSelectList(element.object);
+                        },
+                      );
+                    }),
                     SizedBox(width: 8),
                     Text(element.strings!.values.first ?? '',
                         style: theme.textTheme.subtitle1)
@@ -290,13 +309,15 @@ class SelectFKWidget extends StatelessWidget {
     return controller.list
         .map((element) => Padding(
               padding: const EdgeInsets.only(top: 8),
-              child: ButtonChip(
-                '${element.strings!.values.first ?? ''}',
-                isSelected: controller.obj == element.object,
-                onTap: () {
-                  _validateSelectList(element.object);
-                },
-              ),
+              child: Observer(builder: (_) {
+                return ButtonChip(
+                  '${element.strings?.values.first ?? ''}',
+                  isSelected: controller.obj == element.object,
+                  onTap: () {
+                    _validateSelectList(element.object);
+                  },
+                );
+              }),
             ))
         .toList();
   }
@@ -304,6 +325,7 @@ class SelectFKWidget extends StatelessWidget {
   void clearObj(BuildContext context) {
     controller.clear();
     showSnackMessage(context, 'Campo limpo com sucesso');
+    cleanValue?.call();
   }
 
   void _validateSelectList(obj) async {

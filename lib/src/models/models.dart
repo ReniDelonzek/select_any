@@ -89,7 +89,7 @@ class SelectModel {
   TableBottomBuilder? tableBottomBuilder;
 
   /// Set default filter on table
-  Future<Line> Function(List<Line>)? initialFilter;
+  Future<Line?> Function(List<Line>)? initialFilter;
 
   SelectModel(this.title, this.id, this.lines, this.dataSource, this.typeSelect,
       {this.filters,

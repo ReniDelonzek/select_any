@@ -109,7 +109,7 @@ abstract class _SelectAnyBase with Store {
 
   _SelectAnyBase({this.dynamicScreen = true});
 
-  init(String title, SelectModel selectModel, Map data) async {
+  init(String title, SelectModel selectModel, Map? data) async {
     this.selectModel = selectModel;
     this.data = data;
     appBarTitle = Text(title);

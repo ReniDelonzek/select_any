@@ -54,11 +54,11 @@ abstract class _SelectFKBase with Store {
     list.clear();
     listIsLoaded = false;
     selectModel?.dataSource.clear();
-    return carregarDados(data: data);
+    return loadData(data: data);
   }
 
   /// Carrega os dados da lista, caso ainda não tenham sido carregados
-  void carregarDados({Map<String, dynamic>? data}) async {
+  void loadData({Map<String, dynamic>? data}) async {
     if (!listIsLoaded) {
       /// Pode ser null caso o widget não tenha sido construído ainda
       var value = await selectModel?.dataSource

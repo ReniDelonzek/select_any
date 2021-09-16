@@ -33,15 +33,19 @@ abstract class _SelectFKBase with Store {
   /// Verifica se a [fontData] especificada retorna somente um registro
   /// Caso sim, seta o dado no input
   void checkSingleRow() async {
-    /// Deixa o limite como dois, porque caso retorne dois ele possui > 1 registro
-    /// Pode ser null caso o widget não tenha sido construído ainda
-    selectModel?.dataSource?.getList(2, 0, selectModel)?.then((value) {
-      value.first.then((value) {
-        if (value.data?.length == 1) {
-          obj = value.data.first.object;
-        }
+    /// Só executa caso o obj esteja null
+    /// Verifica novamente dentro da lista pois por ser um método async, no momento de setar os dados essa condição pode mudar
+    if (obj == null) {
+      /// Deixa o limite como dois, porque caso retorne dois ele possui > 1 registro
+      /// Pode ser null caso o widget não tenha sido construído ainda
+      selectModel?.dataSource?.getList(2, 0, selectModel)?.then((value) {
+        value.first.then((value) {
+          if (value.data?.length == 1 && obj == null) {
+            obj = value.data.first.object;
+          }
+        });
       });
-    });
+    }
   }
 
   /// Limpa o objeto selecionado

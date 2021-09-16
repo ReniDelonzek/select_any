@@ -486,13 +486,15 @@ class TableDataWidget extends StatelessWidget {
       children: [
         controller.selectModel.tableBottomBuilder != null
             ? Observer(builder: (_) {
-                return controller.selectModel.tableBottomBuilder(
-                    TableBottomBuilderArgs(
-                        context,
-                        controller.actualFilters,
-                        controller.loaded,
-                        controller.actualDataSource,
-                        controller.list));
+                return Flexible(
+                  child: controller.selectModel.tableBottomBuilder(
+                      CustomBottomBuilderArgs(
+                          context,
+                          controller.actualFilters,
+                          controller.loaded,
+                          controller.actualDataSource,
+                          controller.list)),
+                );
               })
             : SizedBox(),
         Container(

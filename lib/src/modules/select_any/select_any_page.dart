@@ -288,7 +288,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
             controller: widget.controller, carregarDados: false);
       } else {
         if (!widget.controller.confirmToLoadData) {
-          return _getStreamBody();
+          return _getListBuilder();
         } else {
           return Center(
               child: TextButton.icon(
@@ -306,11 +306,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
     });
   }
 
-  Widget _getStreamBody() {
-    return _getListBuilder(context);
-  }
-
-  Widget _getListBuilder(BuildContext context) {
+  Widget _getListBuilder() {
     return Observer(builder: (_) {
       if (widget.controller.loading == true) {
         return new Center(child: new RefreshProgressIndicator());
@@ -401,6 +397,13 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
                 }
                 return SizedBox();
               }),
+              if (widget._selectModel.listBottomBuilder != null)
+                widget._selectModel.listBottomBuilder(CustomBottomBuilderArgs(
+                    context,
+                    widget.controller.actualFilters,
+                    widget.controller.loaded,
+                    widget.controller.actualDataSource,
+                    widget.controller.list))
             ],
           );
         }

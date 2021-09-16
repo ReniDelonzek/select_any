@@ -31,8 +31,7 @@ class UtilsFilter {
     if (groupFilterExp.filterExps
         .where((element) => isAgregate == element.line.isAgregate)
         .isEmpty) {
-      args.add(1);
-      return SqlFilter(query: '1 = \$${args.length}', args: args);
+      return SqlFilter(query: '1 = 1', args: args);
     }
 
     SqlFilter filter = SqlFilter(args: args, query: '');
@@ -73,20 +72,19 @@ class UtilsFilter {
         String key = filterExp.customKey;
         switch (filterExp.typeSearch) {
           case TypeSearch.CONTAINS:
-            args.add('${filterExp.valueId}');
+            args.add(filterExp.valueId);
             return SqlFilter(query: '$key = \$${args.length}', args: args);
 
           case TypeSearch.BEGINSWITH:
-            args.add('${filterExp.valueId}');
-            //return SqlFilter(query: , args: args);
+            args.add(filterExp.valueId);
             return SqlFilter(query: '$key = \$${args.length}', args: args);
 
           case TypeSearch.ENDSWITH:
-            args.add('${filterExp.valueId}');
+            args.add(filterExp.valueId);
             return SqlFilter(query: '$key = \$${args.length}', args: args);
 
           case TypeSearch.NOTCONTAINS:
-            args.add('${filterExp.valueId}');
+            args.add(filterExp.valueId);
             return SqlFilter(query: '$key != \$${args.length}', args: args);
         }
       } else {

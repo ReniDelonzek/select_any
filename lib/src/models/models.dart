@@ -20,17 +20,17 @@ enum TypeSelect {
   ACTION
 }
 
-class TableBottomBuilderArgs {
+class CustomBottomBuilderArgs {
   BuildContext context;
   GroupFilterExp filter;
   bool isLoaded;
   DataSource actualDataSource;
   List<ItemSelectTable> partialData;
-  TableBottomBuilderArgs(this.context, this.filter, this.isLoaded,
+  CustomBottomBuilderArgs(this.context, this.filter, this.isLoaded,
       this.actualDataSource, this.partialData);
 }
 
-typedef Widget TableBottomBuilder(TableBottomBuilderArgs args);
+typedef Widget CustomBottomBuilder(CustomBottomBuilderArgs args);
 
 class SelectModel {
   /// 0 selecao simples, 1 selecao multipla, 2 acao
@@ -86,7 +86,10 @@ class SelectModel {
   SelectModelTheme theme;
 
   /// Widget to fill the bottom left corner of the table
-  TableBottomBuilder tableBottomBuilder;
+  CustomBottomBuilder tableBottomBuilder;
+
+  /// Widget to fill the bottom of the list
+  CustomBottomBuilder listBottomBuilder;
 
   /// Set default filter on table
   Future<Line> Function(List<Line>) initialFilter;
@@ -105,7 +108,8 @@ class SelectModel {
       this.showFiltersInput = true,
       this.theme,
       this.tableBottomBuilder,
-      this.initialFilter}) {
+      this.initialFilter,
+      this.listBottomBuilder}) {
     if (openSearchAutomatically == null) {
       openSearchAutomatically = !UtilsPlatform.isMobile;
     }

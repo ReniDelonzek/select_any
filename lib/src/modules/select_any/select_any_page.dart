@@ -63,20 +63,6 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
   @override
   void initState() {
     super.initState();
-    widget._selectModel?.buttons?.forEach((element) {
-      if (element.onTap == null) {
-        element.onTap = () {
-          UtilsWidget.onAction(
-              context,
-              null,
-              null,
-              element as ActionSelect,
-              widget.controller!.data,
-              widget.controller!.reloadData,
-              widget.controller!.actualDataSource);
-        };
-      }
-    });
   }
 
   @override
@@ -277,6 +263,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
     if (widget.controller!.selectModel!.buttons != null &&
         widget.controller!.selectModel!.theme.buttonsPosition ==
             ButtonsPosition.APPBAR) {
+      setOnTap();
       buttons.addAll(widget.controller!.selectModel!.buttons!
           .map((e) => e.build(ButtonsPosition.APPBAR))
           .toList());
@@ -626,6 +613,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
     //       child: Icon(Icons.filter_list)));
     // }
     if (!(widget._selectModel!.buttons?.isEmpty ?? true)) {
+      setOnTap();
       for (ActionSelectBase acao in widget._selectModel!.buttons!) {
         widgets.add(acao.build(ButtonsPosition.BOTTOM));
       }
@@ -699,5 +687,22 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
                         .toList()),
               ),
             ));
+  }
+
+  void setOnTap() {
+    widget._selectModel?.buttons?.forEach((element) {
+      if (element.onTap == null) {
+        element.onTap = () {
+          UtilsWidget.onAction(
+              context,
+              null,
+              null,
+              element as ActionSelect,
+              widget.controller!.data,
+              widget.controller!.reloadData,
+              widget.controller!.actualDataSource);
+        };
+      }
+    });
   }
 }

@@ -1,6 +1,7 @@
 import 'package:diacritic/diacritic.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
 import 'package:msk_utils/extensions/date.dart';
 import 'package:msk_utils/extensions/map.dart';
@@ -656,7 +657,24 @@ class ItemSelectTable extends ItemSelect {
   });
 }
 
-class ActionSelect {
+abstract class ActionSelectBase {
+  Function onTap;
+  Widget build();
+}
+
+typedef BuildWidget = Widget Function();
+
+class ActionWidget extends ActionSelectBase {
+  BuildWidget buildWidget;
+  ActionWidget(this.buildWidget);
+
+  @override
+  Widget build() {
+    return buildWidget();
+  }
+}
+
+class ActionSelect extends ActionSelectBase {
   /// Keys das colunas a serem enviadas, e o nome como elas devem ir
   Map<String, String> keys;
   String description;
@@ -688,6 +706,16 @@ class ActionSelect {
           page != null ||
           route != null;
     }
+  }
+
+  @override
+  Widget build() {
+    return IconButton(
+      splashRadius: 24,
+      icon: icon ?? Icon(Icons.add),
+      tooltip: description,
+      onPressed: enabled ? onTap : null,
+    );
   }
 }
 

@@ -62,6 +62,20 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
   @override
   void initState() {
     super.initState();
+    widget._selectModel.buttons.forEach((element) {
+      if (element.onTap == null) {
+        element.onTap = () {
+          UtilsWidget.onAction(
+              context,
+              null,
+              null,
+              element,
+              widget.controller.data,
+              widget.controller.reloadData,
+              widget.controller.actualDataSource);
+        };
+      }
+    });
   }
 
   @override
@@ -95,7 +109,6 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
           }
         }
       }
-      //});
     }
     if (!widget.controller.confirmToLoadData) {
       carregarDados();
@@ -257,26 +270,23 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
     if (widget.controller.selectModel.buttons != null &&
         widget.controller.selectModel.theme?.buttonsPosition ==
             ButtonsPosition.APPBAR) {
-      buttons.addAll(widget.controller.selectModel.buttons
-          .map((e) => IconButton(
-                splashRadius: 24,
-                icon: e.icon ?? Icon(Icons.add),
-                tooltip: e.description,
-                onPressed: e.enabled
-                    ? () {
-                        UtilsWidget.onAction(
-                            context,
-                            null,
-                            null,
-                            e,
-                            widget.controller.data,
-                            widget.controller.reloadData,
-                            widget.controller.actualDataSource);
-                      }
-                    : null,
-              ))
-          .toList());
+      buttons.addAll(
+          widget.controller.selectModel.buttons.map((e) => e.build()).toList());
     }
+    widget.controller.selectModel.buttons.forEach((element) {
+      if (element.onTap == null) {
+        element.onTap = () {
+          UtilsWidget.onAction(
+              context,
+              null,
+              null,
+              element,
+              widget.controller.data,
+              widget.controller.reloadData,
+              widget.controller.actualDataSource);
+        };
+      }
+    });
     return buttons;
   }
 

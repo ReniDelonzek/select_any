@@ -22,6 +22,11 @@ abstract class _SelectFKBase with Store {
   FocusNode focusNode = FocusNode();
   SelectModel? selectModel;
 
+  /// Used to prevent the value from being updated every time the widget is reloaded
+  bool isCheckedSingleRow = false;
+
+  bool get updateFunSingleRow => !isCheckedSingleRow && obj == null;
+
   /// Retorna o valor da chave, caso o objeto não seja null e o valor conste no objeto
   getValueKey(String key) {
     if (obj == null || !obj!.containsKey(key)) {
@@ -30,18 +35,23 @@ abstract class _SelectFKBase with Store {
     return obj![key];
   }
 
-  /// Verifica se a [fontData] especificada retorna somente um registro
+  /// Verifica se a [selectModel.dataSource] especificada retorna somente um registro
   /// Caso sim, seta o dado no input
   void checkSingleRow() async {
-    /// Deixa o limite como dois, porque caso retorne dois ele possui > 1 registro
-    /// Pode ser null caso o widget não tenha sido construído ainda
-    selectModel?.dataSource.getList(2, 0, selectModel).then((value) {
-      value.first.then((value) {
-        if (value.data.length == 1) {
-          obj = value.data.first.object;
-        }
+    /// Só executa caso o obj esteja null
+    /// Verifica novamente dentro da lista pois por ser um método async, no momento de setar os dados essa condição pode mudar
+    if (updateFunSingleRow) {
+      /// Deixa o limite como dois, porque caso retorne dois ele possui > 1 registro
+      /// Pode ser null caso o widget não tenha sido construído ainda
+      selectModel?.dataSource.getList(2, 0, selectModel).then((value) {
+        value.first.then((value) {
+          if (value.data.length == 1 && updateFunSingleRow) {
+            obj = value.data.first.object;
+          }
+          isCheckedSingleRow = true;
+        });
       });
-    });
+    }
   }
 
   /// Limpa o objeto selecionado

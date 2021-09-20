@@ -45,17 +45,8 @@ class TableDataWidget extends StatelessWidget {
     if (controller.selectModel!.buttons != null &&
         controller.selectModel!.theme.buttonsPosition ==
             ButtonsPosition.IN_TABLE_AND_BOTTOM) {
-      buttons.addAll(controller.selectModel!.buttons!
-          .map((e) => IconButton(
-                splashRadius: 24,
-                icon: e.icon ?? Icon(Icons.add),
-                tooltip: e.description,
-                onPressed: () {
-                  UtilsWidget.onAction(context, null, null, e, controller.data,
-                      controller.reloadData, controller.actualDataSource);
-                },
-              ))
-          .toList());
+      buttons.addAll(
+          controller.selectModel!.buttons!.map((e) => e.build()).toList());
     }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -483,13 +474,15 @@ class TableDataWidget extends StatelessWidget {
       children: [
         controller.selectModel?.tableBottomBuilder != null
             ? Observer(builder: (_) {
-                return controller.selectModel!.tableBottomBuilder!(
-                    TableBottomBuilderArgs(
-                        context,
-                        controller.actualFilters,
-                        controller.loaded,
-                        controller.actualDataSource,
-                        controller.list));
+                return Flexible(
+                  child: controller.selectModel!.tableBottomBuilder!(
+                      CustomBottomBuilderArgs(
+                          context,
+                          controller.actualFilters,
+                          controller.loaded,
+                          controller.actualDataSource,
+                          controller.list)),
+                );
               })
             : SizedBox(),
         Container(

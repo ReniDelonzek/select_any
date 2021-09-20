@@ -1,6 +1,7 @@
 import 'package:diacritic/diacritic.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
 import 'package:msk_utils/extensions/date.dart';
 import 'package:msk_utils/extensions/map.dart';
@@ -20,17 +21,17 @@ enum TypeSelect {
   ACTION
 }
 
-class TableBottomBuilderArgs {
+class CustomBottomBuilderArgs {
   BuildContext context;
   GroupFilterExp? filter;
   bool isLoaded;
   DataSource? actualDataSource;
   List<ItemSelectTable> partialData;
-  TableBottomBuilderArgs(this.context, this.filter, this.isLoaded,
+  CustomBottomBuilderArgs(this.context, this.filter, this.isLoaded,
       this.actualDataSource, this.partialData);
 }
 
-typedef Widget TableBottomBuilder(TableBottomBuilderArgs args);
+typedef Widget CustomBottomBuilder(CustomBottomBuilderArgs args);
 
 class SelectModel {
   /// Selection type
@@ -86,7 +87,10 @@ class SelectModel {
   SelectModelTheme theme;
 
   /// Widget to fill the bottom left corner of the table
-  TableBottomBuilder? tableBottomBuilder;
+  CustomBottomBuilder? tableBottomBuilder;
+
+  /// Widget to fill the bottom of the list
+  CustomBottomBuilder? listBottomBuilder;
 
   /// Set default filter on table
   Future<Line?> Function(List<Line>)? initialFilter;
@@ -105,7 +109,8 @@ class SelectModel {
       this.showFiltersInput = true,
       this.theme = const SelectModelTheme(tableTheme: SelectModelThemeTable()),
       this.tableBottomBuilder,
-      this.initialFilter}) {
+      this.initialFilter,
+      this.listBottomBuilder}) {
     if (openSearchAutomatically == null) {
       openSearchAutomatically = !UtilsPlatform.isMobile;
     }
@@ -648,7 +653,24 @@ class ItemSelectTable extends ItemSelect {
   });
 }
 
-class ActionSelect {
+abstract class ActionSelectBase {
+  Function()? onTap;
+  Widget build();
+}
+
+typedef BuildWidget = Widget Function();
+
+class ActionWidget extends ActionSelectBase {
+  BuildWidget buildWidget;
+  ActionWidget(this.buildWidget);
+
+  @override
+  Widget build() {
+    return buildWidget();
+  }
+}
+
+class ActionSelect extends ActionSelectBase {
   /// Keys das colunas a serem enviadas, e o nome como elas devem ir
   Map<String, String>? keys;
   String? description;
@@ -680,6 +702,16 @@ class ActionSelect {
           page != null ||
           route != null;
     }
+  }
+
+  @override
+  Widget build() {
+    return IconButton(
+      splashRadius: 24,
+      icon: icon ?? Icon(Icons.add),
+      tooltip: description,
+      onPressed: enabled == true ? onTap : null,
+    );
   }
 }
 

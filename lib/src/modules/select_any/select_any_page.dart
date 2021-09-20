@@ -63,6 +63,20 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
   @override
   void initState() {
     super.initState();
+    widget._selectModel?.buttons?.forEach((element) {
+      if (element.onTap == null) {
+        element.onTap = () {
+          UtilsWidget.onAction(
+              context,
+              null,
+              null,
+              element,
+              widget.controller!.data,
+              widget.controller!.reloadData,
+              widget.controller!.actualDataSource);
+        };
+      }
+    });
   }
 
   @override
@@ -97,7 +111,6 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
           }
         }
       }
-      //});
     }
     if (!widget.controller!.confirmToLoadData) {
       carregarDados();
@@ -260,23 +273,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
         widget.controller!.selectModel!.theme.buttonsPosition ==
             ButtonsPosition.APPBAR) {
       buttons.addAll(widget.controller!.selectModel!.buttons!
-          .map((e) => IconButton(
-                splashRadius: 24,
-                icon: e.icon ?? Icon(Icons.add),
-                tooltip: e.description,
-                onPressed: e.enabled!
-                    ? () {
-                        UtilsWidget.onAction(
-                            context,
-                            null,
-                            null,
-                            e,
-                            widget.controller!.data,
-                            widget.controller!.reloadData,
-                            widget.controller!.actualDataSource);
-                      }
-                    : null,
-              ))
+          .map((e) => e.build())
           .toList());
     }
     return buttons;
@@ -289,8 +286,8 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
         return TableDataWidget(widget._selectModel!,
             controller: widget.controller!, carregarDados: false);
       } else {
-        if (!widget.controller!.confirmToLoadData) {
-          return _getStreamBody();
+        if (!widget.controller!.confirmToLoadData == true) {
+          return _getListBuilder();
         } else {
           return Center(
               child: TextButton.icon(
@@ -308,11 +305,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
     });
   }
 
-  Widget _getStreamBody() {
-    return _getListBuilder(context);
-  }
-
-  Widget _getListBuilder(BuildContext context) {
+  Widget _getListBuilder() {
     return Observer(builder: (_) {
       if (widget.controller!.loading == true) {
         return new Center(child: new RefreshProgressIndicator());
@@ -403,6 +396,13 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
                 }
                 return SizedBox();
               }),
+              if (widget._selectModel!.listBottomBuilder != null)
+                widget._selectModel!.listBottomBuilder!(CustomBottomBuilderArgs(
+                    context,
+                    widget.controller!.actualFilters,
+                    widget.controller!.loaded,
+                    widget.controller!.actualDataSource,
+                    widget.controller!.list))
             ],
           );
         }

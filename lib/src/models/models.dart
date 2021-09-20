@@ -51,7 +51,7 @@ class SelectModel {
   List<ActionSelect>? actions;
 
   /// Botões que apareceram no canto inferior direito
-  List<ActionSelect>? buttons;
+  List<ActionSelectBase>? buttons;
 
   /// Indica a fonte dos dados a ser exibidos
   DataSource dataSource;
@@ -113,6 +113,24 @@ class SelectModel {
       this.listBottomBuilder}) {
     if (openSearchAutomatically == null) {
       openSearchAutomatically = !UtilsPlatform.isMobile;
+    }
+    if (buttons != null &&
+        buttons!.where((element) => element is ActionSelect).length > 1) {
+      int i = 0;
+      while (i < buttons!.length) {
+        if ((i -
+                    buttons!
+                        .sublist(0, i)
+                        .where((element) => !(element is ActionSelect))
+                        .length) >
+                0 &&
+            buttons![i] is ActionSelect) {
+          if ((buttons![i] as ActionSelect).floatingActionButtonMini == null) {
+            (buttons![i] as ActionSelect).floatingActionButtonMini = true;
+          }
+        }
+        i++;
+      }
     }
   }
 }
@@ -655,18 +673,18 @@ class ItemSelectTable extends ItemSelect {
 
 abstract class ActionSelectBase {
   Function()? onTap;
-  Widget build();
+  Widget build(ButtonsPosition position);
 }
 
-typedef BuildWidget = Widget Function();
+typedef BuildWidget = Widget Function(ButtonsPosition position);
 
 class ActionWidget extends ActionSelectBase {
   BuildWidget buildWidget;
   ActionWidget(this.buildWidget);
 
   @override
-  Widget build() {
-    return buildWidget();
+  Widget build(ButtonsPosition position) {
+    return buildWidget(position);
   }
 }
 
@@ -685,6 +703,7 @@ class ActionSelect extends ActionSelectBase {
   /// Indica se a tela deve ser fechada ou não
   bool closePage;
   bool? enabled;
+  bool? floatingActionButtonMini;
 
   ActionSelect(
       {this.description,
@@ -695,7 +714,8 @@ class ActionSelect extends ActionSelectBase {
       this.page,
       this.closePage = false,
       this.functionUpd,
-      this.enabled}) {
+      this.enabled,
+      this.floatingActionButtonMini}) {
     if (enabled == null) {
       enabled = function != null ||
           functionUpd != null ||
@@ -705,7 +725,16 @@ class ActionSelect extends ActionSelectBase {
   }
 
   @override
-  Widget build() {
+  Widget build(ButtonsPosition position) {
+    if (position == ButtonsPosition.BOTTOM) {
+      return FloatingActionButton(
+        heroTag: description,
+        mini: floatingActionButtonMini ?? false,
+        tooltip: description,
+        onPressed: enabled == true ? onTap : null,
+        child: icon ?? Icon(Icons.add),
+      );
+    }
     return IconButton(
       splashRadius: 24,
       icon: icon ?? Icon(Icons.add),

@@ -45,8 +45,9 @@ class TableDataWidget extends StatelessWidget {
     if (controller.selectModel!.buttons != null &&
         controller.selectModel!.theme.buttonsPosition ==
             ButtonsPosition.IN_TABLE_AND_BOTTOM) {
-      buttons.addAll(
-          controller.selectModel!.buttons!.map((e) => e.build()).toList());
+      buttons.addAll(controller.selectModel!.buttons!
+          .map((e) => e.build(ButtonsPosition.IN_TABLE_AND_BOTTOM))
+          .toList());
     }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

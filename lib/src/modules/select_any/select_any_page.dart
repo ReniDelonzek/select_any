@@ -70,7 +70,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
               context,
               null,
               null,
-              element,
+              element as ActionSelect,
               widget.controller!.data,
               widget.controller!.reloadData,
               widget.controller!.actualDataSource);
@@ -139,12 +139,17 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
               }),
               InsertIntent:
                   CallbackAction<InsertIntent>(onInvoke: (InsertIntent intent) {
-                if (widget._selectModel!.buttons?.isNotEmpty == true) {
+                if (widget._selectModel!.buttons
+                        ?.where((element) => element is ActionSelect)
+                        .isNotEmpty ==
+                    true) {
                   UtilsWidget.onAction(
                       context,
                       null,
                       null,
-                      widget._selectModel!.buttons!.first,
+                      widget._selectModel!.buttons!
+                              .firstWhere((element) => element is ActionSelect)
+                          as ActionSelect,
                       widget.data,
                       widget.controller!.reloadData,
                       widget.controller!.actualDataSource);
@@ -273,7 +278,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
         widget.controller!.selectModel!.theme.buttonsPosition ==
             ButtonsPosition.APPBAR) {
       buttons.addAll(widget.controller!.selectModel!.buttons!
-          .map((e) => e.build())
+          .map((e) => e.build(ButtonsPosition.APPBAR))
           .toList());
     }
     return buttons;
@@ -621,23 +626,8 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
     //       child: Icon(Icons.filter_list)));
     // }
     if (!(widget._selectModel!.buttons?.isEmpty ?? true)) {
-      for (ActionSelect acao in widget._selectModel!.buttons!) {
-        widgets.add(FloatingActionButton(
-          heroTag: widgets.length,
-          mini: widgets.isNotEmpty,
-          tooltip: acao.description,
-          onPressed: () {
-            UtilsWidget.onAction(
-                context,
-                null,
-                null,
-                acao,
-                widget.data,
-                widget.controller!.reloadData,
-                widget.controller!.actualDataSource);
-          },
-          child: acao.icon ?? Icon(Icons.add),
-        ));
+      for (ActionSelectBase acao in widget._selectModel!.buttons!) {
+        widgets.add(acao.build(ButtonsPosition.BOTTOM));
       }
     }
     widgets = widgets.reversed.toList();

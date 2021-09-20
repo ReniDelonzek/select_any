@@ -256,16 +256,8 @@ class _SelectAnyExpandedPageState extends State<SelectAnyExpandedPage> {
     //       child: Icon(Icons.filter_list)));
     // }
     if (!(widget._selectModel.buttons?.isEmpty ?? true)) {
-      for (ActionSelect acao in widget._selectModel.buttons!) {
-        widgets.add(FloatingActionButton(
-          heroTag: widgets.length,
-          mini: widgets.isNotEmpty,
-          tooltip: acao.description,
-          onPressed: () {
-            _onAction(null, acao);
-          },
-          child: acao.icon ?? Icon(Icons.add),
-        ));
+      for (ActionSelectBase acao in widget._selectModel.buttons!) {
+        widgets.add(acao.build(ButtonsPosition.BOTTOM));
       }
     }
     widgets = widgets.reversed.toList();

@@ -8,6 +8,7 @@ part 'select_fk_controller.g.dart';
 class SelectFKController = _SelectFKBase with _$SelectFKController;
 
 abstract class _SelectFKBase with Store {
+  String labelId;
   @observable
   bool inFocus = false;
   @observable
@@ -20,16 +21,9 @@ abstract class _SelectFKBase with Store {
 
   set obj(Map<String, dynamic> value) {
     _obj = value;
-  }
-
-  void setObjWithId(Map<String, dynamic> value, int id) {
-    _obj = value;
-    list.forEach((element) {
-      if (element.id == id) {
-        obj = element.object;
-        element.isSelected = true;
-      }
-    });
+    if (labelId != null) {
+      setObjList(_obj, labelId);
+    }
   }
 
   @observable
@@ -95,9 +89,25 @@ abstract class _SelectFKBase with Store {
           ?.getList(-1, -1, selectModel, data: data);
       value.listen((event) {
         list = ObservableList.of(event.data);
+
+        /// Atualiza o objeto da lista conforme a seleção
+        setObjList(_obj, labelId);
         listIsLoaded = true;
       });
       return;
+    }
+  }
+
+  /// Atualiza o objeto da lista conforme a seleção
+  void setObjList(Map<String, dynamic> value, String labelId) {
+    if (value != null && labelId != null) {
+      for (var element in list) {
+        if (element.id == value[labelId]) {
+          _obj = element.object;
+          element.isSelected = true;
+          break;
+        }
+      }
     }
   }
 }

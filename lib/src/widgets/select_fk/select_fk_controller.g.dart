@@ -27,15 +27,15 @@ mixin _$SelectFKController on _SelectFKBase, Store {
   final _$objAtom = Atom(name: '_SelectFKBase.obj');
 
   @override
-  Map<String, dynamic> get obj {
+  Map<String, dynamic> get _obj {
     _$objAtom.reportRead();
-    return super.obj;
+    return super._obj;
   }
 
   @override
-  set obj(Map<String, dynamic> value) {
-    _$objAtom.reportWrite(value, super.obj, () {
-      super.obj = value;
+  set _obj(Map<String, dynamic> value) {
+    _$objAtom.reportWrite(value, super._obj, () {
+      super._obj = value;
     });
   }
 
@@ -88,7 +88,7 @@ mixin _$SelectFKController on _SelectFKBase, Store {
   String toString() {
     return '''
 inFocus: ${inFocus},
-obj: ${obj},
+obj: ${_obj},
 showClearIcon: ${showClearIcon},
 list: ${list},
 listIsLoaded: ${listIsLoaded}

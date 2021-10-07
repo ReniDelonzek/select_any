@@ -11,7 +11,27 @@ abstract class _SelectFKBase with Store {
   @observable
   bool inFocus = false;
   @observable
-  Map<String, dynamic> obj;
+  Map<String, dynamic> _obj;
+
+  @computed
+  Map<String, dynamic> get obj {
+    return _obj;
+  }
+
+  set obj(Map<String, dynamic> value) {
+    _obj = value;
+  }
+
+  void setObjWithId(Map<String, dynamic> value, int id) {
+    _obj = value;
+    list.forEach((element) {
+      if (element.id == id) {
+        obj = element.object;
+        element.isSelected = true;
+      }
+    });
+  }
+
   @observable
   bool showClearIcon = false;
 
@@ -25,14 +45,14 @@ abstract class _SelectFKBase with Store {
   /// Used to prevent the value from being updated every time the widget is reloaded
   bool isCheckedSingleRow = false;
 
-  bool get updateFunSingleRow => !isCheckedSingleRow && obj == null;
+  bool get updateFunSingleRow => !isCheckedSingleRow && _obj == null;
 
   /// Retorna o valor da chave, caso o objeto não seja null e o valor conste no objeto
   getValueKey(String key) {
-    if (obj == null || !obj.containsKey(key)) {
+    if (_obj == null || !_obj.containsKey(key)) {
       return null;
     }
-    return obj[key];
+    return _obj[key];
   }
 
   /// Verifica se a [selectModel.dataSource] especificada retorna somente um registro
@@ -46,7 +66,7 @@ abstract class _SelectFKBase with Store {
       selectModel?.dataSource?.getList(2, 0, selectModel)?.then((value) {
         value.first.then((value) {
           if (value.data?.length == 1 && updateFunSingleRow) {
-            obj = value.data.first.object;
+            _obj = value.data.first.object;
           }
           isCheckedSingleRow = true;
         });
@@ -56,7 +76,7 @@ abstract class _SelectFKBase with Store {
 
   /// Limpa o objeto selecionado
   void clear() {
-    obj = null;
+    _obj = null;
   }
 
   /// Atualiza a lista

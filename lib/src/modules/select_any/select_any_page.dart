@@ -62,7 +62,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
   @override
   void initState() {
     super.initState();
-    widget._selectModel.buttons.forEach((element) {
+    widget._selectModel.buttons?.forEach((element) {
       if (element.onTap == null) {
         element.onTap = () {
           UtilsWidget.onAction(
@@ -273,7 +273,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
       buttons.addAll(
           widget.controller.selectModel.buttons.map((e) => e.build()).toList());
     }
-    widget.controller.selectModel.buttons.forEach((element) {
+    widget.controller.selectModel.buttons?.forEach((element) {
       if (element.onTap == null) {
         element.onTap = () {
           UtilsWidget.onAction(
@@ -553,9 +553,10 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
     dynamic valor = (item.value == null || item.value.toString().isEmpty)
         ? (linha.defaultValue != null ? linha.defaultValue(map) : item.value)
         : item.value;
+    ObjFormatData objFormatData = ObjFormatData(data: valor, map: map);
 
     if (linha.formatData != null) {
-      valor = linha.formatData.formatData(ObjFormatData(data: valor, map: map));
+      valor = linha.formatData.formatData(objFormatData);
     } else if (linha.typeData is TDDateTimestamp && linha.customLine == null) {
       try {
         valor = DateTime.fromMillisecondsSinceEpoch(int.tryParse(valor))
@@ -572,7 +573,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
             data: map, typeScreen: widget.controller.typeDiplay));
       }
       return Text(linha.enclosure.replaceAll('???', valor?.toString() ?? ''),
-          style: linha.textStyle ??
+          style: linha.textStyle?.call(objFormatData) ??
               widget.controller.selectModel.theme.defaultTextStyle);
     } else {
       if ((valor == null || valor.toString().isEmpty) &&
@@ -580,7 +581,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
         return SizedBox();
       }
       return Text(valor?.toString() ?? '',
-          style: linha.textStyle ??
+          style: linha.textStyle?.call(objFormatData) ??
               widget.controller.selectModel.theme.defaultTextStyle);
     }
   }

@@ -88,21 +88,18 @@ class UtilsWidget {
       int typeScreen, Function onTap) {
     Line linha = selectModel.lines
         .firstWhere((linha) => linha.key == item.key, orElse: () => null);
+    ObjFormatData objFormatData = ObjFormatData(data: item.value, map: map);
     if (linha != null && linha.customLine != null) {
       return linha
           .customLine(CustomLineData(data: map, typeScreen: typeScreen));
     } else {
       if (linha.formatData != null) {
-        return _getText(
-            linha.formatData
-                .formatData(ObjFormatData(data: item.value, map: map)),
-            onTap,
-            linha,
-            selectModel);
+        return _getText(linha.formatData.formatData(objFormatData), onTap,
+            linha, selectModel, objFormatData);
       }
       if (item.value?.toString()?.isNullOrBlank != false) {
-        return _getText(
-            linha.defaultValue?.call(map) ?? '', onTap, linha, selectModel);
+        return _getText(linha.defaultValue?.call(map) ?? '', onTap, linha,
+            selectModel, objFormatData);
       }
       if (linha.typeData is TDDateTimestamp) {
         return _getText(
@@ -110,28 +107,31 @@ class UtilsWidget {
                 .string((linha.typeData as TDDateTimestamp).outputFormat),
             onTap,
             linha,
-            selectModel);
+            selectModel,
+            objFormatData);
       }
-      return _getText(item.value?.toString(), onTap, linha, selectModel);
+      return _getText(
+          item.value?.toString(), onTap, linha, selectModel, objFormatData);
     }
   }
 
-  static Widget _getText(
-      String value, Function onTap, Line linha, SelectModel selectModel) {
+  static Widget _getText(String value, Function onTap, Line linha,
+      SelectModel selectModel, ObjFormatData objFormatData) {
     if ((linha?.maxLines ?? 1) > 3 || linha.showTextInTableScroll == true) {
       return SingleChildScrollView(
           child: Padding(
         padding: const EdgeInsets.only(top: 2, bottom: 2),
-        child: _selectableText(value, onTap, linha, selectModel),
+        child: _selectableText(value, onTap, linha, selectModel, objFormatData),
       ));
     } else
-      return _selectableText(value, onTap, linha, selectModel);
+      return _selectableText(value, onTap, linha, selectModel, objFormatData);
   }
 
-  static Widget _selectableText(
-      String value, Function onTap, Line linha, SelectModel selectModel) {
+  static Widget _selectableText(String value, Function onTap, Line linha,
+      SelectModel selectModel, ObjFormatData objFormatData) {
     return SelectableText(value ?? '',
-        style: linha.textStyle ?? selectModel?.theme?.defaultTextStyle,
+        style: linha.textStyle?.call(objFormatData) ??
+            selectModel?.theme?.defaultTextStyle,
         maxLines: linha?.maxLines,
         minLines: linha?.minLines,
         onTap: onTap,

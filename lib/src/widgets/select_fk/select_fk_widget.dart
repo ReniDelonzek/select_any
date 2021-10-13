@@ -212,7 +212,11 @@ class SelectFKWidget extends StatelessWidget {
                                                 style: controller.inFocus
                                                     ? TextStyle(
                                                         color: Colors.white)
-                                                    : defaultLine.textStyle,
+                                                    : defaultLine.textStyle
+                                                        ?.call(ObjFormatData(
+                                                            data: valor,
+                                                            map: controller
+                                                                .obj)),
                                               )
                                             : defaultLine.customLine(
                                                 CustomLineData(

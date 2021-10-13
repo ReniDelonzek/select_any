@@ -398,7 +398,7 @@ class FormatDataDate extends FormatData {
 class FormatDataTimestamp extends FormatData {
   String outputFormat;
 
-  FormatDataTimestamp(this.outputFormat, {String defaultValue})
+  FormatDataTimestamp(this.outputFormat, {String defaultValue = ''})
       : super(defaultValue: defaultValue);
 
   @override

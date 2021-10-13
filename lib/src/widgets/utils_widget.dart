@@ -86,19 +86,22 @@ class UtilsWidget {
   }
 
   static Widget getLinha(SelectModel selectModel, MapEntry item, Map? map,
-      int typeScreen, Function onTap) {
-    Line linha = selectModel.lines
-        .firstWhere((linha) => linha.key == item.key, orElse: () => null);
+      int typeScreen, void Function()? onTap) {
+    Line? linha =
+        selectModel.lines.firstWhereOrNull((linha) => linha.key == item.key);
     ObjFormatData objFormatData = ObjFormatData(data: item.value, map: map);
-    if (linha != null && linha.customLine != null) {
+    if (linha == null) {
+      return SizedBox();
+    }
+    if (linha.customLine != null) {
       return linha
           .customLine!(CustomLineData(data: map, typeScreen: typeScreen));
     } else {
       if (linha.formatData != null) {
-        return _getText(linha.formatData.formatData(objFormatData), onTap,
+        return _getText(linha.formatData!.formatData(objFormatData), onTap,
             linha, selectModel, objFormatData);
       }
-      if (item.value?.toString()?.isNullOrBlank != false) {
+      if (item.value?.toString().isNullOrBlank != false) {
         return _getText(linha.defaultValue?.call(map) ?? '', onTap, linha,
             selectModel, objFormatData);
       }
@@ -116,9 +119,9 @@ class UtilsWidget {
     }
   }
 
-  static Widget _getText(String value, Function onTap, Line linha,
+  static Widget _getText(String? value, void Function()? onTap, Line linha,
       SelectModel selectModel, ObjFormatData objFormatData) {
-    if ((linha?.maxLines ?? 1) > 3 || linha.showTextInTableScroll == true) {
+    if ((linha.maxLines) > 3 || linha.showTextInTableScroll == true) {
       return SingleChildScrollView(
           child: Padding(
         padding: const EdgeInsets.only(top: 2, bottom: 2),
@@ -128,13 +131,13 @@ class UtilsWidget {
       return _selectableText(value, onTap, linha, selectModel, objFormatData);
   }
 
-  static Widget _selectableText(String value, Function onTap, Line linha,
-      SelectModel selectModel, ObjFormatData objFormatData) {
+  static Widget _selectableText(String? value, void Function()? onTap,
+      Line linha, SelectModel selectModel, ObjFormatData objFormatData) {
     return SelectableText(value ?? '',
         style: linha.textStyle?.call(objFormatData) ??
-            selectModel?.theme?.defaultTextStyle,
-        maxLines: linha?.maxLines,
-        minLines: linha?.minLines,
+            selectModel.theme.defaultTextStyle,
+        maxLines: linha.maxLines,
+        minLines: linha.minLines,
         onTap: onTap,
         scrollPhysics: const NeverScrollableScrollPhysics());
   }

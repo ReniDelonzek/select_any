@@ -8,7 +8,7 @@ part 'select_fk_controller.g.dart';
 class SelectFKController = _SelectFKBase with _$SelectFKController;
 
 abstract class _SelectFKBase with Store {
-  String labelId;
+  String? labelId;
   @observable
   bool inFocus = false;
   @observable
@@ -43,7 +43,7 @@ abstract class _SelectFKBase with Store {
 
   /// Retorna o valor da chave, caso o objeto não seja null e o valor conste no objeto
   getValueKey(String key) {
-    if (_obj == null || !_obj.containsKey(key)) {
+    if (_obj == null || !_obj!.containsKey(key)) {
       return null;
     }
     return _obj![key];
@@ -59,7 +59,7 @@ abstract class _SelectFKBase with Store {
       /// Pode ser null caso o widget não tenha sido construído ainda
       selectModel?.dataSource.getList(2, 0, selectModel).then((value) {
         value.first.then((value) {
-          if (value.data?.length == 1 && updateFunSingleRow) {
+          if (value.data.length == 1 && updateFunSingleRow) {
             _obj = value.data.first.object;
           }
           isCheckedSingleRow = true;
@@ -99,7 +99,7 @@ abstract class _SelectFKBase with Store {
   }
 
   /// Atualiza o objeto da lista conforme a seleção
-  void setObjList(Map<String, dynamic> value, String labelId) {
+  void setObjList(Map<String, dynamic>? value, String? labelId) {
     if (value != null && labelId != null) {
       for (var element in list) {
         if (element.id == value[labelId]) {

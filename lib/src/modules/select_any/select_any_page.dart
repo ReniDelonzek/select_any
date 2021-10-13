@@ -63,17 +63,17 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
   @override
   void initState() {
     super.initState();
-    widget._selectModel.buttons?.forEach((element) {
+    widget._selectModel?.buttons?.forEach((element) {
       if (element.onTap == null) {
         element.onTap = () {
           UtilsWidget.onAction(
               context,
               null,
               null,
-              element,
-              widget.controller.data,
-              widget.controller.reloadData,
-              widget.controller.actualDataSource);
+              element as ActionSelect,
+              widget.controller!.data,
+              widget.controller!.reloadData,
+              widget.controller!.actualDataSource);
         };
       }
     });
@@ -282,17 +282,17 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
           .map((e) => e.build(ButtonsPosition.APPBAR))
           .toList());
     }
-    widget.controller.selectModel.buttons?.forEach((element) {
+    widget.controller!.selectModel!.buttons?.forEach((element) {
       if (element.onTap == null) {
         element.onTap = () {
           UtilsWidget.onAction(
               context,
               null,
               null,
-              element,
-              widget.controller.data,
-              widget.controller.reloadData,
-              widget.controller.actualDataSource);
+              element as ActionSelect,
+              widget.controller!.data,
+              widget.controller!.reloadData,
+              widget.controller!.actualDataSource);
         };
       }
     });
@@ -581,9 +581,9 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
         return linha.customLine!(CustomLineData(
             data: map, typeScreen: widget.controller!.typeDiplay));
       }
-      return Text(linha.enclosure.replaceAll('???', valor?.toString() ?? ''),
+      return Text(linha.enclosure!.replaceAll('???', valor?.toString() ?? ''),
           style: linha.textStyle?.call(objFormatData) ??
-              widget.controller.selectModel.theme.defaultTextStyle);
+              widget.controller!.selectModel!.theme.defaultTextStyle);
     } else {
       if ((valor == null || valor.toString().isEmpty) &&
           linha.showSizedBoxWhenEmpty == true) {
@@ -591,7 +591,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
       }
       return Text(valor?.toString() ?? '',
           style: linha.textStyle?.call(objFormatData) ??
-              widget.controller.selectModel.theme.defaultTextStyle);
+              widget.controller!.selectModel!.theme.defaultTextStyle);
     }
   }
 

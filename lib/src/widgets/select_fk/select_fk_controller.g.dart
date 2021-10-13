@@ -27,13 +27,13 @@ mixin _$SelectFKController on _SelectFKBase, Store {
   final _$objAtom = Atom(name: '_SelectFKBase.obj');
 
   @override
-  Map<String, dynamic> get _obj {
+  Map<String, dynamic>? get _obj {
     _$objAtom.reportRead();
     return super._obj;
   }
 
   @override
-  set _obj(Map<String, dynamic> value) {
+  set _obj(Map<String, dynamic>? value) {
     _$objAtom.reportWrite(value, super._obj, () {
       super._obj = value;
     });

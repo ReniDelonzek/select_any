@@ -79,6 +79,7 @@ class SelectFKWidget extends StatelessWidget {
     if (this.defaultLine == null) {
       this.defaultLine = lines.first;
     }
+    controller.labelId = id;
     actions?.forEach((element) {
       element.closePage = true;
     });

@@ -215,7 +215,7 @@ class Line {
   List<Line>? listKeys;
 
   /// Define o estilo do texto a ser apresentado
-  TextStyle? textStyle;
+  TextStyle Function(ObjFormatData)? textStyle;
 
   /// Você pode espeficicar uma formatação a ser aplicada
   FormatData? formatData;
@@ -398,7 +398,8 @@ class FormatDataDate extends FormatData {
 class FormatDataTimestamp extends FormatData {
   String outputFormat;
 
-  FormatDataTimestamp(this.outputFormat);
+  FormatDataTimestamp(this.outputFormat, {String defaultValue})
+      : super(defaultValue: defaultValue);
 
   @override
   String formatData(ObjFormatData data) {

@@ -14,7 +14,7 @@ typedef ValidationSelect = Future<bool> Function(Map<String, dynamic>? obj);
 
 typedef ConvertValue = Future<Map<String, dynamic>> Function(dynamic obj);
 
-enum TypeView { SELECTABLE, RADIO_LIST, CUSTOM_CHIP_LIST }
+enum TypeView { selectable, radioList, customChipList, dropdown }
 
 // ignore: must_be_immutable
 class SelectFKWidget extends StatelessWidget {
@@ -66,7 +66,7 @@ class SelectFKWidget extends StatelessWidget {
       this.buttons,
       this.isRequired = false,
       this.theme,
-      this.typeView = TypeView.SELECTABLE,
+      this.typeView = TypeView.selectable,
       this.convertValue,
       this.height = 45,
       this.customColor,
@@ -97,7 +97,7 @@ class SelectFKWidget extends StatelessWidget {
     if (isRequired == true) {
       controller.checkSingleRow();
     }
-    if (typeView != TypeView.SELECTABLE) {
+    if (typeView != TypeView.selectable) {
       controller.loadData(data: dataToSelect?.call());
     }
   }
@@ -111,7 +111,7 @@ class SelectFKWidget extends StatelessWidget {
       },
       autofocus: true,
       child: Column(
-          crossAxisAlignment: typeView != TypeView.SELECTABLE
+          crossAxisAlignment: typeView != TypeView.selectable
               ? CrossAxisAlignment.start
               : CrossAxisAlignment.center,
           children: [
@@ -127,7 +127,7 @@ class SelectFKWidget extends StatelessWidget {
                   ),
                 ),
               ),
-            typeView != TypeView.SELECTABLE
+            typeView != TypeView.selectable
                 ? _buildList(context)
                 : InkWell(onLongPress: () {
                     clearObj(context);
@@ -266,13 +266,16 @@ class SelectFKWidget extends StatelessWidget {
               child: Text('Lista vazia'),
             );
       }
+      if (typeView == TypeView.dropdown) {
+        return _dropdownButton();
+      }
 
       return Wrap(
         crossAxisAlignment: WrapCrossAlignment.start,
         runAlignment: WrapAlignment.start,
         direction: Axis.horizontal,
         spacing: 8,
-        children: typeView == TypeView.RADIO_LIST
+        children: typeView == TypeView.radioList
             ? _radioList(context)
             : _customChipList(),
       );
@@ -325,6 +328,18 @@ class SelectFKWidget extends StatelessWidget {
               }),
             ))
         .toList();
+  }
+
+  Widget _dropdownButton() {
+    return DropdownButton(
+        value: controller.obj,
+        items: controller.list
+            .map((element) => DropdownMenuItem(
+                onTap: () {
+                  _validateSelectList(element.object);
+                },
+                child: Text('${element.strings?.values.first ?? ''}')))
+            .toList());
   }
 
   void clearObj(BuildContext context) {

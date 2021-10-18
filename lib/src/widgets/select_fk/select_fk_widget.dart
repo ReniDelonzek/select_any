@@ -335,6 +335,7 @@ class SelectFKWidget extends StatelessWidget {
         value: controller.obj,
         items: controller.list
             .map((element) => DropdownMenuItem(
+                value: element.object,
                 onTap: () {
                   _validateSelectList(element.object);
                 },

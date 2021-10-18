@@ -151,7 +151,7 @@ abstract class _SelectAnyBase with Store {
       showSearch = groupFilterExp.filterExps.isEmpty;
       loading = true;
       offset ??= (page - 1) * quantityItensPage!;
-      (await actualDataSource!.getList(quantityItensPage, offset, selectModel,
+      (await actualDataSource!.getList(quantityItensPage!, offset, selectModel,
               data: data,
               refresh: refresh,
               itemSort: itemSort,

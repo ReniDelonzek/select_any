@@ -86,7 +86,7 @@ abstract class _SelectFKBase with Store {
     if (!listIsLoaded) {
       /// Pode ser null caso o widget não tenha sido construído ainda
       var value = await selectModel?.dataSource
-          .getList(-1, -1, selectModel, data: data);
+          .getList(999, -1, selectModel, data: data);
       value?.listen((event) {
         list = ObservableList.of(event.data);
 

@@ -57,6 +57,8 @@ class SelectFKWidget extends StatelessWidget {
 
   final Widget? customEmptyList;
 
+  final EdgeInsets customChipPadding;
+
   SelectFKWidget(
       this.title, this.id, this.lines, this.controller, this.dataSource,
       {this.defaultLine,
@@ -75,7 +77,9 @@ class SelectFKWidget extends StatelessWidget {
       this.customListTitle,
       this.dataToSelect,
       this.cleanValue,
-      this.customEmptyList}) {
+      this.customEmptyList,
+      this.customChipPadding =
+          const EdgeInsets.only(top: 12, bottom: 12, left: 16, right: 16)}) {
     if (this.defaultLine == null) {
       this.defaultLine = lines.first;
     }
@@ -160,22 +164,13 @@ class SelectFKWidget extends StatelessWidget {
                             children: [
                               Expanded(
                                 child: Container(
-                                  height: 45,
+                                  height: height,
                                   constraints: BoxConstraints(
                                       minWidth: 45,
                                       maxWidth: 500,
                                       minHeight: height,
                                       maxHeight: 60),
-                                  decoration: BoxDecoration(
-                                      color: customColor ??
-                                          (controller.inFocus
-                                              ? UtilsColor.getAccentColor(
-                                                  context)
-                                              : Theme.of(context).brightness ==
-                                                      Brightness.dark
-                                                  ? Color(0xFF515151)
-                                                  : Color(0xFFf5f5f5)),
-                                      borderRadius: BorderRadius.circular(20)),
+                                  decoration: _getBoxDecoration(context),
                                   child: Container(
                                     padding:
                                         EdgeInsets.only(left: 15, right: 15),
@@ -267,7 +262,7 @@ class SelectFKWidget extends StatelessWidget {
             );
       }
       if (typeView == TypeView.dropdown) {
-        return _dropdownButton();
+        return _dropdownButton(context);
       }
 
       return Wrap(
@@ -318,29 +313,35 @@ class SelectFKWidget extends StatelessWidget {
         .map((element) => Padding(
               padding: const EdgeInsets.only(top: 8),
               child: Observer(builder: (_) {
-                return ButtonChip(
-                  '${element.strings?.values.first ?? ''}',
-                  isSelected: controller.obj == element.object,
-                  onTap: () {
-                    _validateSelectList(element.object);
-                  },
-                );
+                return ButtonChip('${element.strings?.values.first ?? ''}',
+                    isSelected: controller.obj == element.object, onTap: () {
+                  _validateSelectList(element.object);
+                }, padding: customChipPadding);
               }),
             ))
         .toList();
   }
 
-  Widget _dropdownButton() {
-    return DropdownButton(
-        value: controller.obj,
-        items: controller.list
-            .map((element) => DropdownMenuItem(
-                value: element.object,
-                onTap: () {
-                  _validateSelectList(element.object);
-                },
-                child: Text('${element.strings?.values.first ?? ''}')))
-            .toList());
+  Widget _dropdownButton(BuildContext context) {
+    return Container(
+      height: height,
+      decoration: _getBoxDecoration(context),
+      child: Padding(
+        padding: EdgeInsets.only(left: 15, right: 15),
+        child: DropdownButtonHideUnderline(
+          child: DropdownButton(
+              value: controller.obj,
+              onChanged: (newValue) {
+                _validateSelectList(newValue);
+              },
+              items: controller.list
+                  .map((element) => DropdownMenuItem(
+                      value: element.object,
+                      child: Text('${element.strings?.values.first ?? ''}')))
+                  .toList()),
+        ),
+      ),
+    );
   }
 
   void clearObj(BuildContext context) {
@@ -380,5 +381,16 @@ class SelectFKWidget extends StatelessWidget {
       res = await convertValue!(res);
     }
     controller.obj = res;
+  }
+
+  BoxDecoration _getBoxDecoration(BuildContext context) {
+    return BoxDecoration(
+        color: customColor ??
+            (controller.inFocus
+                ? UtilsColor.getAccentColor(context)
+                : Theme.of(context).brightness == Brightness.dark
+                    ? Color(0xFF515151)
+                    : Color(0xFFf5f5f5)),
+        borderRadius: BorderRadius.circular(20));
   }
 }

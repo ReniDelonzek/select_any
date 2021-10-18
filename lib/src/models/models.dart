@@ -536,7 +536,7 @@ abstract class _DataSourceBase with Store {
       this.supportSingleLineFilter = false});
 
   Future<Stream<ResponseData>> getList(
-      int? limit, int offset, SelectModel? selectModel,
+      int limit, int offset, SelectModel? selectModel,
       {Map? data,
       bool refresh = false,
       ItemSort? itemSort,

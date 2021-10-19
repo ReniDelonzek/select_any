@@ -232,7 +232,7 @@ class UtilsWidget {
               children: actions!
                   .map((acao) => new ListTile(
                       leading: acao.icon,
-                      title: new Text(acao.description!),
+                      title: new Text(acao.description ?? ''),
                       onTap: () {
                         Navigator.pop(context);
                         UtilsWidget.onAction(context, itemSelect, index, acao,

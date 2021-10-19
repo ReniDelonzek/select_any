@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:mobx/mobx.dart';
 import 'package:msk_utils/extensions/map.dart';
+import 'package:msk_utils/msk_utils.dart';
 import 'package:msk_utils/utils/utils_platform.dart';
 import 'package:select_any/select_any.dart';
 import 'package:select_any/src/utils/utils_color.dart';
@@ -57,6 +59,11 @@ class SelectFKWidget extends StatelessWidget {
 
   final Widget customEmptyList;
 
+  /// If the TypeView is [radioList, customChipList, dropdown]
+  /// the function is activated, making it possible to perform a pre-selection
+  final Future<Map<String, dynamic>> Function(ObservableList<ItemSelect>)
+      setDefaultSelection;
+
   SelectFKWidget(
       this.title, this.id, this.lines, this.controller, this.dataSource,
       {this.defaultLine,
@@ -75,7 +82,8 @@ class SelectFKWidget extends StatelessWidget {
       this.customListTitle,
       this.dataToSelect,
       this.cleanValue,
-      this.customEmptyList}) {
+      this.customEmptyList,
+      this.setDefaultSelection}) {
     if (this.defaultLine == null) {
       this.defaultLine = lines.first;
     }
@@ -100,6 +108,7 @@ class SelectFKWidget extends StatelessWidget {
     if (typeView != TypeView.selectable) {
       controller.carregarDados(data: dataToSelect?.call());
     }
+    controller.setDefaultSelection = setDefaultSelection;
   }
 
   @override

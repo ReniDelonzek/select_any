@@ -40,6 +40,8 @@ abstract class _SelectFKBase with Store {
   bool isCheckedSingleRow = false;
 
   bool get updateFunSingleRow => !isCheckedSingleRow && _obj == null;
+  Future<Map<String, dynamic>> Function(ObservableList<ItemSelect>)
+      setDefaultSelection;
 
   /// Retorna o valor da chave, caso o objeto não seja null e o valor conste no objeto
   getValueKey(String key) {
@@ -93,6 +95,7 @@ abstract class _SelectFKBase with Store {
         /// Atualiza o objeto da lista conforme a seleção
         setObjList(_obj, labelId);
         listIsLoaded = true;
+        _defaultValue();
       });
       return;
     }
@@ -108,6 +111,16 @@ abstract class _SelectFKBase with Store {
           break;
         }
       }
+    }
+  }
+
+  void _defaultValue() {
+    if (obj == null && setDefaultSelection != null) {
+      setDefaultSelection(list).then((value) {
+        if (value != null) {
+          obj = value;
+        }
+      });
     }
   }
 }

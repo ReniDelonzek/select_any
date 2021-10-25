@@ -42,7 +42,7 @@ class SelectFKWidget extends StatelessWidget {
   final double height;
   final Color customColor;
   final String defaultLabel;
-  final bool showTextTitle;
+  final Widget customTextTitle;
 
   /// Specifies a special title for the list screen
   final String customListTitle;
@@ -73,7 +73,7 @@ class SelectFKWidget extends StatelessWidget {
       this.height = 45,
       this.customColor,
       this.defaultLabel,
-      this.showTextTitle = true,
+      this.customTextTitle,
       this.customListTitle,
       this.dataToSelect,
       this.cleanValue,
@@ -119,18 +119,20 @@ class SelectFKWidget extends StatelessWidget {
               ? CrossAxisAlignment.start
               : CrossAxisAlignment.center,
           children: [
-            if (title.isNotEmpty && showTextTitle)
-              Padding(
-                padding: const EdgeInsets.only(
-                    top: 16, left: 8, right: 8, bottom: 8),
-                child: Container(
-                  alignment: Alignment.topLeft,
-                  child: Text(
-                    title,
-                    style: TextStyle(fontSize: 20),
-                  ),
-                ),
-              ),
+            customTextTitle ??
+                (title.isNotEmpty
+                    ? Padding(
+                        padding: const EdgeInsets.only(
+                            top: 16, left: 8, right: 8, bottom: 8),
+                        child: Container(
+                          alignment: Alignment.topLeft,
+                          child: Text(
+                            title,
+                            style: TextStyle(fontSize: 20),
+                          ),
+                        ),
+                      )
+                    : SizedBox()),
             typeView != TypeView.selectable
                 ? _buildList(context)
                 : InkWell(onLongPress: () {

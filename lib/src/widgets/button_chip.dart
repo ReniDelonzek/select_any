@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:select_any/src/utils/utils_color.dart';
 
 class ButtonChip extends StatelessWidget {

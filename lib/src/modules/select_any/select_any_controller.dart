@@ -1,5 +1,4 @@
 import 'package:diacritic/diacritic.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
 import 'package:msk_utils/models/item_select.dart';

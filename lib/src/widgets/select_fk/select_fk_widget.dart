@@ -1,14 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:mobx/mobx.dart';
-import 'package:msk_utils/extensions/map.dart';
 import 'package:msk_utils/msk_utils.dart';
-import 'package:msk_utils/utils/utils_platform.dart';
 import 'package:select_any/select_any.dart';
 import 'package:select_any/src/utils/utils_color.dart';
-import 'package:select_any/src/widgets/button_chip.dart';
-
-import 'select_fk_controller.dart';
 
 typedef SelectedFK = Future<bool> Function(Map<String, dynamic> obj, Function);
 

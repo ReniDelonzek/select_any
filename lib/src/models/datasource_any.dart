@@ -354,7 +354,8 @@ abstract class DataSourceAny extends DataSource {
   }
 }
 
-typedef FontDataAnyInterface = Future<List<Map>> Function(dynamic data);
+typedef FontDataAnyInterface = Future<List<Map<String, dynamic>>> Function(
+    dynamic data);
 
 class FontDataAny extends DataSourceAny {
   FontDataAnyInterface fontData;
@@ -364,7 +365,7 @@ class FontDataAny extends DataSourceAny {
   @override
   Future fetchData(int? limit, int offset, SelectModel? selectModel,
       {Map? data}) async {
-    listAll = await (fontData(data) as Future<List<Map<String, dynamic>>?>);
+    listAll = await fontData(data);
     return;
   }
 }

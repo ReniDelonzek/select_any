@@ -278,7 +278,7 @@ class SelectFKWidget extends StatelessWidget {
         spacing: 8,
         children: typeView == TypeView.radioList
             ? _radioList(context)
-            : _customChipList(),
+            : _customChipList(context),
       );
     });
   }
@@ -289,6 +289,9 @@ class SelectFKWidget extends StatelessWidget {
         .map((element) => InkWell(
               onTap: () async {
                 _validateSelectList(element.object);
+              },
+              onDoubleTap: () {
+                clearObj(context);
               },
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -314,15 +317,22 @@ class SelectFKWidget extends StatelessWidget {
         .toList();
   }
 
-  List<Widget> _customChipList() {
+  List<Widget> _customChipList(BuildContext context) {
     return controller.list
         .map((element) => Padding(
               padding: const EdgeInsets.only(top: 8),
               child: Observer(builder: (_) {
-                return ButtonChip('${element.strings?.values.first ?? ''}',
-                    isSelected: controller.obj == element.object, onTap: () {
-                  _validateSelectList(element.object);
-                }, padding: customChipPadding);
+                return ButtonChip(
+                  '${element.strings?.values.first ?? ''}',
+                  isSelected: controller.obj == element.object,
+                  onTap: () {
+                    _validateSelectList(element.object);
+                  },
+                  padding: customChipPadding,
+                  onLongPress: () {
+                    clearObj(context);
+                  },
+                );
               }),
             ))
         .toList();

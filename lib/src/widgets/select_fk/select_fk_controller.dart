@@ -24,6 +24,9 @@ abstract class _SelectFKBase with Store {
     if (labelId != null) {
       setObjList(_obj, labelId);
     }
+    if (_obj == null) {
+      selectModel?.dataSource?.clear();
+    }
   }
 
   @observable

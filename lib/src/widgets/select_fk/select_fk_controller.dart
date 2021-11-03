@@ -25,7 +25,7 @@ abstract class _SelectFKBase with Store {
       setObjList(_obj, labelId);
     }
     if (_obj == null) {
-      selectModel?.dataSource?.clear();
+      selectModel?.dataSource.clear();
     }
   }
 

@@ -94,6 +94,9 @@ class SelectModel {
   /// Set default filter on table
   Future<Line?> Function(List<Line>)? initialFilter;
 
+  /// Indicates that the content in the listing must always be presented on cards
+  bool? showInCards;
+
   SelectModel(this.title, this.id, this.lines, this.dataSource, this.typeSelect,
       {this.filters,
       this.actions,
@@ -109,7 +112,8 @@ class SelectModel {
       this.theme = const SelectModelTheme(tableTheme: SelectModelThemeTable()),
       this.tableBottomBuilder,
       this.initialFilter,
-      this.listBottomBuilder}) {
+      this.listBottomBuilder,
+      this.showInCards}) {
     if (openSearchAutomatically == null) {
       openSearchAutomatically = !UtilsPlatform.isMobile;
     }
@@ -130,6 +134,9 @@ class SelectModel {
         }
         i++;
       }
+    }
+    if (showInCards == null) {
+      showInCards = lines.length > 2;
     }
   }
 }

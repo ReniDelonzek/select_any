@@ -457,7 +457,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
   }
 
   Widget _getItemList(ItemSelect itemSelect, int index) {
-    if (itemSelect.strings!.length <= 2) {
+    if (widget._selectModel!.showInCards != true) {
       return new Padding(
           padding: EdgeInsets.only(left: 5, right: 5),
           child: ListTile(

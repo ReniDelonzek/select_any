@@ -359,10 +359,10 @@ typedef CustomLine = Widget Function(CustomLineData);
 
 class CustomLineData {
   dynamic data;
-  int? typeScreen;
+  int typeScreen;
   CustomLineData({
     this.data,
-    this.typeScreen,
+    required this.typeScreen,
   });
 }
 

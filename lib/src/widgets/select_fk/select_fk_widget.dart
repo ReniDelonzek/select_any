@@ -222,7 +222,8 @@ class SelectFKWidget extends StatelessWidget {
                                               )
                                             : defaultLine!.customLine!(
                                                 CustomLineData(
-                                                    data: controller.obj));
+                                                    data: controller.obj,
+                                                    typeScreen: 1));
                                       },
                                     ),
                                   ),

@@ -153,7 +153,7 @@ class _SelectAnyExpandedPageState extends State<SelectAnyExpandedPage> {
     }
     if ((linha.enclosure != null || linha.customLine != null)) {
       if (linha.customLine != null) {
-        return linha.customLine!(CustomLineData(data: map));
+        return linha.customLine!(CustomLineData(data: map, typeScreen: 1));
       }
       return Text(linha.enclosure!.replaceAll('???', valor),
           style: linha.textStyle!(ObjFormatData(data: valor, map: map)));

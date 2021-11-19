@@ -261,13 +261,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
   }
 
   void onDone() {
-    if (widget.controller!.typeDiplay == 1) {
-      Navigator.pop(context,
-          widget.controller!.list.where((item) => item.isSelected).toList());
-    } else {
-      Navigator.pop(context,
-          widget.controller!.list.where((item) => item.isSelected).toList());
-    }
+    Navigator.pop(context, widget.controller!.selectedList.toList());
   }
 
   List<Widget> _buildIconButtons() {
@@ -464,7 +458,8 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
             leading: widget._selectModel!.typeSelect == TypeSelect.MULTIPLE
                 ? Checkbox(
                     onChanged: (newValue) {
-                      itemSelect.isSelected = newValue!;
+                      widget.controller!
+                          .updateSelectItem(itemSelect, newValue ?? true);
                     },
                     value: itemSelect.isSelected)
                 : null,
@@ -476,48 +471,23 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
                     itemSelect.strings!.entries.toList()[1], itemSelect.object)
                 : null,
             onTap: () async {
-              UtilsWidget.tratarOnTap(
-                  context,
-                  itemSelect,
-                  index,
-                  widget.controller!.selectModel!,
-                  widget.controller!.data,
-                  widget.controller!.reloadData,
-                  widget.controller!.actualDataSource);
+              UtilsWidget.cbOnTap(
+                  context, itemSelect, index, widget.controller!);
             },
             onLongPress: () {
               UtilsWidget.tratarOnLongPres(
-                  context,
-                  itemSelect,
-                  index,
-                  widget.controller!.selectModel!,
-                  widget.controller!.data,
-                  widget.controller!.reloadData,
-                  widget.controller!.actualDataSource);
+                  context, itemSelect, index, widget.controller!);
             },
           ));
     } else {
       return Card(
         child: InkWell(
           onTap: () {
-            UtilsWidget.tratarOnTap(
-                context,
-                itemSelect,
-                index,
-                widget.controller!.selectModel!,
-                widget.controller!.data,
-                widget.controller!.reloadData,
-                widget.controller!.actualDataSource);
+            UtilsWidget.cbOnTap(context, itemSelect, index, widget.controller!);
           },
           onLongPress: () {
             UtilsWidget.tratarOnLongPres(
-                context,
-                itemSelect,
-                index,
-                widget.controller!.selectModel!,
-                widget.controller!.data,
-                widget.controller!.reloadData,
-                widget.controller!.actualDataSource);
+                context, itemSelect, index, widget.controller!);
           },
           child: Padding(
             padding: const EdgeInsets.all(16.0),
@@ -525,8 +495,9 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
                 ? Row(
                     children: [
                       Checkbox(
-                        onChanged: (valor) {
-                          itemSelect.isSelected = valor!;
+                        onChanged: (newValue) {
+                          widget.controller!
+                              .updateSelectItem(itemSelect, newValue ?? true);
                         },
                         value: itemSelect.isSelected,
                       ),

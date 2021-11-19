@@ -2,6 +2,7 @@ import 'package:collection/collection.dart' show IterableExtension;
 import 'package:data_table_plus/data_table_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:msk_utils/msk_utils.dart';
+import 'package:select_any/select_any.dart';
 import 'package:select_any/src/models/models.dart';
 import 'package:select_any/src/widgets/my_snack_bar.dart';
 
@@ -12,7 +13,7 @@ class UtilsWidget {
       ItemSelect itemSelect,
       BuildContext context,
       Map? data,
-      Function(ItemSelect, bool?, int index) onSelected,
+      Function(ItemSelect, bool, int index) onSelected,
       Function reloadData,
       int typeScreen,
       DataSource? dataSource,
@@ -46,12 +47,8 @@ class UtilsWidget {
     DataRowPlus dataRow = DataRowPlus.byIndex(
         index: index,
         cells: cells,
-        onSelectChanged:
-            //  selectModel.tipoSelecao ==
-            //             SelectAnyPage.TIPO_SELECAO_SIMPLES ||
-            //         selectModel.tipoSelecao == SelectAnyPage.TIPO_SELECAO_MULTIPLA
-            (b) {
-          onSelected(itemSelect, b, index);
+        onSelectChanged: (b) {
+          onSelected(itemSelect, b ?? true, index);
         },
         selected: itemSelect.isSelected);
     return dataRow;
@@ -241,58 +238,70 @@ class UtilsWidget {
         });
   }
 
-  static tratarOnTap(
-      BuildContext context,
-      ItemSelect itemSelect,
-      int index,
-      SelectModel selectModel,
-      Map? data,
-      Function onDataUpdate,
-      DataSource? dataSource) {
-    if (selectModel.typeSelect == TypeSelect.ACTION &&
-        selectModel.actions != null) {
-      if (selectModel.actions!.length > 1) {
-        UtilsWidget.exibirListaAcoes(context, itemSelect, index,
-            selectModel.actions, data, onDataUpdate, dataSource);
-      } else if (selectModel.actions!.isNotEmpty) {
-        ActionSelect? acao = selectModel.actions?.first;
+  static cbOnTap(BuildContext context, ItemSelect itemSelect, int index,
+      SelectAnyController controller) {
+    if (controller.selectModel!.typeSelect == TypeSelect.ACTION &&
+        controller.selectModel!.actions != null) {
+      if (controller.selectModel!.actions!.length > 1) {
+        UtilsWidget.exibirListaAcoes(
+            context,
+            itemSelect,
+            index,
+            controller.selectModel!.actions,
+            controller.data,
+            controller.reloadData,
+            controller.actualDataSource);
+      } else if (controller.selectModel!.actions!.isNotEmpty) {
+        ActionSelect? acao = controller.selectModel!.actions?.first;
         if (acao != null) {
           UtilsWidget.onAction(
-              context, itemSelect, index, acao, data, onDataUpdate, dataSource);
+              context,
+              itemSelect,
+              index,
+              acao,
+              controller.data,
+              controller.reloadData,
+              controller.actualDataSource);
         }
       }
-    } else if (selectModel.typeSelect == TypeSelect.SIMPLE) {
+    } else if (controller.selectModel!.typeSelect == TypeSelect.SIMPLE) {
       Navigator.pop(context, itemSelect.object);
-    } else if (selectModel.typeSelect == TypeSelect.MULTIPLE) {
-      itemSelect.isSelected = !itemSelect.isSelected;
+    } else if (controller.selectModel!.typeSelect == TypeSelect.MULTIPLE) {
+      controller.updateSelectItem(itemSelect, !itemSelect.isSelected);
     }
   }
 
-  static void tratarOnLongPres(
-      BuildContext context,
-      ItemSelect itemSelect,
-      int index,
-      SelectModel selectModel,
-      Map? data,
-      Function onDataUpdate,
-      DataSource? dataSource) {
-    if (selectModel.actions != null) {
-      if (selectModel.actions!.length > 1) {
-        UtilsWidget.exibirListaAcoes(context, itemSelect, index,
-            selectModel.actions, data, onDataUpdate, dataSource);
+  static void tratarOnLongPres(BuildContext context, ItemSelect itemSelect,
+      int index, SelectAnyController controller) {
+    if (controller.selectModel!.actions != null) {
+      if (controller.selectModel!.actions!.length > 1) {
+        UtilsWidget.exibirListaAcoes(
+            context,
+            itemSelect,
+            index,
+            controller.selectModel!.actions,
+            controller.data,
+            controller.reloadData,
+            controller.actualDataSource);
       } else {
-        ActionSelect? acao = selectModel.actions?.first;
+        ActionSelect? acao = controller.selectModel!.actions?.first;
         if (acao != null) {
           UtilsWidget.onAction(
-              context, itemSelect, index, acao, data, onDataUpdate, dataSource);
+              context,
+              itemSelect,
+              index,
+              acao,
+              controller.data,
+              controller.reloadData,
+              controller.actualDataSource);
         }
       }
-    } else if (selectModel.typeSelect == TypeSelect.SIMPLE) {
+    } else if (controller.selectModel!.typeSelect == TypeSelect.SIMPLE) {
       Navigator.pop(context, itemSelect.object);
-    } else if (selectModel.typeSelect == TypeSelect.MULTIPLE) {
-      itemSelect.isSelected = !itemSelect.isSelected;
+    } else if (controller.selectModel!.typeSelect == TypeSelect.MULTIPLE) {
+      controller.updateSelectItem(itemSelect, !itemSelect.isSelected);
     } else {
-      //case seja do tipo acao, mas n tenha nenhuma acao
+      /// caso seja do tipo acao, mas n tenha nenhuma acao
       Navigator.pop(context, itemSelect.object);
     }
   }

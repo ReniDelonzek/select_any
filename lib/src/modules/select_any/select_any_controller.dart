@@ -112,6 +112,9 @@ abstract class _SelectAnyBase with Store {
     this.selectModel = selectModel;
     this.data = data;
     appBarTitle = Text(title);
+    if (selectModel.preSelected != null) {
+      selectedList.addAll(selectModel.preSelected!);
+    }
     var box = await UtilsHive.getInstance()!.getBox('select_utils');
     int newValue = (await box.get('quantityItensPage')) ?? quantityItensPage;
     if (newValue != quantityItensPage &&
@@ -463,5 +466,23 @@ abstract class _SelectAnyBase with Store {
         }
       });
     }
+  }
+
+  void updateSelectItem(ItemSelect item, bool newValue) {
+    if (newValue) {
+      selectedList.add(item);
+    } else {
+      selectedList.removeWhere((element) => element.id == item.id);
+    }
+    list.forEach((element) {
+      if (element.id == item.id) {
+        element.isSelected = newValue;
+      }
+    });
+    listaExibida.forEach((element) {
+      if (element.id == item.id) {
+        element.isSelected = newValue;
+      }
+    });
   }
 }

@@ -161,35 +161,23 @@ class TableDataWidget extends StatelessWidget {
             for (var element in subList) {
               rows.add(UtilsWidget.generateDataRow(
                   controller.selectModel!, i, element, context, controller.data,
-                  (ItemSelect itemSelect, bool? b, int index) {
+                  (ItemSelect itemSelect, bool b, int index) {
                 if (controller.selectModel!.typeSelect == TypeSelect.SIMPLE) {
                   if (Navigator.maybeOf(context)?.canPop() == true) {
                     Navigator.maybeOf(context)?.pop(itemSelect.object);
                   }
-                }
-                if (controller.selectModel!.typeSelect == TypeSelect.ACTION) {
+                } else if (controller.selectModel!.typeSelect ==
+                    TypeSelect.ACTION) {
                   /// Gambi para evitar problemas ao usuário clicar em selecionar todos
                   if ((controller.lastClick + 500) <
                       (DateTime.now().millisecondsSinceEpoch)) {
                     controller.lastClick =
                         DateTime.now().millisecondsSinceEpoch;
-                    UtilsWidget.tratarOnTap(
-                        context,
-                        itemSelect,
-                        index,
-                        controller.selectModel!,
-                        controller.data,
-                        controller.reloadData,
-                        controller.actualDataSource);
+                    UtilsWidget.cbOnTap(context, itemSelect, index, controller);
                   }
-                } else {
-                  if (b!) {
-                    controller.selectedList.add(itemSelect);
-                  } else {
-                    controller.selectedList
-                        .removeWhere((element) => element.id == itemSelect.id);
-                  }
-                  itemSelect.isSelected = b;
+                } else if (controller.selectModel!.typeSelect ==
+                    TypeSelect.MULTIPLE) {
+                  controller.updateSelectItem(itemSelect, b);
                 }
               }, controller.reloadData, 2, controller.actualDataSource,
                   generateActions: false));

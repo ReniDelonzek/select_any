@@ -615,6 +615,7 @@ abstract class _DataSourceBase with Store {
     if (!(text is String)) {
       text = text?.toString() ?? '';
     }
+    text = removeDiacritics(text);
     if (typeSearch == TypeSearch.CONTAINS) {
       return removeDiacritics(value.toString()).toLowerCase().contains(text) ==
           true;

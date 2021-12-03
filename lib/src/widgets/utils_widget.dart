@@ -3,8 +3,6 @@ import 'package:data_table_plus/data_table_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:msk_utils/msk_utils.dart';
 import 'package:select_any/select_any.dart';
-import 'package:select_any/src/models/models.dart';
-import 'package:select_any/src/widgets/my_snack_bar.dart';
 
 class UtilsWidget {
   static DataRow generateDataRow(

@@ -8,6 +8,7 @@ import 'package:msk_utils/utils/utils_sentry.dart';
 
 import 'package:select_any/src/models/models.dart';
 import 'package:select_any/src/widgets/select_range_date/select_range_date_widget.dart';
+import 'package:select_any/src/widgets/utils_widget.dart';
 
 part 'select_any_controller.g.dart';
 
@@ -482,6 +483,17 @@ abstract class _SelectAnyBase with Store {
     listaExibida.forEach((element) {
       if (element.id == item.id) {
         element.isSelected = newValue;
+      }
+    });
+  }
+
+  void setOnTapButtons(BuildContext context) {
+    selectModel?.buttons?.forEach((element) {
+      if (element.onTap == null) {
+        element.onTap = () {
+          UtilsWidget.onAction(context, null, null, element as ActionSelect,
+              data, reloadData, actualDataSource);
+        };
       }
     });
   }

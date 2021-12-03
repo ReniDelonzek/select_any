@@ -152,23 +152,23 @@ class SelectModelTheme {
 
   final Color? backgroundColor;
 
-  final ButtonsPosition buttonsPosition;
-
   final TextStyle? defaultTextStyle;
 
   final Color? defaultIconActionColor;
 
   final EdgeInsets? paddingAppBarActions;
 
+  final ButtonPosition Function(int typeScreen) defaultButtonPosition;
+
   const SelectModelTheme(
       {this.tableTheme = const SelectModelThemeTable(),
       this.centerTitle = true,
       this.appBarBackgroundColor,
       this.backgroundColor,
-      this.buttonsPosition = ButtonsPosition.IN_TABLE_AND_BOTTOM,
       this.defaultTextStyle,
       this.defaultIconActionColor,
-      this.paddingAppBarActions});
+      this.paddingAppBarActions,
+      this.defaultButtonPosition = getDefaultButtonPosition});
 }
 
 class SelectModelThemeTable {
@@ -197,7 +197,7 @@ class SelectModelThemeTable {
       this.bottomIconsColor});
 }
 
-enum ButtonsPosition { APPBAR, BOTTOM, IN_TABLE_AND_BOTTOM }
+enum ButtonPosition { APPBAR, BOTTOM, IN_TABLE }
 
 class Line {
   String key;
@@ -681,19 +681,32 @@ class ItemSelectTable extends ItemSelect {
 
 abstract class ActionSelectBase {
   Function()? onTap;
-  Widget build(ButtonsPosition position);
+  ButtonPosition Function(int typeScreen)? buttonPosition;
+
+  ActionSelectBase({this.buttonPosition});
+
+  Widget build(ButtonPosition position);
 }
 
-typedef BuildWidget = Widget Function(ButtonsPosition position);
+typedef BuildWidget = Widget Function(ButtonPosition position);
 
 class ActionWidget extends ActionSelectBase {
   BuildWidget buildWidget;
-  ActionWidget(this.buildWidget);
+  ActionWidget(this.buildWidget,
+      {ButtonPosition Function(int typeScreen)? buttonPosition})
+      : super(buttonPosition: buttonPosition);
 
   @override
-  Widget build(ButtonsPosition position) {
+  Widget build(ButtonPosition position) {
     return buildWidget(position);
   }
+}
+
+ButtonPosition getDefaultButtonPosition(int typeScreen) {
+  if (typeScreen == 1) {
+    return ButtonPosition.BOTTOM;
+  }
+  return ButtonPosition.IN_TABLE;
 }
 
 class ActionSelect extends ActionSelectBase {
@@ -723,7 +736,9 @@ class ActionSelect extends ActionSelectBase {
       this.closePage = false,
       this.functionUpd,
       this.enabled,
-      this.floatingActionButtonMini}) {
+      this.floatingActionButtonMini,
+      ButtonPosition Function(int typeScreen)? buttonPosition})
+      : super(buttonPosition: buttonPosition) {
     if (enabled == null) {
       enabled = function != null ||
           functionUpd != null ||
@@ -733,8 +748,8 @@ class ActionSelect extends ActionSelectBase {
   }
 
   @override
-  Widget build(ButtonsPosition position) {
-    if (position == ButtonsPosition.BOTTOM) {
+  Widget build(ButtonPosition position) {
+    if (position == ButtonPosition.BOTTOM) {
       return FloatingActionButton(
         heroTag: description,
         mini: floatingActionButtonMini ?? false,

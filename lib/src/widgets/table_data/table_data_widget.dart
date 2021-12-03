@@ -42,12 +42,16 @@ class TableDataWidget extends StatelessWidget {
 
   Widget _buildContent(BuildContext context) {
     List<Widget> buttons = [];
-    if (controller.selectModel!.buttons != null &&
-        controller.selectModel!.theme.buttonsPosition ==
-            ButtonsPosition.IN_TABLE_AND_BOTTOM) {
-      buttons.addAll(controller.selectModel!.buttons!
-          .map((e) => e.build(ButtonsPosition.IN_TABLE_AND_BOTTOM))
-          .toList());
+    if (controller.selectModel!.buttons != null) {
+      controller.setOnTapButtons(context);
+      for (ActionSelectBase action in controller.selectModel!.buttons!) {
+        if ((action.buttonPosition ??
+                    controller.selectModel!.theme.defaultButtonPosition)
+                .call((controller.typeDiplay)) ==
+            ButtonPosition.IN_TABLE) {
+          buttons.add(action.build(ButtonPosition.IN_TABLE));
+        }
+      }
     }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

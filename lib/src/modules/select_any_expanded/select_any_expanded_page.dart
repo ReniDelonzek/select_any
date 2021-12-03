@@ -257,7 +257,7 @@ class _SelectAnyExpandedPageState extends State<SelectAnyExpandedPage> {
     // }
     if (!(widget._selectModel.buttons?.isEmpty ?? true)) {
       for (ActionSelectBase acao in widget._selectModel.buttons!) {
-        widgets.add(acao.build(ButtonsPosition.BOTTOM));
+        widgets.add(acao.build(ButtonPosition.BOTTOM));
       }
     }
     widgets = widgets.reversed.toList();

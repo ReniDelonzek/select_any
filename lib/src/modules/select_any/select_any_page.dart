@@ -240,15 +240,13 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
                   floatingActionButton: Padding(
                     padding: const EdgeInsets.only(bottom: 16.0),
                     child: Observer(
-                      builder: (_) => (widget.controller!.typeDiplay == 2)
-                          ? SizedBox()
-                          : Wrap(
-                              crossAxisAlignment: WrapCrossAlignment.center,
-                              spacing: 8,
-                              direction: Axis.horizontal,
-                              runAlignment: WrapAlignment.end,
-                              children: _getFloatingActionButtons(),
-                            ),
+                      builder: (_) => Wrap(
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        spacing: 8,
+                        direction: Axis.horizontal,
+                        runAlignment: WrapAlignment.end,
+                        children: _getFloatingActionButtons(),
+                      ),
                     ),
                   ),
                   backgroundColor:
@@ -266,13 +264,17 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
 
   List<Widget> _buildIconButtons() {
     List<Widget> buttons = [];
-    if (widget.controller!.selectModel!.buttons != null &&
-        widget.controller!.selectModel!.theme.buttonsPosition ==
-            ButtonsPosition.APPBAR) {
-      setOnTap();
-      buttons.addAll(widget.controller!.selectModel!.buttons!
-          .map((e) => e.build(ButtonsPosition.APPBAR))
-          .toList());
+    if (widget.controller!.selectModel!.buttons != null) {
+      widget.controller!.setOnTapButtons(context);
+      for (ActionSelectBase action
+          in widget.controller!.selectModel!.buttons!) {
+        if ((action.buttonPosition ??
+                    widget._selectModel!.theme.defaultButtonPosition)
+                .call((widget.controller!.typeDiplay)) ==
+            ButtonPosition.APPBAR) {
+          buttons.add(action.build(ButtonPosition.APPBAR));
+        }
+      }
     }
     widget.controller!.selectModel!.buttons?.forEach((element) {
       if (element.onTap == null) {
@@ -593,26 +595,15 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
 
   List<Widget> _getFloatingActionButtons() {
     List<Widget> widgets = [];
-    // if (!(widget._selectModel.filtros?.isEmpty ?? true)) {
-    //   widgets.add(FloatingActionButton(
-    //       heroTag: widgets.length,
-    //       onPressed: () async {
-    //         Map<String, List<String>> s = await Navigator.of(context).push(
-    //             new MaterialPageRoute(
-    //                 builder: (BuildContext context) =>
-    //                     new FiltroPage(widget._selectModel.filtros)));
-    //         if (widget.data == null) {
-    //           widget.data = Map();
-    //         }
-    //         widget.data['filtros'] = s;
-    //       },
-    //       mini: (!(widget._selectModel.acoes?.isEmpty ?? true)),
-    //       child: Icon(Icons.filter_list)));
-    // }
     if (!(widget._selectModel!.buttons?.isEmpty ?? true)) {
-      setOnTap();
-      for (ActionSelectBase acao in widget._selectModel!.buttons!) {
-        widgets.add(acao.build(ButtonsPosition.BOTTOM));
+      widget.controller!.setOnTapButtons(context);
+      for (ActionSelectBase action in widget._selectModel!.buttons!) {
+        if ((action.buttonPosition ??
+                    widget._selectModel!.theme.defaultButtonPosition)
+                .call((widget.controller!.typeDiplay)) ==
+            ButtonPosition.BOTTOM) {
+          widgets.add(action.build(ButtonPosition.BOTTOM));
+        }
       }
     }
     widgets = widgets.reversed.toList();
@@ -684,22 +675,5 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
                         .toList()),
               ),
             ));
-  }
-
-  void setOnTap() {
-    widget._selectModel?.buttons?.forEach((element) {
-      if (element.onTap == null) {
-        element.onTap = () {
-          UtilsWidget.onAction(
-              context,
-              null,
-              null,
-              element as ActionSelect,
-              widget.controller!.data,
-              widget.controller!.reloadData,
-              widget.controller!.actualDataSource);
-        };
-      }
-    });
   }
 }

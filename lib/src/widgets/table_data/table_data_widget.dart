@@ -502,43 +502,52 @@ class TableDataWidget extends StatelessWidget {
                                 SizedBox(
                                   width: 90,
                                   height: 36,
-                                  child: DropdownButtonFormField<int>(
-                                      decoration: const InputDecoration(
-                                          border: OutlineInputBorder(),
-                                          contentPadding: const EdgeInsets.only(
-                                              left: 16, right: 16)),
-                                      value: controller.quantityItensPage,
-                                      onChanged: (item) {
-                                        controller.quantityItensPage = item;
+                                  child: Observer(builder: (_) {
+                                    return DropdownButtonFormField<int>(
+                                        decoration: const InputDecoration(
+                                            border: OutlineInputBorder(),
+                                            contentPadding:
+                                                const EdgeInsets.only(
+                                                    left: 16, right: 16)),
+                                        value: controller.quantityItensPage,
+                                        onChanged: (item) {
+                                          /// Não remover o ??, remover fará com que não funcione corretamente na web/release
+                                          controller.quantityItensPage =
+                                              item ?? 10;
 
-                                        /// Caso o total de paginas seja menor do que a pagina atuali
-                                        if (((controller.total) /
-                                                    controller
-                                                        .quantityItensPage!)
-                                                .ceil() <
-                                            controller.page) {
-                                          /// Seta a ultima pagina como pagina atual
-                                          controller.page = ((controller
-                                                      .total) /
-                                                  controller.quantityItensPage!)
-                                              .ceil();
-                                        }
-                                        controller.setCorretDataSource();
+                                          /// Caso o total de paginas seja menor do que a pagina atuali
+                                          if (((controller.total) /
+                                                      controller
+                                                          .quantityItensPage!)
+                                                  .ceil() <
+                                              controller.page) {
+                                            /// Seta a ultima pagina como pagina atual
+                                            controller.page =
+                                                ((controller.total) /
+                                                        controller
+                                                            .quantityItensPage!)
+                                                    .ceil();
+                                          }
+                                          controller.setCorretDataSource();
 
-                                        /// Salva isso no banco
-                                        UtilsHive.getInstance()!
-                                            .getBox('select_utils')
-                                            .then((value) {
-                                          value.put('quantityItensPage', item);
-                                        });
-                                      },
-                                      items: controller.getNumberItemsPerPage
-                                          .map((e) => DropdownMenuItem(
-                                              value: e,
-                                              child: Text('$e',
-                                                  style: controller.selectModel!
-                                                      .theme.defaultTextStyle)))
-                                          .toList()),
+                                          /// Salva isso no banco
+                                          UtilsHive.getInstance()!
+                                              .getBox('select_utils')
+                                              .then((value) {
+                                            value.put(
+                                                'quantityItensPage', item);
+                                          });
+                                        },
+                                        items: controller.getNumberItemsPerPage
+                                            .map((e) => DropdownMenuItem(
+                                                value: e,
+                                                child: Text('$e',
+                                                    style: controller
+                                                        .selectModel!
+                                                        .theme
+                                                        .defaultTextStyle)))
+                                            .toList());
+                                  }),
                                 ),
                                 SizedBox(width: 16)
                               ],
@@ -557,36 +566,37 @@ class TableDataWidget extends StatelessWidget {
                                         ((controller.total.toString().length) *
                                                 12)
                                             .toDouble(),
-                                    child: DropdownButtonFormField<int>(
-                                        decoration: const InputDecoration(
-                                            border: InputBorder.none,
-                                            contentPadding:
-                                                const EdgeInsets.all(0)),
-                                        icon: SizedBox(),
-                                        style: controller.selectModel!.theme
-                                                .defaultTextStyle ??
-                                            TextStyle(
-                                                fontSize: 14,
-                                                color: Theme.of(context)
-                                                    .textTheme
-                                                    .bodyText1!
-                                                    .color),
-                                        value: controller.page,
-                                        onChanged: (item) {
-                                          controller.page = item ?? 1;
-                                          controller.setCorretDataSource();
-                                        },
-                                        items: List<
-                                                DropdownMenuItem<int>>.generate(
-                                            total,
-                                            (index) => DropdownMenuItem(
-                                                value: index + 1,
-                                                child: Text(
-                                                    '${(controller.quantityItensPage! * index) + 1}-${controller.quantityItensPage! * (index + 1)}',
-                                                    style: controller
-                                                        .selectModel!
-                                                        .theme
-                                                        .defaultTextStyle)))),
+                                    child: Observer(builder: (_) {
+                                      return DropdownButtonFormField<int>(
+                                          decoration: const InputDecoration(
+                                              border: InputBorder.none,
+                                              contentPadding:
+                                                  const EdgeInsets.all(0)),
+                                          icon: SizedBox(),
+                                          style: controller.selectModel!.theme
+                                                  .defaultTextStyle ??
+                                              TextStyle(
+                                                  fontSize: 14,
+                                                  color: Theme.of(context)
+                                                      .textTheme
+                                                      .bodyText1!
+                                                      .color),
+                                          value: controller.page,
+                                          onChanged: (item) {
+                                            controller.page = item ?? 1;
+                                            controller.setCorretDataSource();
+                                          },
+                                          items: List<DropdownMenuItem<int>>.generate(
+                                              total,
+                                              (index) => DropdownMenuItem(
+                                                  value: index + 1,
+                                                  child: Text(
+                                                      '${(controller.quantityItensPage! * index) + 1}-${controller.quantityItensPage! * (index + 1)}',
+                                                      style: controller
+                                                          .selectModel!
+                                                          .theme
+                                                          .defaultTextStyle))));
+                                    }),
                                   )
                                 : SizedBox(),
                             Text('de ${(controller.total)}',

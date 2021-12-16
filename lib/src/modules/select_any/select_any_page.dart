@@ -450,7 +450,8 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
     } else {
       widget.controller!.searchIcon = new Icon(Icons.search);
       widget.controller!.appBarTitle = new Text(widget._selectModel!.title);
-      if (widget.controller!.filter.text.isNotEmpty) {
+      if (widget.controller!.filter.text.isNotEmpty ||
+          widget.controller!.searchText.isNotEmpty) {
         widget.controller!.searchText = '';
         widget.controller!.filter.clear();
         widget.controller!.filtroPesquisaModificado(reload: true);

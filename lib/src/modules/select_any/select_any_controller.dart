@@ -142,6 +142,7 @@ abstract class _SelectAnyBase with Store {
   void dispose() {
     list.clear();
     filter.clear();
+    searchText = '';
     actualDataSource?.listData.clear();
     actualDataSource?.clear();
     loaded = false;
@@ -219,7 +220,7 @@ abstract class _SelectAnyBase with Store {
   setDataSourceSearch({int? offset, bool refresh = false}) async {
     showSearch = true;
     try {
-      inicializarFonteDados();
+      initializeFontData();
       loading = true;
       String text = removeDiacritics(filter.text.trim()).toLowerCase();
       (await actualDataSource!.getListSearch(text, quantityItensPage,
@@ -282,7 +283,7 @@ abstract class _SelectAnyBase with Store {
   }
 
   /// Caso confirmarParaCarregarDados seja true, inicializada a var fonteDadoAtual com a fonte padrão
-  inicializarFonteDados() {
+  void initializeFontData() {
     if (confirmToLoadData) {
       confirmToLoadData = false;
       if (actualDataSource == null) {

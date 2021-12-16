@@ -36,13 +36,13 @@ mixin _$DataSource on _DataSourceBase, Store {
   final _$listDataAtom = Atom(name: '_DataSourceBase.listData');
 
   @override
-  ObservableList<ItemSelect<dynamic>> get listData {
+  ObservableList<ItemSelectTable> get listData {
     _$listDataAtom.reportRead();
     return super.listData;
   }
 
   @override
-  set listData(ObservableList<ItemSelect<dynamic>> value) {
+  set listData(ObservableList<ItemSelectTable> value) {
     _$listDataAtom.reportWrite(value, super.listData, () {
       super.listData = value;
     });

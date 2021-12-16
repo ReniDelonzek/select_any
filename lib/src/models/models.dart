@@ -532,7 +532,7 @@ abstract class _DataSourceBase with Store {
   bool supportSingleLineFilter;
 
   @observable
-  ObservableList<ItemSelect> listData = ObservableList();
+  ObservableList<ItemSelectTable> listData = ObservableList();
 
   _DataSourceBase(
       {this.id,
@@ -607,7 +607,8 @@ abstract class _DataSourceBase with Store {
     return lista;
   }
 
-  Future exportData(SelectModel? selectModel);
+  Future exportData(SelectModel selectModel, bool onlyFiltered,
+      GroupFilterExp filter, String text, TypeSearch typeSearch);
 
   Future clear();
 

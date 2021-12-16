@@ -38,26 +38,29 @@ abstract class DataSourceAny extends DataSource {
       listAll = applySortFilters(itemSort, selectModel!.id, listAll);
     }
 
-    filter = convertFiltersToLowerCase(filter);
+    List<Map<String, dynamic>> tempList = applyFiltes(listAll!, filter);
+    List<Map<String, dynamic>> subList = getSubList(offset, limit, tempList);
+    return Stream.value(ResponseData(
+        total: tempList.length,
+        data: generateList(subList, offset, selectModel),
+        start: offset,
+        end: offset + limit!));
+  }
 
-    List<Map<String, dynamic>>? tempList = [];
+  List<Map<String, dynamic>> applyFiltes(
+      List<Map<String, dynamic>> listAll, GroupFilterExp? filter) {
+    List<Map<String, dynamic>> tempList = [];
+    filter = convertFiltersToLowerCase(filter);
     if (filter != null && filter.filterExps.isNotEmpty) {
-      for (int i = 0; i < listAll!.length; i++) {
-        if (applyGroupFilterExp(filter, listAll![i])) {
-          tempList.add(listAll![i]);
+      for (int i = 0; i < listAll.length; i++) {
+        if (applyGroupFilterExp(filter, listAll[i])) {
+          tempList.add(listAll[i]);
         }
       }
     } else {
       tempList = listAll;
     }
-
-    List<Map<String, dynamic>> subList = getSubList(offset, limit, tempList);
-
-    return Stream.value(ResponseData(
-        total: tempList?.length ?? 0,
-        data: generateList(subList, offset, selectModel),
-        start: offset,
-        end: offset + limit!));
+    return tempList;
   }
 
   List<Map<String, dynamic>> getSubList(
@@ -133,17 +136,25 @@ abstract class DataSourceAny extends DataSource {
     return tempList;
   }
 
-  Future exportData(SelectModel? selectModel) async {
+  Future exportData(SelectModel? selectModel, bool onlyFiltered,
+      GroupFilterExp filter, String textSearch, TypeSearch typeSearch) async {
     StringBuffer stringBuffer = StringBuffer();
-    if (listAll!.isNotEmpty) {
-      for (var key in listAll!.first.keys) {
+    List<Map<String, dynamic>> data = listAll!;
+    if (onlyFiltered) {
+      if (!textSearch.isNullOrBlank) {
+        data = applyFilterList(typeSearch, listAll!, textSearch);
+      }
+      data = applyFiltes(data, filter);
+    }
+    if (data.isNotEmpty) {
+      for (var key in data.first.keys) {
         stringBuffer
           ..write(key)
           ..write(';');
       }
       stringBuffer.write('\n');
     }
-    for (var item in listAll!) {
+    for (var item in data) {
       for (MapEntry entry in item.entries) {
         Line? line = selectModel?.lines
             .firstWhereOrNull((element) => element.key == entry.key);

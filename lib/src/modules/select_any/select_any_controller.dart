@@ -314,8 +314,29 @@ abstract class _SelectAnyBase with Store {
 
   int get getOffSet => typeDiplay == 1 ? -1 : (page - 1) * quantityItensPage!;
 
-  export() {
-    actualDataSource!.exportData(selectModel);
+  void export(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (alertContext) => AlertDialog(
+                content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ListTile(
+                    title: Text('Lista inteira'),
+                    onTap: () {
+                      Navigator.pop(alertContext);
+                      actualDataSource!.exportData(selectModel!, false,
+                          buildFilterExpression(), searchText, typeSearch);
+                    }),
+                ListTile(
+                    title: Text('Lista filtrada'),
+                    onTap: () {
+                      Navigator.pop(alertContext);
+                      actualDataSource!.exportData(selectModel!, true,
+                          buildFilterExpression(), searchText, typeSearch);
+                    })
+              ],
+            )));
   }
 
   /// Executa a pesquisa caso o texto seja diferente ou reload seja true

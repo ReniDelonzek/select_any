@@ -80,6 +80,11 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
   @override
   void dispose() {
     widget.controller!.dispose();
+
+    /// Caso a pesquisa esteja ativa, desativa ela
+    if (widget.controller!.searchIcon.icon == Icons.close) {
+      _searchPressed();
+    }
     super.dispose();
   }
 
@@ -427,13 +432,14 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
   void _searchPressed() {
     if (widget.controller!.searchIcon.icon == Icons.search &&
         widget.controller!.typeDiplay == 1) {
-      widget.controller!.searchIcon = new Icon(Icons.close);
+      widget.controller!.searchIcon = Icon(Icons.close);
       widget.controller!.appBarTitle = Container(
         alignment: Alignment.topRight,
         constraints: BoxConstraints(maxWidth: 300),
         child: TextField(
           focusNode: widget.controller!.focusNodeSearch,
           controller: widget.controller!.filter,
+          autofocus: true,
           decoration: new InputDecoration(
               prefixIcon: new Icon(Icons.search), hintText: 'Pesquise...'),
           onChanged: (text) {

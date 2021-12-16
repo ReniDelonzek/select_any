@@ -46,7 +46,7 @@ abstract class _SelectAnyBase with Store {
   }
 
   @observable
-  Icon searchIcon = new Icon(Icons.search);
+  Icon searchIcon = Icon(Icons.search);
   @observable
   Widget? appBarTitle;
   DataSource? actualDataSource;

@@ -418,7 +418,8 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
               if (widget._selectModel!.listBottomBuilder != null)
                 widget._selectModel!.listBottomBuilder!(CustomBottomBuilderArgs(
                     context,
-                    widget.controller!.actualFilters,
+                    widget.controller!.actualFilters ??
+                        widget.controller!.buildFilterExpression(),
                     widget.controller!.loaded,
                     widget.controller!.actualDataSource,
                     widget.controller!.list))

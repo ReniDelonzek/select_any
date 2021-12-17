@@ -471,7 +471,8 @@ class TableDataWidget extends StatelessWidget {
                   child: controller.selectModel!.tableBottomBuilder!(
                       CustomBottomBuilderArgs(
                           context,
-                          controller.actualFilters,
+                          controller.actualFilters ??
+                              controller.buildFilterExpression(),
                           controller.loaded,
                           controller.actualDataSource,
                           controller.list)),

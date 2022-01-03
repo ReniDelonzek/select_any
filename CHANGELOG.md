@@ -30,3 +30,8 @@
 ## 0.0.4
 
 * Support null safety
+
+## 0.0.5
+
+* Update packages
+

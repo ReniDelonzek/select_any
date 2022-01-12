@@ -601,6 +601,8 @@ abstract class _DataSourceBase with Store {
         itemSelect.isSelected = preSelecionado;
         itemSelect.object = a;
         itemSelect.position = offset++;
+        assert(!lista.any((element) => element.id == itemSelect.id),
+            'List element marked go must be distinct (no duplicates)');
         lista.add(itemSelect);
       }
     }

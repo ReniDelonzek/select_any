@@ -191,7 +191,12 @@ abstract class _SelectAnyBase with Store {
             }
             int index = list.indexWhere((element) => element.id == item.id);
             if (index > -1) {
-              list[index] = item;
+              if (item.position != null && index != item.position!) {
+                list.removeAt(index);
+                list.insert(item.position!, item);
+              } else {
+                list[index] = item;
+              }
             } else {
               list.add(item);
             }

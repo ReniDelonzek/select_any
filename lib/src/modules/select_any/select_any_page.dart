@@ -61,20 +61,6 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
   @override
   void initState() {
     super.initState();
-    widget._selectModel?.buttons?.forEach((element) {
-      if (element.onTap == null) {
-        element.onTap = () {
-          UtilsWidget.onAction(
-              context,
-              null,
-              null,
-              element as ActionSelect,
-              widget.controller!.data,
-              widget.controller!.reloadData,
-              widget.controller!.actualDataSource);
-        };
-      }
-    });
   }
 
   @override
@@ -270,31 +256,25 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
   List<Widget> _buildIconButtons() {
     List<Widget> buttons = [];
     if (widget.controller!.selectModel!.buttons != null) {
-      widget.controller!.setOnTapButtons(context);
       for (ActionSelectBase action
           in widget.controller!.selectModel!.buttons!) {
         if ((action.buttonPosition ??
                     widget._selectModel!.theme.defaultButtonPosition)
                 .call((widget.controller!.typeDiplay)) ==
             ButtonPosition.APPBAR) {
-          buttons.add(action.build(ButtonPosition.APPBAR));
+          buttons.add(action.build(ButtonPosition.APPBAR, () {
+            UtilsWidget.onAction(
+                context,
+                null,
+                null,
+                action as ActionSelect,
+                widget.controller!.data,
+                widget.controller!.reloadData,
+                widget.controller!.actualDataSource);
+          }));
         }
       }
     }
-    widget.controller!.selectModel!.buttons?.forEach((element) {
-      if (element.onTap == null) {
-        element.onTap = () {
-          UtilsWidget.onAction(
-              context,
-              null,
-              null,
-              element as ActionSelect,
-              widget.controller!.data,
-              widget.controller!.reloadData,
-              widget.controller!.actualDataSource);
-        };
-      }
-    });
     return buttons;
   }
 
@@ -604,13 +584,21 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
   List<Widget> _getFloatingActionButtons() {
     List<Widget> widgets = [];
     if (!(widget._selectModel!.buttons?.isEmpty ?? true)) {
-      widget.controller!.setOnTapButtons(context);
       for (ActionSelectBase action in widget._selectModel!.buttons!) {
         if ((action.buttonPosition ??
                     widget._selectModel!.theme.defaultButtonPosition)
                 .call((widget.controller!.typeDiplay)) ==
             ButtonPosition.BOTTOM) {
-          widgets.add(action.build(ButtonPosition.BOTTOM));
+          widgets.add(action.build(ButtonPosition.BOTTOM, () {
+            UtilsWidget.onAction(
+                context,
+                null,
+                null,
+                action as ActionSelect,
+                widget.controller!.data,
+                widget.controller!.reloadData,
+                widget.controller!.actualDataSource);
+          }));
         }
       }
     }

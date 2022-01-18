@@ -558,7 +558,9 @@ abstract class _DataSourceBase with Store {
   List<ItemSelectTable> generateList(
       List data, int offset, SelectModel? selectModel) {
     ObservableList<ItemSelectTable> lista = ObservableList();
-    offset = offset.abs();
+    if (offset < 0) {
+      offset = 0;
+    }
     for (Map a in data as Iterable<Map<dynamic, dynamic>>) {
       // ignore: deprecated_member_use_from_same_package
       bool preSelecionado = selectModel!.selectedItens != null &&
@@ -683,15 +685,15 @@ class ItemSelectTable extends ItemSelect {
 }
 
 abstract class ActionSelectBase {
-  Function()? onTap;
-  ButtonPosition Function(int typeScreen)? buttonPosition;
+  final ButtonPosition Function(int typeScreen)? buttonPosition;
 
   ActionSelectBase({this.buttonPosition});
 
-  Widget build(ButtonPosition position);
+  Widget build(ButtonPosition position, void Function()? onTap);
 }
 
-typedef BuildWidget = Widget Function(ButtonPosition position);
+typedef BuildWidget = Widget Function(
+    ButtonPosition position, void Function()? onTap);
 
 class ActionWidget extends ActionSelectBase {
   BuildWidget buildWidget;
@@ -700,8 +702,8 @@ class ActionWidget extends ActionSelectBase {
       : super(buttonPosition: buttonPosition);
 
   @override
-  Widget build(ButtonPosition position) {
-    return buildWidget(position);
+  Widget build(ButtonPosition position, void Function()? onTap) {
+    return buildWidget(position, onTap);
   }
 }
 
@@ -751,7 +753,7 @@ class ActionSelect extends ActionSelectBase {
   }
 
   @override
-  Widget build(ButtonPosition position) {
+  Widget build(ButtonPosition position, void Function()? onTap) {
     if (position == ButtonPosition.BOTTOM) {
       return FloatingActionButton(
         heroTag: description,

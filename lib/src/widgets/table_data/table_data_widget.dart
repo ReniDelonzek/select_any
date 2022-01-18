@@ -43,13 +43,21 @@ class TableDataWidget extends StatelessWidget {
   Widget _buildContent(BuildContext context) {
     List<Widget> buttons = [];
     if (controller.selectModel!.buttons != null) {
-      controller.setOnTapButtons(context);
       for (ActionSelectBase action in controller.selectModel!.buttons!) {
         if ((action.buttonPosition ??
                     controller.selectModel!.theme.defaultButtonPosition)
                 .call((controller.typeDiplay)) ==
             ButtonPosition.IN_TABLE) {
-          buttons.add(action.build(ButtonPosition.IN_TABLE));
+          buttons.add(action.build(ButtonPosition.IN_TABLE, () {
+            UtilsWidget.onAction(
+                context,
+                null,
+                null,
+                action as ActionSelect,
+                controller.data,
+                controller.reloadData,
+                controller.actualDataSource);
+          }));
         }
       }
     }

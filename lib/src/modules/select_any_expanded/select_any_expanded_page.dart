@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:mobx/mobx.dart';
@@ -5,6 +7,8 @@ import 'package:msk_utils/extensions/list.dart';
 import 'package:msk_utils/models/item_select.dart';
 import 'package:select_any/src/models/models.dart';
 import 'package:select_any/src/modules/select_any_expanded/select_any_expanded_controller.dart';
+
+import '../../../select_any.dart';
 
 // ignore: must_be_immutable
 class SelectAnyExpandedPage extends StatefulWidget {
@@ -239,25 +243,12 @@ class _SelectAnyExpandedPageState extends State<SelectAnyExpandedPage> {
 
   List<Widget> _getFloatingActionButtons() {
     List<Widget> widgets = [];
-    // if (!(widget._selectModel.filtros?.isEmpty ?? true)) {
-    //   widgets.add(FloatingActionButton(
-    //       heroTag: widgets.length,
-    //       onPressed: () async {
-    //         Map<String, List<String>> s = await Navigator.of(context).push(
-    //             new MaterialPageRoute(
-    //                 builder: (BuildContext context) =>
-    //                     new FiltroPage(widget._selectModel.filtros)));
-    //         if (widget.data == null) {
-    //           widget.data = Map();
-    //         }
-    //         widget.data['filtros'] = s;
-    //       },
-    //       mini: (!(widget._selectModel.acoes?.isEmpty ?? true)),
-    //       child: Icon(Icons.filter_list)));
-    // }
     if (!(widget._selectModel.buttons?.isEmpty ?? true)) {
       for (ActionSelectBase acao in widget._selectModel.buttons!) {
-        widgets.add(acao.build(ButtonPosition.BOTTOM));
+        widgets.add(acao.build(ButtonPosition.BOTTOM, () {
+          UtilsWidget.onAction(context, null, null, acao as ActionSelect,
+              widget.data, () {}, controller.fonteDadoAtual);
+        }));
       }
     }
     widgets = widgets.reversed.toList();

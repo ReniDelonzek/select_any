@@ -230,14 +230,12 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
                       FloatingActionButtonLocation.endDocked,
                   floatingActionButton: Padding(
                     padding: const EdgeInsets.only(bottom: 16.0),
-                    child: Observer(
-                      builder: (_) => Wrap(
-                        crossAxisAlignment: WrapCrossAlignment.center,
-                        spacing: 8,
-                        direction: Axis.horizontal,
-                        runAlignment: WrapAlignment.end,
-                        children: _getFloatingActionButtons(),
-                      ),
+                    child: Wrap(
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      spacing: 8,
+                      direction: Axis.horizontal,
+                      runAlignment: WrapAlignment.end,
+                      children: _getFloatingActionButtons(),
                     ),
                   ),
                   backgroundColor:

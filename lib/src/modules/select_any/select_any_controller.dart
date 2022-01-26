@@ -147,9 +147,10 @@ abstract class _SelectAnyBase with Store {
     actualDataSource?.clear();
     loaded = false;
     clearFilters(callDataSource: false);
+    filterControllers.clear();
   }
 
-  setDataSource({int? offset, bool refresh = false}) async {
+  void setDataSource({int? offset, bool refresh = false}) async {
     try {
       GroupFilterExp groupFilterExp = buildFilterExpression();
       showSearch = groupFilterExp.filterExps.isEmpty;

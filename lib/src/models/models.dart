@@ -597,14 +597,14 @@ abstract class _DataSourceBase with Store {
 
         /// Caso a fonte indique um id, pega dela, se não, pega do modelo
         if (a[this.id ?? selectModel.id] == null && !UtilsPlatform.isRelease) {
-          throw ('Id null');
+          throw ('Id null ${selectModel.title}');
         }
         itemSelect.id = a[this.id ?? selectModel.id];
         itemSelect.isSelected = preSelecionado;
         itemSelect.object = a;
         itemSelect.position = offset++;
-        assert(!lista.any((element) => element.id == itemSelect.id),
-            'List element marked go must be distinct (no duplicates)');
+        //assert(!lista.any((element) => element.id == itemSelect.id),
+        //  'List element marked go must be distinct (no duplicates)');
         lista.add(itemSelect);
       }
     }

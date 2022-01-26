@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:diacritic/diacritic.dart';
 import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
@@ -6,6 +8,7 @@ import 'package:msk_utils/utils/utils_hive.dart';
 import 'package:msk_utils/utils/utils_platform.dart';
 import 'package:msk_utils/utils/utils_sentry.dart';
 import 'package:msk_utils/extensions/list.dart';
+import 'package:select_any/src/extensions/list_extensions.dart';
 
 import 'package:select_any/src/models/models.dart';
 import 'package:select_any/src/widgets/select_range_date/select_range_date_widget.dart';
@@ -180,6 +183,11 @@ abstract class _SelectAnyBase with Store {
               list.clear();
             }
           }
+
+          /// Não aplica no debug/profile para captura de erros
+          if (UtilsPlatform.isRelease) {
+            event.data = event.data.distinctBy((e) => e.id);
+          }
           event.data.forEach((item) {
             bool present = selectedList.any((element) => element.id == item.id);
             if (item.isSelected == true) {
@@ -251,6 +259,10 @@ abstract class _SelectAnyBase with Store {
                 });
           });
 
+          /// Não aplica no debug/profile para captura de erros
+          if (UtilsPlatform.isRelease) {
+            event.data = event.data.distinctBy((e) => e.id);
+          }
           event.data.forEach((item) {
             bool present = selectedList.any((element) => element.id == item.id);
             if (item.isSelected == true) {

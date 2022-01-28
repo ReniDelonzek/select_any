@@ -61,6 +61,9 @@ class SelectFKWidget extends StatelessWidget {
   final Future<Map<String, dynamic>?> Function(ObservableList<ItemSelect>)?
       setDefaultSelection;
 
+  /// When in list mode, display on cards regardless of the number of lines
+  final bool? showInCards;
+
   SelectFKWidget(
       this.title, this.id, this.lines, this.controller, this.dataSource,
       {this.defaultLine,
@@ -82,7 +85,8 @@ class SelectFKWidget extends StatelessWidget {
       this.customEmptyList,
       this.customChipPadding =
           const EdgeInsets.only(top: 12, bottom: 12, left: 16, right: 16),
-      this.setDefaultSelection}) {
+      this.setDefaultSelection,
+      this.showInCards}) {
     if (this.defaultLine == null) {
       this.defaultLine = lines.first;
     }
@@ -99,6 +103,7 @@ class SelectFKWidget extends StatelessWidget {
           openSearchAutomatically: !UtilsPlatform.isMobile,
           actions: actions,
           buttons: buttons,
+          showInCards: showInCards,
           theme: theme ?? SelectModelTheme());
     }
     if (isRequired == true) {

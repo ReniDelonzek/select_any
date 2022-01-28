@@ -17,7 +17,7 @@ dependencies:
   bloc_pattern: ^3.0.0
   mobx: ^2.0.4
   flutter_mobx: ^2.0.2
-  msk_utils: ^0.0.6
+  msk_utils: ^0.0.8
   flutter:
     sdk: flutter
   collection: ^1.15.0-nullsafety.4

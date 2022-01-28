@@ -31,7 +31,7 @@ abstract class DataSourceAny extends DataSource {
         // Caso o itemSort tenha sido anulado, atualiza a lista para restaurar a formatação padrão
         (itemSort == null && _actualySort != null)) {
       listAll?.clear();
-      await fetchData(limit, offset, selectModel, data: data);
+      listAll = await fetchData(limit, offset, selectModel, data: data);
     }
 
     if (itemSort != _actualySort) {
@@ -42,7 +42,7 @@ abstract class DataSourceAny extends DataSource {
     List<Map<String, dynamic>> subList = getSubList(offset, limit, tempList);
     return Stream.value(ResponseData(
         total: tempList.length,
-        data: generateList(subList, offset, selectModel),
+        data: generateList(subList, offset, selectModel!),
         start: offset,
         end: offset + limit!));
   }
@@ -87,7 +87,7 @@ abstract class DataSourceAny extends DataSource {
       TypeSearch typeSearch = TypeSearch.CONTAINS,
       ItemSort? itemSort}) async {
     if (listAll == null || listAll!.isEmpty || refresh == true) {
-      await fetchData(limit, offset, selectModel, data: data);
+      listAll = await fetchData(limit, offset, selectModel, data: data);
     }
     List<Map<String, dynamic>>? tempList =
         applyFilterList(typeSearch, listAll!, text);
@@ -175,7 +175,8 @@ abstract class DataSourceAny extends DataSource {
     return;
   }
 
-  Future fetchData(int? limit, int offset, SelectModel? selectModel,
+  Future<List<Map<String, dynamic>>?> fetchData(
+      int? limit, int offset, SelectModel? selectModel,
       {Map? data});
 
   @override
@@ -374,9 +375,10 @@ class FontDataAny extends DataSourceAny {
       : super(supportSingleLineFilter: supportSingleLineFilter);
 
   @override
-  Future fetchData(int? limit, int offset, SelectModel? selectModel,
+  Future<List<Map<String, dynamic>>?> fetchData(
+      int? limit, int offset, SelectModel? selectModel,
       {Map? data}) async {
     listAll = await fontData(data);
-    return;
+    return listAll;
   }
 }

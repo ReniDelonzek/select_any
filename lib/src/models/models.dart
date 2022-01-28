@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
 import 'package:msk_utils/extensions/date.dart';
+import 'package:msk_utils/extensions/list.dart';
 import 'package:msk_utils/extensions/map.dart';
 import 'package:msk_utils/extensions/string.dart';
 import 'package:msk_utils/models/item_select.dart';
@@ -556,14 +557,23 @@ abstract class _DataSourceBase with Store {
       ItemSort? itemSort});
 
   List<ItemSelectTable> generateList(
-      List data, int offset, SelectModel? selectModel) {
+      List<Map<String, dynamic>> data, int offset, SelectModel selectModel) {
     ObservableList<ItemSelectTable> lista = ObservableList();
     if (offset < 0) {
       offset = 0;
     }
-    for (Map a in data as Iterable<Map<dynamic, dynamic>>) {
+    String id = this.id ?? selectModel.id;
+
+    /// Apply a filter so that only distinct elements remain
+    int oldLength = data.length;
+    data = data.distinctBy((e) => e[id]);
+
+    assert(oldLength == data.length,
+        'List element marked go must be distinct (no duplicates)');
+
+    for (Map a in data) {
       // ignore: deprecated_member_use_from_same_package
-      bool preSelecionado = selectModel!.selectedItens != null &&
+      bool preSelecionado = selectModel.selectedItens != null &&
           // ignore: deprecated_member_use_from_same_package
           selectModel.selectedItens!
               .any((element) => element == a[selectModel.id]);
@@ -596,15 +606,14 @@ abstract class _DataSourceBase with Store {
         }
 
         /// Caso a fonte indique um id, pega dela, se não, pega do modelo
-        if (a[this.id ?? selectModel.id] == null && !UtilsPlatform.isRelease) {
+        if (a[id] == null && !UtilsPlatform.isRelease) {
           throw ('Id null ${selectModel.title}');
         }
         itemSelect.id = a[this.id ?? selectModel.id];
         itemSelect.isSelected = preSelecionado;
         itemSelect.object = a;
         itemSelect.position = offset++;
-        //assert(!lista.any((element) => element.id == itemSelect.id),
-        //  'List element marked go must be distinct (no duplicates)');
+
         lista.add(itemSelect);
       }
     }

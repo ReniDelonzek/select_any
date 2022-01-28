@@ -1,5 +1,3 @@
-import 'dart:collection';
-
 import 'package:diacritic/diacritic.dart';
 import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
@@ -8,7 +6,6 @@ import 'package:msk_utils/utils/utils_hive.dart';
 import 'package:msk_utils/utils/utils_platform.dart';
 import 'package:msk_utils/utils/utils_sentry.dart';
 import 'package:msk_utils/extensions/list.dart';
-import 'package:select_any/src/extensions/list_extensions.dart';
 
 import 'package:select_any/src/models/models.dart';
 import 'package:select_any/src/widgets/select_range_date/select_range_date_widget.dart';
@@ -169,14 +166,17 @@ abstract class _SelectAnyBase with Store {
         if (filter.text.trim().isEmpty) {
           /// Caso seja -1, não remove nada pois ela deve retornar todos os registros
           if (offset! > -1) {
+            list.clear();
+            /* 
             /// Remove todos os registros que o id não consta no range retornado
-            list.removeWhere((element) {
-              return element.position! <= event.end &&
-                  element.position! >= event.start &&
-                  !event.data.any((e2) {
-                    return e2.id == element.id;
-                  });
-            });
+            // list.removeWhere((element) {
+            //   return element.position! <= event.end &&
+            //       element.position! >= event.start &&
+            //       !event.data.any((e2) {
+            //         return e2.id == element.id;
+            //       });
+            // });
+            */
           } else {
             /// Caso retorne uma quantidade diferente do que já existe na lista, limpa a mesma
             if (list.length != event.data.length) {
@@ -202,7 +202,7 @@ abstract class _SelectAnyBase with Store {
             if (index > -1) {
               if (item.position != null && index != item.position!) {
                 list.removeAt(index);
-                list.insert(item.position!, item);
+                list.add(item);
               } else {
                 list[index] = item;
               }

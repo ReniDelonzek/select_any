@@ -35,3 +35,7 @@
 
 * Update packages
 
+## 0.0.6
+
+* Fix small bugs
+

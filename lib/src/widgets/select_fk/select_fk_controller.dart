@@ -14,6 +14,24 @@ abstract class _SelectFKBase with Store {
   @observable
   Map<String, dynamic>? _obj;
 
+  @observable
+  bool showClearIcon = false;
+
+  @observable
+  ObservableList<ItemSelect> list = ObservableList();
+  @observable
+  bool listIsLoaded = false;
+  FocusNode focusNode = FocusNode();
+  SelectModel? selectModel;
+
+  /// Used to prevent the value from being updated every time the widget is reloaded
+  bool isCheckedSingleRow = false;
+
+  bool get updateFunSingleRow => !isCheckedSingleRow && _obj == null;
+
+  Future<Map<String, dynamic>?> Function(ObservableList<ItemSelect>)?
+      setDefaultSelection;
+
   @computed
   Map<String, dynamic>? get obj {
     return _obj;
@@ -29,25 +47,8 @@ abstract class _SelectFKBase with Store {
     }
   }
 
-  @observable
-  bool showClearIcon = false;
-
-  @observable
-  ObservableList<ItemSelect> list = ObservableList();
-  @observable
-  bool listIsLoaded = false;
-  FocusNode focusNode = FocusNode();
-  SelectModel? selectModel;
-
-  /// Used to prevent the value from being updated every time the widget is reloaded
-  bool isCheckedSingleRow = false;
-
-  bool get updateFunSingleRow => !isCheckedSingleRow && _obj == null;
-  Future<Map<String, dynamic>?> Function(ObservableList<ItemSelect>)?
-      setDefaultSelection;
-
   /// Retorna o valor da chave, caso o objeto não seja null e o valor conste no objeto
-  getValueKey(String key) {
+  dynamic getValueKey(String key) {
     if (_obj == null || !_obj!.containsKey(key)) {
       return null;
     }
@@ -91,7 +92,7 @@ abstract class _SelectFKBase with Store {
     if (!listIsLoaded) {
       /// Pode ser null caso o widget não tenha sido construído ainda
       var value = await selectModel?.dataSource
-          .getList(999, -1, selectModel, data: data);
+          .getList(9999, -1, selectModel, data: data);
       value?.listen((event) {
         list = ObservableList.of(event.data);
 

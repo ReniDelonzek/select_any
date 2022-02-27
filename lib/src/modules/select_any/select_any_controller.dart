@@ -152,6 +152,7 @@ abstract class _SelectAnyBase with Store {
 
   void setDataSource({int? offset, bool refresh = false}) async {
     try {
+      initializeDataSource();
       GroupFilterExp groupFilterExp = buildFilterExpression();
       showSearch = groupFilterExp.filterExps.isEmpty;
       loading = true;
@@ -235,7 +236,7 @@ abstract class _SelectAnyBase with Store {
   setDataSourceSearch({int? offset, bool refresh = false}) async {
     showSearch = true;
     try {
-      initializeFontData();
+      initializeDataSourceAndConfirmData();
       loading = true;
       String text = removeDiacritics(filter.text.trim()).toLowerCase();
       (await actualDataSource!.getListSearch(text, quantityItensPage,
@@ -302,12 +303,16 @@ abstract class _SelectAnyBase with Store {
   }
 
   /// Caso confirmarParaCarregarDados seja true, inicializada a var fonteDadoAtual com a fonte padrão
-  void initializeFontData() {
+  void initializeDataSourceAndConfirmData() {
     if (confirmToLoadData) {
       confirmToLoadData = false;
-      if (actualDataSource == null) {
-        actualDataSource = selectModel!.dataSource;
-      }
+      initializeDataSource();
+    }
+  }
+
+  void initializeDataSource() {
+    if (actualDataSource == null) {
+      actualDataSource = selectModel!.dataSource;
     }
   }
 

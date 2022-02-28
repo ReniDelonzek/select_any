@@ -20,7 +20,11 @@ class TableDataWidget extends StatelessWidget {
       : super(key: key) {
     controller.selectModel = selectModel;
     if (selectModel.preSelected != null) {
-      controller.selectedList = selectModel.preSelected!.toSet();
+      for (var item in selectModel.preSelected!) {
+        if (!controller.selectedList.any((element) => element.id == item.id)) {
+          controller.selectedList.add(item);
+        }
+      }
     }
 
     if (carregarDados) {

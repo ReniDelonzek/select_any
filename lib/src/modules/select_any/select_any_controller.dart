@@ -25,7 +25,7 @@ abstract class _SelectAnyBase with Store {
   String? title;
   Map? data;
   @computed
-  ObservableList<ItemSelectTable> get listaExibida {
+  ObservableList<ItemSelectTable> get showList {
     if (searchText.isEmpty) {
       return list;
     }
@@ -526,7 +526,7 @@ abstract class _SelectAnyBase with Store {
         element.isSelected = newValue;
       }
     });
-    listaExibida.forEach((element) {
+    showList.forEach((element) {
       if (element.id == item.id) {
         element.isSelected = newValue;
       }

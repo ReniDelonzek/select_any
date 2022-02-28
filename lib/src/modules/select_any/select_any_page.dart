@@ -332,7 +332,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
       }
       //_gerarLista((snapshot.data as ResponseData).data);
       return Observer(builder: (_) {
-        if (widget.controller!.listaExibida.isEmpty == true)
+        if (widget.controller!.showList.isEmpty == true)
           return Center(child: new Text('Nenhum registro encontrado'));
         else {
           return Column(
@@ -375,12 +375,11 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
                         return true;
                       },
                       child: ListView.builder(
-                          itemCount: widget.controller!.listaExibida.length,
+                          itemCount: widget.controller!.showList.length,
                           itemBuilder: (context, index) {
                             return Observer(
                                 builder: (_) => _getItemList(
-                                    widget.controller!.listaExibida[index],
-                                    index));
+                                    widget.controller!.showList[index], index));
                           })),
                 ),
               ),

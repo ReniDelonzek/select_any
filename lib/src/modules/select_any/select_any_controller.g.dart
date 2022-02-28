@@ -12,11 +12,10 @@ mixin _$SelectAnyController on _SelectAnyBase, Store {
   Computed<ObservableList<ItemSelectTable>>? _$listaExibidaComputed;
 
   @override
-  ObservableList<ItemSelectTable> get listaExibida =>
-      (_$listaExibidaComputed ??= Computed<ObservableList<ItemSelectTable>>(
-              () => super.listaExibida,
+  ObservableList<ItemSelectTable> get showList => (_$listaExibidaComputed ??=
+          Computed<ObservableList<ItemSelectTable>>(() => super.showList,
               name: '_SelectAnyBase.listaExibida'))
-          .value;
+      .value;
 
   final _$typeDiplayAtom = Atom(name: '_SelectAnyBase.typeDiplay');
 
@@ -247,7 +246,7 @@ quantityItensPage: ${quantityItensPage},
 loadingMore: ${loadingMore},
 showSearch: ${showSearch},
 actualFilters: ${actualFilters},
-listaExibida: ${listaExibida}
+listaExibida: ${showList}
     ''';
   }
 }

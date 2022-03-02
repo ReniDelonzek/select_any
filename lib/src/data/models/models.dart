@@ -445,6 +445,16 @@ class FormatDataMoney extends FormatData {
   }
 }
 
+class FormatDataBool extends FormatData {
+  final String textTrue, textFalse;
+  FormatDataBool({this.textTrue = 'Sim', this.textFalse = 'Não'});
+
+  @override
+  String formatData(ObjFormatData data) {
+    return data.data == true ? textTrue : textFalse;
+  }
+}
+
 abstract class FilterBase = _FilterBaseBase with _$FilterBase;
 
 abstract class _FilterBaseBase with Store {

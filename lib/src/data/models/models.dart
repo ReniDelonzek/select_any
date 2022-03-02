@@ -455,6 +455,16 @@ class FormatDataBool extends FormatData {
   }
 }
 
+class FormatDataBoolInt extends FormatData {
+  final String textTrue, textFalse;
+  FormatDataBoolInt({this.textTrue = 'Sim', this.textFalse = 'Não'});
+
+  @override
+  String formatData(ObjFormatData data) {
+    return data.data == 1 ? textTrue : textFalse;
+  }
+}
+
 abstract class FilterBase = _FilterBaseBase with _$FilterBase;
 
 abstract class _FilterBaseBase with Store {

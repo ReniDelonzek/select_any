@@ -4,7 +4,7 @@ import 'package:select_any/select_any.dart';
 
 abstract class DataSourceAny extends DataSource {
   List<Map<String, dynamic>>? listAll;
-  ItemSort? _actualySort;
+  ItemSort? _currentSort;
 
   DataSourceAny(
       {String? id,
@@ -29,16 +29,16 @@ abstract class DataSourceAny extends DataSource {
         listAll!.isEmpty ||
         refresh == true ||
         // Caso o itemSort tenha sido anulado, atualiza a lista para restaurar a formatação padrão
-        (itemSort == null && _actualySort != null)) {
+        (itemSort == null && _currentSort != null)) {
       listAll?.clear();
       listAll = await fetchData(limit, offset, selectModel, data: data);
     }
 
-    if (itemSort != _actualySort) {
+    if (itemSort != _currentSort) {
       listAll = applySortFilters(itemSort, selectModel!.id, listAll);
     }
 
-    List<Map<String, dynamic>> tempList = applyFiltes(listAll!, filter);
+    List<Map<String, dynamic>> tempList = applyFilters(listAll!, filter);
     List<Map<String, dynamic>> subList = getSubList(offset, limit, tempList);
     return Stream.value(ResponseDataDataSource(
         total: tempList.length,
@@ -47,7 +47,7 @@ abstract class DataSourceAny extends DataSource {
         end: offset + limit!));
   }
 
-  List<Map<String, dynamic>> applyFiltes(
+  List<Map<String, dynamic>> applyFilters(
       List<Map<String, dynamic>> listAll, GroupFilterExp? filter) {
     List<Map<String, dynamic>> tempList = [];
     filter = convertFiltersToLowerCase(filter);
@@ -144,7 +144,7 @@ abstract class DataSourceAny extends DataSource {
       if (!textSearch.isNullOrBlank) {
         data = applyFilterList(typeSearch, listAll!, textSearch);
       }
-      data = applyFiltes(data, filter);
+      data = applyFilters(data, filter);
     }
     if (data.isNotEmpty) {
       for (var key in data.first.keys) {
@@ -280,7 +280,7 @@ abstract class DataSourceAny extends DataSource {
 
   List<Map<String, dynamic>>? applySortFilters(
       ItemSort? itemSort, String keyId, List<Map<String, dynamic>>? list) {
-    _actualySort = itemSort;
+    _currentSort = itemSort;
     try {
       if (itemSort != null && list != null && list.isNotEmpty) {
         /// Maintain a consistent order for the list
@@ -371,8 +371,11 @@ typedef FontDataAnyInterface = Future<List<Map<String, dynamic>>> Function(
 
 class FontDataAny extends DataSourceAny {
   FontDataAnyInterface fontData;
-  FontDataAny(this.fontData, {supportSingleLineFilter = true})
-      : super(supportSingleLineFilter: supportSingleLineFilter);
+  FontDataAny(this.fontData,
+      {bool supportSingleLineFilter = true, bool allowExport = true})
+      : super(
+            supportSingleLineFilter: supportSingleLineFilter,
+            allowExport: allowExport);
 
   @override
   Future<List<Map<String, dynamic>>?> fetchData(

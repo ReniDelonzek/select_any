@@ -65,17 +65,17 @@ abstract class _DataSourceBase with Store {
 
     for (Map a in data) {
       // ignore: deprecated_member_use_from_same_package
-      bool preSelecionado = selectModel.selectedItens != null &&
+      bool preSelected = selectModel.selectedItens != null &&
           // ignore: deprecated_member_use_from_same_package
           selectModel.selectedItens!
               .any((element) => element == a[selectModel.id]);
-      if (!preSelecionado) {
-        preSelecionado = selectModel.preSelected
+      if (!preSelected) {
+        preSelected = selectModel.preSelected
                 ?.any((element) => element.id == a[selectModel.id]) ==
             true;
       }
       //caso nao seja pré-selecionado ou a regra é exibir os pre-selecionados
-      if (preSelecionado == false || selectModel.showPreSelected == true) {
+      if (preSelected == false || selectModel.showPreSelected == true) {
         ItemSelectTable itemSelect = ItemSelectTable();
         for (Line line in selectModel.lines) {
           // caso seja uma lista
@@ -102,7 +102,7 @@ abstract class _DataSourceBase with Store {
           throw ('Id null ${selectModel.title}');
         }
         itemSelect.id = a[this.id ?? selectModel.id];
-        itemSelect.isSelected = preSelecionado;
+        itemSelect.isSelected = preSelected;
         itemSelect.object = a;
         itemSelect.position = offset++;
 
@@ -117,7 +117,7 @@ abstract class _DataSourceBase with Store {
 
   Future clear();
 
-  bool filterTypeSearch(TypeSearch typeSearch, dynamic value, dynamic text) {
+  bool filterByTypeSearch(TypeSearch typeSearch, dynamic value, dynamic text) {
     if (!(text is String)) {
       text = text?.toString() ?? '';
     }

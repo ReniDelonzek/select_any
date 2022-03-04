@@ -12,7 +12,7 @@ class TableDataWidget extends StatelessWidget {
   final SelectAnyController controller;
 
   TableDataWidget(SelectModel selectModel,
-      {Key? key, required this.controller, bool carregarDados = true})
+      {Key? key, required this.controller, bool loadData = true})
       : super(key: key) {
     controller.selectModel = selectModel;
     if (selectModel.preSelected != null) {
@@ -23,7 +23,7 @@ class TableDataWidget extends StatelessWidget {
       }
     }
 
-    if (carregarDados) {
+    if (loadData) {
       controller.actualDataSource = selectModel.dataSource;
       controller.setDataSource();
     }

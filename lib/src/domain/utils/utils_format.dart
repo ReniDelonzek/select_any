@@ -11,18 +11,18 @@ class UtilsFormat {
       return '0';
     }
     value = value.toStringAsFixed(4).toDouble();
-    int casasDecimais = value.toString().split('.').last.length;
-    if (casasDecimais < minDecimalDigits) {
-      casasDecimais = minDecimalDigits;
+    int decimalPlaces = value.toString().split('.').last.length;
+    if (decimalPlaces < minDecimalDigits) {
+      decimalPlaces = minDecimalDigits;
     }
 
     /// Limita a 4 casas
-    if (casasDecimais > maxDecimalDigits) {
-      casasDecimais = maxDecimalDigits;
+    if (decimalPlaces > maxDecimalDigits) {
+      decimalPlaces = maxDecimalDigits;
     }
 
     return NumberFormat.currency(
-            locale: locale, symbol: symbol, decimalDigits: casasDecimais)
+            locale: locale, symbol: symbol, decimalDigits: decimalPlaces)
         .format(value);
   }
 }

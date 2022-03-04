@@ -125,7 +125,7 @@ abstract class DataSourceAny extends DataSource {
       } else {
         for (var value in listAll![i].values) {
           if (value != null) {
-            if (filterTypeSearch(typeSearch, value, text)) {
+            if (filterByTypeSearch(typeSearch, value, text)) {
               tempList.add(listAll![i]);
               break;
             }
@@ -198,7 +198,7 @@ abstract class DataSourceAny extends DataSource {
             value = filter.line!.formatData!
                 .formatData(ObjFormatData(data: value, map: map));
           }
-          if (filterTypeSearch(filter.typeSearch, value, filter.value)) {
+          if (filterByTypeSearch(filter.typeSearch, value, filter.value)) {
             return true;
           }
         } else if (filter is FilterSelectColumn) {
@@ -207,7 +207,7 @@ abstract class DataSourceAny extends DataSource {
             value = filter.line!.formatData!
                 .formatData(ObjFormatData(data: value, map: map));
           }
-          if (filterTypeSearch(filter.typeSearch, value, filter.value)) {
+          if (filterByTypeSearch(filter.typeSearch, value, filter.value)) {
             return true;
           }
         } else if (filter is FilterExpRangeCollun) {
@@ -234,7 +234,7 @@ abstract class DataSourceAny extends DataSource {
             value = filter.line!.formatData!
                 .formatData(ObjFormatData(data: value, map: map));
           }
-          if (filterTypeSearch(filter.typeSearch, value, filter.value)) {
+          if (filterByTypeSearch(filter.typeSearch, value, filter.value)) {
             filterAndOk = true;
           } else {
             return false;
@@ -245,7 +245,7 @@ abstract class DataSourceAny extends DataSource {
             value = filter.line!.formatData!
                 .formatData(ObjFormatData(data: value, map: map));
           }
-          if (filterTypeSearch(filter.typeSearch, value, filter.value)) {
+          if (filterByTypeSearch(filter.typeSearch, value, filter.value)) {
             filterAndOk = true;
           } else {
             return false;

@@ -1,7 +1,5 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
-import 'package:msk_utils/extensions/date.dart';
 import 'package:msk_utils/extensions/string.dart';
 import 'package:msk_utils/models/item_select.dart';
 import 'package:msk_utils/utils/utils_platform.dart';
@@ -195,8 +193,6 @@ class SelectModelThemeTable {
       this.bottomIconsColor});
 }
 
-enum ButtonPosition { APPBAR, BOTTOM, IN_TABLE }
-
 class Line {
   String key;
 
@@ -293,65 +289,7 @@ class Line {
       enclosure = enclosure! + ' ???';
     }
   }
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-
-    return other is Line &&
-        other.key == key &&
-        other.enclosure == enclosure &&
-        other.defaultValue == defaultValue &&
-        other.name == name &&
-        listEquals(other.listKeys, listKeys) &&
-        other.textStyle == textStyle &&
-        other.formatData == formatData &&
-        other.filter == filter &&
-        other.typeData == typeData;
-  }
-
-  @override
-  int get hashCode {
-    return key.hashCode ^
-        enclosure.hashCode ^
-        defaultValue.hashCode ^
-        name.hashCode ^
-        listKeys.hashCode ^
-        textStyle.hashCode ^
-        formatData.hashCode ^
-        filter.hashCode ^
-        typeData.hashCode;
-  }
 }
-
-abstract class TypeData {}
-
-abstract class TDDate extends TypeData {
-  String outputFormat;
-
-  TDDate({this.outputFormat = 'dd/MM/yyyy'});
-}
-
-class TDDateString extends TDDate {
-  TDDateString({String outputFormat = 'dd/MM/yyyy'})
-      : super(outputFormat: outputFormat);
-}
-
-class TDDateTimestamp extends TDDate {
-  TDDateTimestamp({String outputFormat = 'dd/MM/yyyy'})
-      : super(outputFormat: outputFormat);
-}
-
-class TDMoney extends TypeData {}
-
-class TDString extends TypeData {}
-
-class TDNumber extends TypeData {}
-
-class TDBoolean extends TypeData {}
-
-/// Generic class that represents a non-string value, do not use outside the app
-class TDNotString extends TypeData {}
 
 typedef CustomLine = Widget Function(CustomLineData);
 
@@ -366,190 +304,12 @@ class CustomLineData {
 
 typedef DefaultValue = String Function(dynamic data);
 
-class ObjFormatData {
-  dynamic data;
-  Map? map;
-  ObjFormatData({this.data, this.map});
-}
-
-abstract class FormatData {
-  String defaultValue;
-  FormatData({this.defaultValue = ''});
-  String formatData(ObjFormatData obj);
-}
-
-class FormatDataDate extends FormatData {
-  late String inputFormat;
-  late String outputFormat;
-
-  @override
-  String formatData(ObjFormatData obj) {
-    try {
-      String? data;
-      if (obj.data is String) {
-        data = obj.data;
-      } else {
-        data = obj.data?.toString();
-      }
-      return data.toDate(inputFormat).string(outputFormat);
-    } catch (error, _) {
-      // UtilsSentry.reportError(error, stackTrace);
-    }
-    return defaultValue;
-  }
-}
-
-class FormatDataTimestamp extends FormatData {
-  String outputFormat;
-
-  FormatDataTimestamp(this.outputFormat, {String defaultValue = ''})
-      : super(defaultValue: defaultValue);
-
-  @override
-  String formatData(ObjFormatData data) {
-    try {
-      if (data.data == null) return defaultValue;
-      return DateTime.fromMillisecondsSinceEpoch(data.data.toString().toInt())
-          .string(outputFormat);
-    } catch (error, _) {
-      // UtilsSentry.reportError(error, stackTrace);
-    }
-    return defaultValue;
-  }
-}
-
-class FormatDataAny extends FormatData {
-  Function(ObjFormatData) format;
-  FormatDataAny(this.format);
-
-  @override
-  String formatData(ObjFormatData data) {
-    return format(data);
-  }
-}
-
-class FormatDataMoney extends FormatData {
-  String? locale;
-  String? symbol;
-  int maxDecimalDigits;
-
-  FormatDataMoney({this.locale, this.symbol, this.maxDecimalDigits = 2});
-
-  @override
-  String formatData(ObjFormatData data) {
-    try {
-      return UtilsFormat.formatMoney(data.data,
-          maxDecimalDigits: maxDecimalDigits);
-    } catch (error, _) {}
-    return defaultValue;
-  }
-}
-
-class FormatDataBool extends FormatData {
-  final String textTrue, textFalse;
-  FormatDataBool({this.textTrue = 'Sim', this.textFalse = 'Não'});
-
-  @override
-  String formatData(ObjFormatData data) {
-    return data.data == true ? textTrue : textFalse;
-  }
-}
-
-class FormatDataBoolInt extends FormatData {
-  final String textTrue, textFalse;
-  FormatDataBoolInt({this.textTrue = 'Sim', this.textFalse = 'Não'});
-
-  @override
-  String formatData(ObjFormatData data) {
-    return data.data == 1 ? textTrue : textFalse;
-  }
-}
-
-abstract class FilterBase = _FilterBaseBase with _$FilterBase;
-
-abstract class _FilterBaseBase with Store {
-  @observable
-  ItemDataFilter? selectedValue;
-
-  _FilterBaseBase({this.selectedValue});
-}
-
-class FilterRangeDate extends FilterBase {
-  DateTime? dateMin;
-  DateTime? dateMax;
-  DateTime? dateDefault;
-  ItemDataFilterRange? selectedValueRange;
-  FilterRangeDate(
-      {this.dateMin, this.dateMax, this.dateDefault, this.selectedValueRange});
-}
-
-class FilterSelectItem extends FilterBase {
-  FontDataFilterBase fontDataFilter;
-
-  /// custom key for filters by id
-  String? keyFilterId;
-
-  FilterSelectItem(this.fontDataFilter,
-      {this.keyFilterId, ItemDataFilter? selectedValue})
-      : super(selectedValue: selectedValue);
-}
-
-class FilterText extends FilterBase {
-  FilterText();
-}
-
-class ItemDataFilter {
-  String? label;
-  dynamic value;
-  dynamic idValue;
-  ItemDataFilter({this.label, @required this.value, this.idValue});
-}
-
 class ItemDataFilterRange extends ItemDataFilter {
   dynamic start;
   dynamic end;
 
   ItemDataFilterRange({String? label, this.start, this.end})
       : super(label: label, value: null);
-}
-
-abstract class FontDataFilterBase {
-  Future<List<ItemDataFilter>> getList(
-      GroupFilterExp? filters, String textSearch);
-}
-
-class FontDataFilterAny extends FontDataFilterBase {
-  Future<List<ItemDataFilter>> Function(
-      GroupFilterExp? filters, String textSearch) list;
-  FontDataFilterAny(this.list);
-
-  @override
-  Future<List<ItemDataFilter>> getList(
-      GroupFilterExp? filters, String textSearch) async {
-    return list(filters, textSearch);
-  }
-}
-
-class ResponseData {
-  int? total;
-  Exception? exception;
-  List<ItemSelectTable> data;
-
-  /// Campo opcional, indica o filtro aplicado na resposta
-  /// Usado para comparar se a resposta ainda é válida de acordo com o input
-  String? filter;
-
-  /// Indica o range que esse retorno atende
-  /// Por ex: 1-10
-  int start;
-  int end;
-  ResponseData(
-      {this.exception,
-      required this.data,
-      this.total,
-      this.filter,
-      required this.start,
-      required this.end});
 }
 
 class ItemSelectTable extends ItemSelect {
@@ -559,98 +319,12 @@ class ItemSelectTable extends ItemSelect {
   });
 }
 
-abstract class ActionSelectBase {
-  final ButtonPosition Function(int typeScreen)? buttonPosition;
-
-  ActionSelectBase({this.buttonPosition});
-
-  Widget build(ButtonPosition position, void Function()? onTap);
-}
-
 typedef BuildWidget = Widget Function(
     ButtonPosition position, void Function()? onTap);
 
-class ActionWidget extends ActionSelectBase {
-  BuildWidget buildWidget;
-  ActionWidget(this.buildWidget,
-      {ButtonPosition Function(int typeScreen)? buttonPosition})
-      : super(buttonPosition: buttonPosition);
-
-  @override
-  Widget build(ButtonPosition position, void Function()? onTap) {
-    return buildWidget(position, onTap);
-  }
-}
-
-ButtonPosition getDefaultButtonPosition(int typeScreen) {
-  if (typeScreen == 1) {
-    return ButtonPosition.BOTTOM;
-  }
-  return ButtonPosition.IN_TABLE;
-}
-
-class ActionSelect extends ActionSelectBase {
-  /// Keys das colunas a serem enviadas, e o nome como elas devem ir
-  Map<String, String>? keys;
-  String? description;
-  PageRoute? route;
-  Widget Function()? page;
-  FunctionAction? function;
-
-  /// Tem um papel igual da função, esta porém atualiza a tela quando recebe um resultado verdadeiro
-  FunctionActionUpd? functionUpd;
-  Widget? icon;
-
-  /// Indica se a tela deve ser fechada ou não
-  bool closePage;
-  bool? enabled;
-  bool? floatingActionButtonMini;
-
-  ActionSelect(
-      {this.description,
-      this.route,
-      this.keys,
-      this.function,
-      this.icon,
-      this.page,
-      this.closePage = false,
-      this.functionUpd,
-      this.enabled,
-      this.floatingActionButtonMini,
-      ButtonPosition Function(int typeScreen)? buttonPosition})
-      : super(buttonPosition: buttonPosition) {
-    if (enabled == null) {
-      enabled = function != null ||
-          functionUpd != null ||
-          page != null ||
-          route != null;
-    }
-  }
-
-  @override
-  Widget build(ButtonPosition position, void Function()? onTap) {
-    if (position == ButtonPosition.BOTTOM) {
-      return FloatingActionButton(
-        heroTag: description,
-        mini: floatingActionButtonMini ?? false,
-        tooltip: description,
-        onPressed: enabled == true ? onTap : null,
-        child: icon ?? Icon(Icons.add),
-      );
-    }
-    return IconButton(
-      splashRadius: 24,
-      icon: icon ?? Icon(Icons.add),
-      tooltip: description,
-      onPressed: enabled == true ? onTap : null,
-    );
-  }
-}
-
 typedef FunctionAction = void Function(DataFunction);
-typedef FunctionActionUpd = Future<bool> Function(DataFunction);
 
-class ItemSelectExpanded = _ItemSelectExpandedBase with _$ItemSelectExpanded;
+typedef FunctionActionUpd = Future<bool> Function(DataFunction);
 
 class DataFunction {
   dynamic data;
@@ -659,6 +333,8 @@ class DataFunction {
   DataFunction({this.data, this.index, this.context});
 }
 
+class ItemSelectExpanded = _ItemSelectExpandedBase with _$ItemSelectExpanded;
+
 abstract class _ItemSelectExpandedBase extends ItemSelect with Store {
   @observable
   ObservableList<ItemSelectExpanded>? items = ObservableList();
@@ -666,83 +342,4 @@ abstract class _ItemSelectExpandedBase extends ItemSelect with Store {
   bool isExpanded = false;
 
   _ItemSelectExpandedBase({this.items, this.isExpanded = false});
-}
-
-enum TypeSearch { CONTAINS, BEGINSWITH, ENDSWITH, NOTCONTAINS }
-
-abstract class FilterExp {
-  Line? line;
-
-  FilterExp({this.line});
-}
-
-class FilterExpColumn extends FilterExp {
-  dynamic value;
-  TypeSearch typeSearch;
-  FilterExpColumn(
-      {required Line line, this.value, this.typeSearch = TypeSearch.CONTAINS})
-      : super(line: line);
-}
-
-class FilterExpRangeCollun extends FilterExp {
-  DateTime? dateStart;
-  DateTime? dateEnd;
-  FilterExpRangeCollun({required Line line, this.dateStart, this.dateEnd})
-      : super(line: line);
-}
-
-class GroupFilterExp extends FilterExp {
-  OperatorFilterEx operatorEx;
-  List<FilterExp> filterExps;
-  GroupFilterExp({
-    required this.operatorEx,
-    this.filterExps = const [],
-  });
-}
-
-class FilterSelectColumn extends FilterExp {
-  dynamic value;
-  TypeSearch typeSearch;
-  String? customKey;
-  dynamic valueId;
-  FilterSelectColumn(
-      {required Line line,
-      this.value,
-      this.typeSearch = TypeSearch.CONTAINS,
-      this.customKey,
-      this.valueId})
-      : super(line: line);
-}
-
-enum OperatorFilterEx { AND, OR }
-
-enum EnumTypeSort { ASC, DESC }
-
-extension ExEnumTypeSort on EnumTypeSort {
-  String toStringEnum() {
-    if (this == EnumTypeSort.ASC) {
-      return 'asc';
-    } else {
-      return 'desc';
-    }
-  }
-}
-
-class ItemSort {
-  EnumTypeSort? typeSort;
-  Line? line;
-  int? indexLine;
-  ItemSort({this.typeSort, this.line, this.indexLine});
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-
-    return other is ItemSort &&
-        other.typeSort == typeSort &&
-        other.line == line;
-  }
-
-  @override
-  int get hashCode => typeSort.hashCode ^ line.hashCode;
 }

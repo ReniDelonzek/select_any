@@ -354,17 +354,3 @@ class UtilsWidget {
             ));
   }
 }
-
-showSnackMessage(BuildContext context, String message) {
-  if (UtilsPlatform.isMobile) {
-    ScaffoldMessenger.maybeOf(context)!.showSnackBar(SnackBar(
-      content: Text(message),
-      behavior: SnackBarBehavior.floating,
-    ));
-  } else {
-    ScaffoldMessenger.maybeOf(context)!.showSnackBar(MySnackBar(
-      content: Text(message),
-      behavior: SnackBarBehavior.floating,
-    ));
-  }
-}

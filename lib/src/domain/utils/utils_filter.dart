@@ -1,5 +1,5 @@
 import 'package:msk_utils/extensions/string.dart';
-import 'package:select_any/src/data/models/models.dart';
+import 'package:select_any/select_any.dart';
 
 class SqlFilter {
   String query;

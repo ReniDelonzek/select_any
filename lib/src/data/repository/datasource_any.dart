@@ -16,7 +16,7 @@ abstract class DataSourceAny extends DataSource {
             supportSingleLineFilter: supportSingleLineFilter);
 
   @override
-  Future<Stream<ResponseData>> getList(
+  Future<Stream<ResponseDataDataSource>> getList(
     int? limit,
     int offset,
     SelectModel? selectModel, {
@@ -40,7 +40,7 @@ abstract class DataSourceAny extends DataSource {
 
     List<Map<String, dynamic>> tempList = applyFiltes(listAll!, filter);
     List<Map<String, dynamic>> subList = getSubList(offset, limit, tempList);
-    return Stream.value(ResponseData(
+    return Stream.value(ResponseDataDataSource(
         total: tempList.length,
         data: generateList(subList, offset, selectModel!),
         start: offset,
@@ -80,7 +80,7 @@ abstract class DataSourceAny extends DataSource {
   }
 
   @override
-  Future<Stream<ResponseData>> getListSearch(
+  Future<Stream<ResponseDataDataSource>> getListSearch(
       String text, int? limit, int offset, SelectModel? selectModel,
       {Map? data,
       bool? refresh = false,
@@ -95,7 +95,7 @@ abstract class DataSourceAny extends DataSource {
     tempList = applySortFilters(itemSort, selectModel!.id, tempList);
 
     List<Map<String, dynamic>> subList = getSubList(offset, limit, tempList);
-    return Stream.value(ResponseData(
+    return Stream.value(ResponseDataDataSource(
         total: tempList!.length,
         data: generateList(subList, offset, selectModel),
         start: offset,

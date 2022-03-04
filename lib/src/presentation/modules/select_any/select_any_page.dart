@@ -2,12 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:msk_utils/msk_utils.dart';
-import 'package:select_any/src/data/models/models.dart';
-import 'package:select_any/src/presentation/widgets/fail/fail_widget.dart';
-import 'package:select_any/src/presentation/widgets/table_data/table_data_widget.dart';
-import 'package:select_any/src/presentation/widgets/utils_widget.dart';
-
-import 'select_any_controller.dart';
+import 'package:select_any/select_any.dart';
 
 class InsertIntent extends Intent {
   const InsertIntent();

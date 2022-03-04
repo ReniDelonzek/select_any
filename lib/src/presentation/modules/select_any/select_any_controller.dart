@@ -6,9 +6,7 @@ import 'package:msk_utils/utils/utils_hive.dart';
 import 'package:msk_utils/utils/utils_platform.dart';
 import 'package:msk_utils/utils/utils_sentry.dart';
 import 'package:msk_utils/extensions/list.dart';
-import 'package:select_any/src/data/models/models.dart';
-import 'package:select_any/src/domain/repository/data_source.dart';
-import 'package:select_any/src/presentation/widgets/select_range_date/select_range_date_widget.dart';
+import 'package:select_any/select_any.dart';
 
 part 'select_any_controller.g.dart';
 
@@ -245,7 +243,7 @@ abstract class _SelectAnyBase with Store {
               refresh: refresh,
               typeSearch: typeSearch,
               itemSort: itemSort))
-          .listen((ResponseData event) {
+          .listen((ResponseDataDataSource event) {
         error = null;
 
         /// Só altera se o texto ainda for idêntico ao pesquisado

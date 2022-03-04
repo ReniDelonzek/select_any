@@ -1,7 +1,7 @@
 import 'package:diacritic/diacritic.dart';
 import 'package:mobx/mobx.dart';
 import 'package:msk_utils/msk_utils.dart';
-import 'package:select_any/src/data/models/models.dart';
+import 'package:select_any/select_any.dart';
 
 part 'data_source.g.dart';
 
@@ -34,14 +34,14 @@ abstract class _DataSourceBase with Store {
       this.supportPaginate = false,
       this.supportSingleLineFilter = false});
 
-  Future<Stream<ResponseData>> getList(
+  Future<Stream<ResponseDataDataSource>> getList(
       int limit, int offset, SelectModel? selectModel,
       {Map? data,
       bool refresh = false,
       ItemSort? itemSort,
       GroupFilterExp? filter});
 
-  Future<Stream<ResponseData>> getListSearch(
+  Future<Stream<ResponseDataDataSource>> getListSearch(
       String text, int? limit, int offset, SelectModel? selectModel,
       {Map? data,
       bool? refresh,

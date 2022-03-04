@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:mobx/mobx.dart';
 import 'package:msk_utils/msk_utils.dart';
-import 'package:select_any/src/data/models/models.dart';
-import 'package:select_any/src/presentation/modules/select_any_expanded/select_any_expanded_controller.dart';
-import 'package:select_any/src/presentation/widgets/utils_widget.dart';
+import 'package:select_any/select_any.dart';
 
 // ignore: must_be_immutable
 class SelectAnyExpandedPage extends StatefulWidget {

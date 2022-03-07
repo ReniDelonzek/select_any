@@ -10,7 +10,7 @@ class UtilsFormat {
     if (value == null) {
       return '0';
     }
-    value = value.toStringAsFixed(4).toDouble();
+    value = value.toStringAsFixed(maxDecimalDigits).toDouble();
     int decimalPlaces = value.toString().split('.').last.length;
     if (decimalPlaces < minDecimalDigits) {
       decimalPlaces = minDecimalDigits;

@@ -1,9 +1,15 @@
 import 'package:msk_utils/msk_utils.dart';
+
 import 'package:select_any/select_any.dart';
 
 class FormatDataDate extends FormatData {
-  late String inputFormat;
-  late String outputFormat;
+  String inputFormat;
+  String outputFormat;
+
+  FormatDataDate({
+    required this.inputFormat,
+    required this.outputFormat,
+  });
 
   @override
   String formatData(ObjFormatData obj) {
@@ -61,8 +67,13 @@ class FormatDataMoney extends FormatData {
   @override
   String formatData(ObjFormatData data) {
     try {
-      return UtilsFormat.formatMoney(data.data,
-          maxDecimalDigits: maxDecimalDigits);
+      double value;
+      if (data.data is double) {
+        value = data.data;
+      } else {
+        value = data.data.toString().toDouble();
+      }
+      return UtilsFormat.formatMoney(value, maxDecimalDigits: maxDecimalDigits);
     } catch (error, _) {}
     return defaultValue;
   }

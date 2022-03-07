@@ -345,7 +345,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
                               scrollInfo.metrics.extentAfter == 0) {
                             if (widget.controller!.total == 0 ||
                                 widget.controller!.page *
-                                        widget.controller!.quantityItensPage! <=
+                                        widget.controller!.quantityItensPage <=
                                     widget.controller!.total) {
                               if (widget.controller!.searchText.isEmpty) {
                                 widget.controller!.loadingMore = true;

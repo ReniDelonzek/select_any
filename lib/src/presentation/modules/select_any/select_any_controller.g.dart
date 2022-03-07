@@ -172,13 +172,13 @@ mixin _$SelectAnyController on _SelectAnyBase, Store {
       Atom(name: '_SelectAnyBase.quantityItensPage');
 
   @override
-  int? get quantityItensPage {
+  int get quantityItensPage {
     _$quantityItensPageAtom.reportRead();
     return super.quantityItensPage;
   }
 
   @override
-  set quantityItensPage(int? value) {
+  set quantityItensPage(int value) {
     _$quantityItensPageAtom.reportWrite(value, super.quantityItensPage, () {
       super.quantityItensPage = value;
     });

@@ -161,8 +161,8 @@ class TableDataWidget extends StatelessWidget {
           List<ItemSelect> subList = [];
           if (!controller.loading) {
             int start =
-                (controller.page - 1).abs() * controller.quantityItensPage!;
-            int end = controller.page * controller.quantityItensPage!;
+                (controller.page - 1).abs() * controller.quantityItensPage;
+            int end = controller.page * controller.quantityItensPage;
 
             subList = controller.list
                 .where((element) =>
@@ -494,7 +494,7 @@ class TableDataWidget extends StatelessWidget {
               child: Observer(builder: (_) {
                 if (controller.list.isEmpty) return SizedBox();
                 int total =
-                    ((controller.total) / controller.quantityItensPage!).ceil();
+                    ((controller.total) / controller.quantityItensPage).ceil();
 
                 return Container(
                   child: Row(
@@ -527,14 +527,14 @@ class TableDataWidget extends StatelessWidget {
                                           /// Caso o total de paginas seja menor do que a pagina atuali
                                           if (((controller.total) /
                                                       controller
-                                                          .quantityItensPage!)
+                                                          .quantityItensPage)
                                                   .ceil() <
                                               controller.page) {
                                             /// Seta a ultima pagina como pagina atual
                                             controller.page =
                                                 ((controller.total) /
                                                         controller
-                                                            .quantityItensPage!)
+                                                            .quantityItensPage)
                                                     .ceil();
                                           }
                                           controller.setCorretDataSource();
@@ -600,7 +600,7 @@ class TableDataWidget extends StatelessWidget {
                                               (index) => DropdownMenuItem(
                                                   value: index + 1,
                                                   child: Text(
-                                                      '${(controller.quantityItensPage! * index) + 1}-${controller.quantityItensPage! * (index + 1)}',
+                                                      '${(controller.quantityItensPage * index) + 1}-${controller.quantityItensPage * (index + 1)}',
                                                       style: controller
                                                           .selectModel!
                                                           .theme

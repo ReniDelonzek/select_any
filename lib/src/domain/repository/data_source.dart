@@ -42,7 +42,7 @@ abstract class _DataSourceBase with Store {
       GroupFilterExp? filter});
 
   Future<Stream<ResponseDataDataSource>> getListSearch(
-      String text, int? limit, int offset, SelectModel? selectModel,
+      String text, int limit, int offset, SelectModel? selectModel,
       {Map? data,
       bool? refresh,
       TypeSearch typeSearch = TypeSearch.CONTAINS,

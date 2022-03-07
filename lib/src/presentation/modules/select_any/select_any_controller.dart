@@ -79,9 +79,9 @@ abstract class _SelectAnyBase with Store {
   /// Necessário para persistir o estado da seleção
   Set<ItemSelect> selectedList = {};
 
-  /// Indica a quantidade de itens que estaram disponíveis na página
+  /// Indica a quantidade de itens que estarão disponíveis na página
   @observable
-  int? quantityItensPage = 10;
+  int quantityItensPage = 10;
 
   /// Indica que mais dados estão sendo carregados
   @observable
@@ -154,8 +154,8 @@ abstract class _SelectAnyBase with Store {
       GroupFilterExp groupFilterExp = buildFilterExpression();
       showSearch = groupFilterExp.filterExps.isEmpty;
       loading = true;
-      offset ??= (page - 1) * quantityItensPage!;
-      (await actualDataSource!.getList(quantityItensPage!, offset, selectModel,
+      offset ??= (page - 1) * quantityItensPage;
+      (await actualDataSource!.getList(quantityItensPage, offset, selectModel,
               data: data,
               refresh: refresh,
               itemSort: itemSort,
@@ -238,7 +238,7 @@ abstract class _SelectAnyBase with Store {
       loading = true;
       String text = removeDiacritics(filter.text.trim()).toLowerCase();
       (await actualDataSource!.getListSearch(text, quantityItensPage,
-              offset ?? (page - 1) * quantityItensPage!, selectModel,
+              offset ?? (page - 1) * quantityItensPage, selectModel,
               data: data,
               refresh: refresh,
               typeSearch: typeSearch,
@@ -334,7 +334,7 @@ abstract class _SelectAnyBase with Store {
     --total;
   }
 
-  int get getOffSet => typeDiplay == 1 ? -1 : (page - 1) * quantityItensPage!;
+  int get getOffSet => typeDiplay == 1 ? -1 : (page - 1) * quantityItensPage;
 
   void export(BuildContext context) {
     showDialog(

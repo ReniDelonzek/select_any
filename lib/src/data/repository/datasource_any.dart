@@ -17,7 +17,7 @@ abstract class DataSourceAny extends DataSource {
 
   @override
   Future<Stream<ResponseDataDataSource>> getList(
-    int? limit,
+    int limit,
     int offset,
     SelectModel? selectModel, {
     Map? data,
@@ -35,7 +35,7 @@ abstract class DataSourceAny extends DataSource {
     }
 
     if (itemSort != _currentSort) {
-      listAll = applySortFilters(itemSort, selectModel!.id, listAll);
+      listAll = applySort(itemSort, selectModel!.id, listAll);
     }
 
     List<Map<String, dynamic>> tempList = applyFilters(listAll!, filter);
@@ -44,7 +44,7 @@ abstract class DataSourceAny extends DataSource {
         total: tempList.length,
         data: generateList(subList, offset, selectModel!),
         start: offset,
-        end: offset + limit!));
+        end: offset + limit));
   }
 
   List<Map<String, dynamic>> applyFilters(
@@ -64,12 +64,12 @@ abstract class DataSourceAny extends DataSource {
   }
 
   List<Map<String, dynamic>> getSubList(
-      int offset, int? limit, List<Map<String, dynamic>>? tempList) {
+      int offset, int limit, List<Map<String, dynamic>>? tempList) {
     List<Map<String, dynamic>> subList = [];
     if (tempList == null) return subList;
     if (offset == -1) {
       subList = tempList;
-    } else if (limit! > 0 && limit + offset < tempList.length) {
+    } else if (limit > 0 && limit + offset < tempList.length) {
       subList = tempList.sublist(offset, limit + offset);
     } else if (offset < tempList.length) {
       subList = tempList.sublist(offset);
@@ -81,7 +81,7 @@ abstract class DataSourceAny extends DataSource {
 
   @override
   Future<Stream<ResponseDataDataSource>> getListSearch(
-      String text, int? limit, int offset, SelectModel? selectModel,
+      String text, int limit, int offset, SelectModel? selectModel,
       {Map? data,
       bool? refresh = false,
       TypeSearch typeSearch = TypeSearch.CONTAINS,
@@ -92,14 +92,14 @@ abstract class DataSourceAny extends DataSource {
     List<Map<String, dynamic>>? tempList =
         applyFilterList(typeSearch, listAll!, text);
 
-    tempList = applySortFilters(itemSort, selectModel!.id, tempList);
+    tempList = applySort(itemSort, selectModel!.id, tempList);
 
     List<Map<String, dynamic>> subList = getSubList(offset, limit, tempList);
     return Stream.value(ResponseDataDataSource(
         total: tempList!.length,
         data: generateList(subList, offset, selectModel),
         start: offset,
-        end: offset + limit!,
+        end: offset + limit,
         filter: text));
   }
 
@@ -109,7 +109,7 @@ abstract class DataSourceAny extends DataSource {
     for (int i = 0; i < list.length; i++) {
       if (typeSearch == TypeSearch.NOTCONTAINS) {
         bool contains = false;
-        for (var value in listAll![i].values) {
+        for (var value in list[i].values) {
           if (value != null) {
             if (removeDiacritics(value.toString())
                 .toLowerCase()
@@ -120,13 +120,13 @@ abstract class DataSourceAny extends DataSource {
           }
         }
         if (!contains) {
-          tempList.add(listAll![i]);
+          tempList.add(list[i]);
         }
       } else {
-        for (var value in listAll![i].values) {
+        for (var value in list[i].values) {
           if (value != null) {
             if (filterByTypeSearch(typeSearch, value, text)) {
-              tempList.add(listAll![i]);
+              tempList.add(list[i]);
               break;
             }
           }
@@ -273,32 +273,39 @@ abstract class DataSourceAny extends DataSource {
     return filterAndOk ?? false;
   }
 
-  bool compareValues(value1, value2) {
-    if (value1 == null || value2 == null) return value1 == value2;
-    return removeDiacritics(value1.toString()).toLowerCase().contains(value2);
-  }
-
-  List<Map<String, dynamic>>? applySortFilters(
+  List<Map<String, dynamic>>? applySort(
       ItemSort? itemSort, String keyId, List<Map<String, dynamic>>? list) {
     _currentSort = itemSort;
     try {
       if (itemSort != null && list != null && list.isNotEmpty) {
-        /// Maintain a consistent order for the list
-        var temp = list.sortedBy((e) => e![keyId]);
         final TypeData? typeData = itemSort.line?.typeData;
+
+        /// Maintain a consistent order for the list
+        Iterable<Map<String, dynamic>> temp;
+        if (typeData is TDBoolean) {
+          temp = list.sortedBy((e) => e![keyId] == true ? 1 : 0);
+        } else {
+          temp = list.sortedBy((e) => e![keyId]);
+        }
+
         if (typeData is TDString || typeData is TDNotString) {
           list = _sort(temp as List<Map<String, dynamic>>, itemSort, '',
               typeData: typeData);
         } else if (typeData is TDNumber) {
-          list = _sort(temp as List<Map<String, dynamic>>, itemSort, 0);
+          list = _sort(temp as List<Map<String, dynamic>>, itemSort, 0,
+              typeData: typeData);
         } else if (typeData is TDBoolean) {
-          list = _sort(temp as List<Map<String, dynamic>>, itemSort, false);
+          list = _sort(temp as List<Map<String, dynamic>>, itemSort, false,
+              typeData: typeData);
         } else if (typeData is TDDateTimestamp) {
-          list = _sort(temp as List<Map<String, dynamic>>, itemSort, 0);
+          list = _sort(temp as List<Map<String, dynamic>>, itemSort, 0,
+              typeData: typeData);
         } else if (typeData is TDDateString) {
-          list = _sort(temp as List<Map<String, dynamic>>, itemSort, '');
+          list = _sort(temp as List<Map<String, dynamic>>, itemSort, '',
+              typeData: typeData);
         } else {
-          list = _sort(temp as List<Map<String, dynamic>>, itemSort, null);
+          list = _sort(temp as List<Map<String, dynamic>>, itemSort, null,
+              typeData: typeData);
         }
       }
     } catch (error, stackTrace) {
@@ -341,26 +348,35 @@ abstract class DataSourceAny extends DataSource {
               defaultValue) as List<Map<String, dynamic>>;
         }
       }
-    }
-    if (itemSort.line!.defaultValue != null) {
-      if (itemSort.typeSort == EnumTypeSort.ASC) {
-        return temp.sortedBy((e) =>
-            e![itemSort.line!.key] ??
-            itemSort.line!.defaultValue!(e) ??
-            defaultValue) as List<Map<String, dynamic>>;
-      } else {
-        return temp.sortedByDesc((e) =>
-            e![itemSort.line!.key] ??
-            itemSort.line!.defaultValue!(e) ??
-            defaultValue) as List<Map<String, dynamic>>;
-      }
     } else {
-      if (itemSort.typeSort == EnumTypeSort.ASC) {
-        return temp.sortedBy((e) => e![itemSort.line!.key] ?? defaultValue)
-            as List<Map<String, dynamic>>;
+      if (typeData is TDBoolean) {
+        if (itemSort.typeSort == EnumTypeSort.ASC) {
+          return temp.sortedBy((e) => (e![itemSort.line!.key] ??
+                      itemSort.line!.defaultValue?.call(e) ??
+                      defaultValue) ==
+                  true
+              ? 1
+              : 0) as List<Map<String, dynamic>>;
+        } else {
+          return temp.sortedByDesc((e) => (e![itemSort.line!.key] ??
+                      itemSort.line!.defaultValue?.call(e) ??
+                      defaultValue) ==
+                  true
+              ? 1
+              : 0) as List<Map<String, dynamic>>;
+        }
       } else {
-        return temp.sortedByDesc((e) => e![itemSort.line!.key] ?? defaultValue)
-            as List<Map<String, dynamic>>;
+        if (itemSort.typeSort == EnumTypeSort.ASC) {
+          return temp.sortedBy((e) =>
+              e![itemSort.line!.key] ??
+              itemSort.line!.defaultValue?.call(e) ??
+              defaultValue) as List<Map<String, dynamic>>;
+        } else {
+          return temp.sortedByDesc((e) =>
+              e![itemSort.line!.key] ??
+              itemSort.line!.defaultValue?.call(e) ??
+              defaultValue) as List<Map<String, dynamic>>;
+        }
       }
     }
   }

@@ -1,19 +1,11 @@
 import 'package:msk_utils/extensions/string.dart';
 import 'package:select_any/select_any.dart';
 
-class SqlFilter {
-  String query;
-  List args;
-  SqlFilter({
-    this.query = '1 = 1',
-    this.args = const [],
-  });
-}
-
 class UtilsFilter {
   static SqlFilter addFilterToSQL(String query, GroupFilterExp groupFilterExp) {
     /// Usa toString para criar uma nova string
     query = query.toString().toUpperCase();
+    assert(query.contains('WHERE') || query.contains('\$HAVING'));
 
     SqlFilter sqfFilterWhere =
         _getSQLFromGroupFilter(groupFilterExp, false, []);
@@ -28,6 +20,8 @@ class UtilsFilter {
 
   static SqlFilter _getSQLFromGroupFilter(
       GroupFilterExp groupFilterExp, bool isAgregate, List args) {
+    assert(!groupFilterExp.filterExps.every((element) =>
+        element.line?.key == groupFilterExp.filterExps.first.line?.key));
     if (groupFilterExp.filterExps
         .where((element) => isAgregate == element.line?.isAgregate)
         .isEmpty) {
@@ -120,7 +114,7 @@ class UtilsFilter {
       if (filterExp.line!.typeData is TDNumber) {
         /// Excepcionalmente aqui, passar o valor diretamente na query,
         /// deixar para passar o valor por parâmetro faz a query não funcionar corretamente
-        /// Não tem problema de injeção de dependência pois o valor é num
+        /// Não tem problema de sql injection pois o valor é num
         ///
         /// Faz um parse para int/double para garantir que n seja uma string
         String v = filterExp.value.toString().replaceAll(',', '.');

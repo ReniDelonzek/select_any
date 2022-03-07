@@ -286,7 +286,7 @@ class Line {
     if (enclosure != null &&
         enclosure!.isNotEmpty &&
         !enclosure!.contains('???')) {
-      enclosure = enclosure! + ' ???';
+      enclosure = enclosure!.trim() + ': ???';
     }
   }
 }

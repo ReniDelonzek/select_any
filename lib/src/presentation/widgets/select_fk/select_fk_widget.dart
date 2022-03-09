@@ -42,7 +42,7 @@ class SelectFKWidget extends StatelessWidget {
   final double height;
   final Color? customColor;
   final String? defaultLabel;
-  final Widget? customTextTitle;
+  final Widget? customTitle;
 
   /// Specifies a special title for the list screen
   final String? customListTitle;
@@ -78,7 +78,7 @@ class SelectFKWidget extends StatelessWidget {
       this.height = 45,
       this.customColor,
       this.defaultLabel,
-      this.customTextTitle,
+      this.customTitle,
       this.customListTitle,
       this.dataToSelect,
       this.cleanValue,
@@ -128,7 +128,7 @@ class SelectFKWidget extends StatelessWidget {
               ? CrossAxisAlignment.start
               : CrossAxisAlignment.center,
           children: [
-            customTextTitle ??
+            customTitle ??
                 (title.isNotEmpty
                     ? Padding(
                         padding: const EdgeInsets.only(
@@ -144,119 +144,78 @@ class SelectFKWidget extends StatelessWidget {
                     : SizedBox()),
             typeView != TypeView.selectable
                 ? _buildList(context)
-                : InkWell(onLongPress: () {
-                    clearObj(context);
-                  }, onTap: () async {
-                    if (await (_preValidate())) {
-                      var res = await Navigator.of(context).push(
-                          new MaterialPageRoute(
-                              builder: (BuildContext context) =>
-                                  new SelectAnyModule(controller.selectModel,
-                                      data: dataToSelect?.call())));
-                      if (res != null) {
-                        _validateResult(res);
+                : InkWell(
+                    key: Key('key_inkewell_$title'),
+                    onLongPress: () {
+                      clearObj(context);
+                    },
+                    onTap: () async {
+                      if (await (_preValidate())) {
+                        var res = await Navigator.of(context).push(
+                            new MaterialPageRoute(
+                                builder: (BuildContext context) =>
+                                    new SelectAnyModule(controller.selectModel,
+                                        data: dataToSelect?.call())));
+                        if (res != null) {
+                          _validateResult(res);
+                        }
+                        controller.focusNode.requestFocus();
                       }
-                      controller.focusNode.requestFocus();
-                    }
-                  }, child: Container(child: Observer(builder: (_) {
-                    return MouseRegion(
-                        onEnter: (_) {
-                          controller.showClearIcon = true;
-                        },
-                        onExit: (_) {
-                          controller.showClearIcon = false;
-                        },
-                        child: Container(
-                          height: height,
-                          constraints: BoxConstraints(maxWidth: 500),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Expanded(
-                                child: Container(
-                                  height: height,
-                                  constraints: BoxConstraints(
-                                      minWidth: 45,
-                                      maxWidth: 500,
-                                      minHeight: height,
-                                      maxHeight: 60),
-                                  decoration: _getBoxDecoration(context),
+                    },
+                    child: Container(child: Observer(builder: (_) {
+                      return MouseRegion(
+                          onEnter: (_) {
+                            controller.showClearIcon = true;
+                          },
+                          onExit: (_) {
+                            controller.showClearIcon = false;
+                          },
+                          child: Container(
+                            height: height,
+                            constraints: BoxConstraints(maxWidth: 500),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Expanded(
                                   child: Container(
-                                    padding:
-                                        EdgeInsets.only(left: 15, right: 15),
-                                    alignment: Alignment.centerLeft,
-                                    child: Observer(
-                                      builder: (_) {
-                                        String valor = controller.obj == null
-                                            ? (defaultLabel ??
-                                                'Toque para selecionar')
-                                            : (controller.obj![
-                                                            defaultLine!.key] ==
-                                                        null ||
-                                                    controller
-                                                        .obj![defaultLine!.key]
-                                                        .toString()
-                                                        .isEmpty)
-                                                ? (defaultLine!.defaultValue !=
-                                                        null
-                                                    ? defaultLine!
-                                                            .defaultValue!(
-                                                        controller.obj)
-                                                    : 'Linha vazia')
-                                                : controller.obj
-                                                    .getLineValue(
-                                                        defaultLine!.key)
-                                                    .toString();
-                                        return defaultLine!.customLine == null
-                                            ? Text(
-                                                (defaultLine!.enclosure != null
-                                                    ? defaultLine!.enclosure!
-                                                        .replaceAll(
-                                                            '???', valor)
-                                                    : valor),
-                                                maxLines: 2,
-                                                style: controller.inFocus
-                                                    ? TextStyle(
-                                                        color: Colors.white)
-                                                    : defaultLine!.textStyle
-                                                        ?.call(ObjFormatData(
-                                                            data: valor,
-                                                            map: controller
-                                                                .obj)),
-                                              )
-                                            : defaultLine!.customLine!(
-                                                CustomLineData(
-                                                    data: controller.obj,
-                                                    typeScreen: 1));
-                                      },
-                                    ),
+                                    height: height,
+                                    constraints: BoxConstraints(
+                                        minWidth: 45,
+                                        maxWidth: 500,
+                                        minHeight: height,
+                                        maxHeight: 60),
+                                    decoration: _getBoxDecoration(context),
+                                    child: Container(
+                                        padding: EdgeInsets.only(
+                                            left: 15, right: 15),
+                                        alignment: Alignment.centerLeft,
+                                        child: getWidgetContent()),
                                   ),
                                 ),
-                              ),
-                              AnimatedCrossFade(
-                                firstChild: Container(
-                                  height: height,
-                                  child: IconButton(
-                                      icon: Icon(Icons.close),
-                                      tooltip: 'Limpar',
-                                      onPressed: () {
-                                        clearObj(context);
-                                      }),
-                                ),
-                                secondChild: SizedBox(),
-                                duration: Duration(milliseconds: 300),
-                                reverseDuration: Duration(milliseconds: 300),
-                                crossFadeState: !UtilsPlatform.isMobile &&
-                                        controller.showClearIcon &&
-                                        controller.obj != null
-                                    ? CrossFadeState.showFirst
-                                    : CrossFadeState.showSecond,
-                              )
-                            ],
-                          ),
-                        ));
-                  })))
+                                AnimatedCrossFade(
+                                  firstChild: Container(
+                                    height: height,
+                                    child: IconButton(
+                                        icon: Icon(Icons.close),
+                                        tooltip: 'Limpar',
+                                        onPressed: () {
+                                          clearObj(context);
+                                        }),
+                                  ),
+                                  secondChild: SizedBox(),
+                                  duration: Duration(milliseconds: 300),
+                                  reverseDuration: Duration(milliseconds: 300),
+                                  crossFadeState: !UtilsPlatform.isMobile &&
+                                          controller.showClearIcon &&
+                                          controller.obj != null
+                                      ? CrossFadeState.showFirst
+                                      : CrossFadeState.showSecond,
+                                )
+                              ],
+                            ),
+                          ));
+                    })))
           ]),
     );
   }
@@ -414,5 +373,38 @@ class SelectFKWidget extends StatelessWidget {
                     ? Color(0xFF515151)
                     : Color(0xFFf5f5f5)),
         borderRadius: BorderRadius.circular(20));
+  }
+
+  Widget getWidgetContent() {
+    return Observer(
+      builder: (_) {
+        if (defaultLine!.customLine != null) {
+          return defaultLine!
+              .customLine!(CustomLineData(data: controller.obj, typeScreen: 1));
+        }
+        String value;
+        if (controller.obj == null) {
+          value = defaultLabel ?? 'Toque para selecionar';
+        } else if (controller.obj![defaultLine!.key] == null ||
+            controller.obj![defaultLine!.key].toString().isEmpty) {
+          value = defaultLine!.defaultValue != null
+              ? defaultLine!.defaultValue!(controller.obj)
+              : 'Linha vazia';
+        } else {
+          value = controller.obj.getLineValue(defaultLine!.key).toString();
+        }
+        if (defaultLine!.enclosure != null) {
+          value = defaultLine!.enclosure!.replaceAll('???', value);
+        }
+        return Text(
+          value,
+          maxLines: 2,
+          style: controller.inFocus
+              ? TextStyle(color: Colors.white)
+              : defaultLine!.textStyle
+                  ?.call(ObjFormatData(data: value, map: controller.obj)),
+        );
+      },
+    );
   }
 }

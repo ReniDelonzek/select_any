@@ -13,7 +13,7 @@ typedef List<DateTime> DatasNaoSelecionaveis();
 class SelectRangeDateWidget extends StatelessWidget {
   final SelectRangeDateController controller;
 
-  final String formatDate;
+  //final String formatDate;
   DateTime? dateMin;
   DateTime? dateMax;
   final DateTime? dateStart;
@@ -22,8 +22,7 @@ class SelectRangeDateWidget extends StatelessWidget {
 
   final RangeDateChanged onChanged;
   SelectRangeDateWidget(this.controller, this.onChanged,
-      {this.formatDate = 'dd/MM/yyyy',
-      this.dateMin,
+      {this.dateMin,
       this.dateMax,
       this.dateStart,
       this.dateEnd,
@@ -55,7 +54,7 @@ class SelectRangeDateWidget extends StatelessWidget {
             padding: EdgeInsets.only(left: 15, right: 15),
             alignment: Alignment.center,
             child: Text(
-              this.controller.data,
+              controller.data,
               maxLines: 2,
             ),
           ),
@@ -64,7 +63,7 @@ class SelectRangeDateWidget extends StatelessWidget {
     );
   }
 
-  _showCalendar(BuildContext buildContext) {
+  void _showCalendar(BuildContext buildContext) {
     // recupera as datas aqui para nao precisar recuperar pra cada um dos dias ali em baixo
     List<DateTime> localUnselectableDays = [];
     if (unselectableDays != null) {
@@ -98,17 +97,11 @@ class SelectRangeDateWidget extends StatelessWidget {
                   selectedPeriod: controller.period!,
                   onChanged: (DatePeriod datePediod) {
                     controller.period = datePediod;
-                    this.controller.initialDate = DateTime(
-                        datePediod.start.year,
-                        datePediod.start.month,
-                        datePediod.start.day,
-                        0,
-                        0,
-                        0);
-                    this.controller.finalDate = DateTime(datePediod.end.year,
+                    controller.initialDate = DateTime(datePediod.start.year,
+                        datePediod.start.month, datePediod.start.day, 0, 0, 0);
+                    controller.finalDate = DateTime(datePediod.end.year,
                         datePediod.end.month, datePediod.end.day, 23, 59, 59);
-                    onChanged(
-                        this.controller.initialDate, this.controller.finalDate);
+                    onChanged(controller.initialDate, controller.finalDate);
                   },
                   selectableDayPredicate: (day) {
                     // solução alternativa usada para poder limpar o range de selecao
@@ -148,13 +141,13 @@ class SelectRangeDateWidget extends StatelessWidget {
             ));
   }
 
-  _clearSelection() {
+  void _clearSelection() {
     // seta o periodo como os dias antes da data minima, o que causa um problema na seleção
     // e faz o range de selecao ficar vazio
     controller.period = DatePeriod(dateMin!.subtract(Duration(days: 2)),
         dateMin!.subtract(Duration(days: 1)));
     controller.initialDate = null;
     controller.finalDate = null;
-    onChanged(this.controller.initialDate, this.controller.finalDate);
+    onChanged(controller.initialDate, controller.finalDate);
   }
 }

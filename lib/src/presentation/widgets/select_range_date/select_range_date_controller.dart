@@ -8,6 +8,7 @@ class SelectRangeDateController = _SelectRangeDateController
     with _$SelectRangeDateController;
 
 abstract class _SelectRangeDateController with Store {
+  String dateFormat;
   @observable
   DateTime? initialDate;
   @observable
@@ -17,18 +18,18 @@ abstract class _SelectRangeDateController with Store {
   @computed
   String get data {
     if (initialDate != null && finalDate != null) {
-      return '${initialDate.string('dd/MM/yyyy')} - ${finalDate.string('dd/MM/yyyy')}';
+      return '${initialDate.string(dateFormat)} - ${finalDate.string(dateFormat)}';
     } else
       return 'Toque aqui para selecionar';
   }
 
-  _SelectRangeDateController() {
+  _SelectRangeDateController({this.dateFormat = 'dd/MM/yyyy'}) {
     if (initialDate != null && finalDate != null) {
       period = DatePeriod(initialDate!, finalDate!);
     }
   }
 
-  clear() {
+  void clear() {
     initialDate = null;
     finalDate = null;
   }

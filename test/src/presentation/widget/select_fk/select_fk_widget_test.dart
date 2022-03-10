@@ -154,7 +154,10 @@ void main() {
     ));
     expect(find.text('key1'), findsOneWidget);
     expect(find.byType(Radio), findsNWidgets(data.length));
+  });
 
+  testWidgets('Test selectFK empty List', (tester) async {
+    SelectFKController ctlSelect = SelectFKController();
     await tester.pumpWidget(MaterialApp(
       home: Material(
         child: SingleChildScrollView(
@@ -181,7 +184,102 @@ void main() {
         ),
       ),
     ));
-    await Future.delayed(Duration(seconds: 2));
     expect(find.text('List is Empty'), findsOneWidget);
+  });
+
+  testWidgets('Test selectFK clean obj', (tester) async {
+    SelectFKController ctlSelect = SelectFKController();
+    await tester.pumpWidget(MaterialApp(
+      home: Material(
+        child: SingleChildScrollView(
+          child: SelectFKWidget(
+            'title',
+            'id',
+            [Line('key')],
+            ctlSelect,
+            FontDataAny((_) async => data),
+          ),
+        ),
+      ),
+    ));
+    ctlSelect.obj = {'key': 'Test value'};
+    await tester.pump();
+    expect(find.text('Test value'), findsOneWidget);
+    Widget widgetInkWell = tester.widget(find.byKey(Key('key_inkewell_title')));
+    expect(widgetInkWell, isNotNull);
+    expect(widgetInkWell.runtimeType, InkWell);
+    (widgetInkWell as InkWell).onLongPress!();
+    await tester.pump(); // schedule animation
+    //expect(find.text('Campo limpo com sucesso'), findsOneWidget);
+    expect(ctlSelect.obj, isNull);
+  });
+
+  testWidgets('Test selectFK select element list', (tester) async {
+    SelectFKController ctlSelect = SelectFKController();
+    await tester.pumpWidget(MaterialApp(
+      home: Material(
+        child: SingleChildScrollView(
+          child: SelectFKWidget(
+              'title', 'id', [Line('key')], ctlSelect, dataSource,
+              typeView: TypeView.radioList),
+        ),
+      ),
+    ));
+    expect(find.text('Lista vazia'), findsNothing);
+
+    expect(find.byKey(Key('radio_select_0')), findsOneWidget);
+    Radio radio = tester.widget(find.byKey(Key('radio_select_0')));
+    radio.onChanged!(true);
+    await tester.pump();
+    expect(ctlSelect.obj, data.first);
+
+    ctlSelect.clear();
+
+    await tester.pumpWidget(MaterialApp(
+      home: Material(
+        child: SingleChildScrollView(
+          child: SelectFKWidget(
+            'title',
+            'id',
+            [Line('key')],
+            ctlSelect,
+            dataSource,
+            typeView: TypeView.radioList,
+            allowSelect: () async => false,
+          ),
+        ),
+      ),
+    ));
+    Radio radio2 = tester.widget(find.byKey(Key('radio_select_0')));
+    radio2.onChanged!(true);
+    await tester.pump();
+    expect(ctlSelect.obj, isNull);
+
+    await tester.pumpWidget(MaterialApp(
+      home: Material(
+        child: SingleChildScrollView(
+          child: SelectFKWidget(
+            'title',
+            'id',
+            [Line('key')],
+            ctlSelect,
+            dataSource,
+            typeView: TypeView.radioList,
+            selectedFK: (data, cb) async {
+              return data!['id'] == 2;
+            },
+          ),
+        ),
+      ),
+    ));
+    Radio radio3 = tester.widget(find.byKey(Key('radio_select_0')));
+    radio3.onChanged!(true);
+    await tester.pump();
+    expect(ctlSelect.obj, isNull);
+
+    Radio radio4 = tester.widget(find.byKey(Key('radio_select_2')));
+    radio4.onChanged!(true);
+    await tester.pump();
+    expect(ctlSelect.obj, data[2]);
   });
 }

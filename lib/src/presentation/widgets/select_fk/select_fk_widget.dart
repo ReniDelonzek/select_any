@@ -7,7 +7,7 @@ import 'package:select_any/src/presentation/widgets/utils_snack.dart';
 
 typedef SelectedFK = Future<bool> Function(Map<String, dynamic>? obj, Function);
 
-typedef ValidationSelect = Future<bool> Function(Map<String, dynamic>? obj);
+typedef AllowSelect = Future<bool> Function();
 
 typedef ConvertValue = Future<Map<String, dynamic>> Function(dynamic obj);
 
@@ -15,17 +15,32 @@ enum TypeView { selectable, radioList, customChipList, dropdown }
 
 // ignore: must_be_immutable
 class SelectFKWidget extends StatelessWidget {
+  /// Prodive a controller
   final SelectFKController controller;
+
+  /// Title displayed above selector
   final String title;
+
+  /// Id Column that contains some unique identifier in the [dataSource]
   final String id;
+
+  /// Source of data displayed for selection
   final DataSource dataSource;
+
+  /// Lines that should be displayed (if the selection type is different [TypeView.selectable], only the first one is displayed)
   final List<Line> lines;
 
-  /// Dispara toda fez que um registro é selecionado
-  /// Caso retorne false, a seleção é cancelada
+  /// Calls every time a record is selected. If it returns false, the selection is canceled
   final SelectedFK? selectedFK;
-  final ValidationSelect? preValidationSelect;
+
+  /// Function to validate if the selection is allowed
+  /// it can be determined based on the state of other fields for example
+  final AllowSelect? allowSelect;
+
+  /// List screen actions
   final List<ActionSelect>? actions;
+
+  /// Buttons screen actions
   final List<ActionSelect>? buttons;
   Line? defaultLine;
   final bool isRequired;
@@ -38,37 +53,49 @@ class SelectFKWidget extends StatelessWidget {
   /// Caso seja necessário aplicar alguma conversão do valor selecionado
   final ConvertValue? convertValue;
 
-  ///
+  /// Height the selector widget
   final double height;
+
+  /// Custom color the selector widget
   final Color? customColor;
-  final String? defaultLabel;
+
+  /// Label in the selector when value is null
+  final String defaultLabel;
+
+  /// Custom title above the selector
   final Widget? customTitle;
 
   /// Specifies a special title for the list screen
   final String? customListTitle;
 
+  /// Provide data that will be sent to the datasource
   final Map<String, dynamic> Function()? dataToSelect;
 
   /// Triggered when the value is cleared by the user
   final Function? cleanValue;
 
+  /// Show when typeView is radioList, customChipList, dropdown and list data is empty
   final Widget? customEmptyList;
 
+  /// Padding chip when typeView is customChipList
   final EdgeInsets customChipPadding;
 
   /// If the TypeView is [radioList, customChipList, dropdown]
   /// the function is activated, making it possible to perform a pre-selection
   final Future<Map<String, dynamic>?> Function(ObservableList<ItemSelect>)?
-      setDefaultSelection;
+      setDefaultSelectionList;
 
   /// When in list mode, display on cards regardless of the number of lines
   final bool? showInCards;
+
+  /// Custom message when field is cleared
+  final String messageWhenValueCleared;
 
   SelectFKWidget(
       this.title, this.id, this.lines, this.controller, this.dataSource,
       {this.defaultLine,
       this.selectedFK,
-      this.preValidationSelect,
+      this.allowSelect,
       this.actions,
       this.buttons,
       this.isRequired = false,
@@ -77,7 +104,7 @@ class SelectFKWidget extends StatelessWidget {
       this.convertValue,
       this.height = 45,
       this.customColor,
-      this.defaultLabel,
+      this.defaultLabel = 'Toque para selecionar',
       this.customTitle,
       this.customListTitle,
       this.dataToSelect,
@@ -85,8 +112,9 @@ class SelectFKWidget extends StatelessWidget {
       this.customEmptyList,
       this.customChipPadding =
           const EdgeInsets.only(top: 12, bottom: 12, left: 16, right: 16),
-      this.setDefaultSelection,
-      this.showInCards}) {
+      this.setDefaultSelectionList,
+      this.showInCards,
+      this.messageWhenValueCleared = 'Campo limpo com sucesso'}) {
     if (this.defaultLine == null) {
       this.defaultLine = lines.first;
     }
@@ -106,13 +134,13 @@ class SelectFKWidget extends StatelessWidget {
           showInCards: showInCards,
           theme: theme ?? SelectModelTheme());
     }
-    if (isRequired == true) {
+    if (isRequired) {
       controller.checkSingleRow();
     }
     if (typeView != TypeView.selectable) {
       controller.loadData(data: dataToSelect?.call());
     }
-    controller.setDefaultSelection = setDefaultSelection;
+    controller.setDefaultSelection = setDefaultSelectionList;
   }
 
   @override
@@ -267,6 +295,7 @@ class SelectFKWidget extends StatelessWidget {
                       return Radio<dynamic>(
                         value: element.object,
                         groupValue: controller.obj,
+                        key: Key('radio_select_${element.id}'),
                         onChanged: (value) {
                           _validateSelectList(element.object);
                         },
@@ -353,8 +382,7 @@ class SelectFKWidget extends StatelessWidget {
   }
 
   Future<bool> _preValidate() async {
-    return (preValidationSelect == null ||
-        await preValidationSelect!(controller.obj) == true);
+    return (allowSelect == null || await allowSelect!() == true);
   }
 
   Future<void> _convertValue(res) async {
@@ -384,7 +412,7 @@ class SelectFKWidget extends StatelessWidget {
         }
         String value;
         if (controller.obj == null) {
-          value = defaultLabel ?? 'Toque para selecionar';
+          value = defaultLabel;
         } else if (controller.obj![defaultLine!.key] == null ||
             controller.obj![defaultLine!.key].toString().isEmpty) {
           value = defaultLine!.defaultValue != null

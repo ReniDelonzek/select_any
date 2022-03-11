@@ -34,7 +34,10 @@ void main() {
     ));
     expect(find.text('title'), findsNothing);
     expect(find.text('My custom title'), findsOneWidget);
+  });
 
+  testWidgets('Test customLabel', (tester) async {
+    SelectFKController ctlSelect = SelectFKController();
     await tester.pumpWidget(MaterialApp(
       home: Material(
         child: SelectFKWidget(
@@ -42,7 +45,6 @@ void main() {
             defaultLabel: 'My default label'),
       ),
     ));
-    expect(find.text('title'), findsNothing);
     expect(find.text('My default label'), findsOneWidget);
   });
 

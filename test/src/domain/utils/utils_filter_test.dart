@@ -57,7 +57,6 @@ void main() {
             FilterExpColumn(line: Line('key3'), value: 'test'),
             FilterExpColumn(line: Line('key4'), value: 'false'),
           ]));
-      print(res.query);
       expect(
           res.query.contains(
               'key LIKE \$1 AND key2 LIKE \$2 AND key3 LIKE \$3 AND key4 LIKE \$4'),
@@ -85,7 +84,6 @@ void main() {
                 value: '4',
                 typeSearch: TypeSearch.NOTCONTAINS),
           ]));
-      print(res.args);
       expect(
           res.query.contains(
               'key LIKE \$1 OR key2 LIKE \$2 OR key3 LIKE \$3 OR key4 != \$4'),

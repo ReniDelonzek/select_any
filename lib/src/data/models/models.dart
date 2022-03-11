@@ -177,20 +177,25 @@ class SelectModelThemeTable {
   /// Custom width column
   final Map<int, TableColumnWidth>? widthTableColumns;
 
-  final TextStyle? headerTextStyle;
+  final TextStyle headerTextStyle;
 
   final Color? bottomIconsColor;
 
   /// Table padding
   final EdgeInsetsGeometry tablePadding;
 
+  final TextStyle headerActionsTextStyle;
+
   const SelectModelThemeTable(
       {this.headerColor = const Color(0xFF00823A),
       this.showTableInCard = true,
       this.widthTableColumns,
       this.tablePadding = const EdgeInsets.only(left: 16, right: 16),
-      this.headerTextStyle,
-      this.bottomIconsColor});
+      this.headerTextStyle = const TextStyle(
+          fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+      this.bottomIconsColor,
+      this.headerActionsTextStyle =
+          const TextStyle(fontWeight: FontWeight.bold, color: Colors.white)});
 }
 
 class Line {
@@ -230,7 +235,7 @@ class Line {
 
   bool enableSorting;
 
-  bool? showTextInTableScroll;
+  bool alwaysShowTextTableInScroll;
 
   /// Indicates whether the line must support filters specific to it
   bool? enableLineFilter;
@@ -258,7 +263,7 @@ class Line {
       this.maxLines = 1,
       this.minLines,
       this.enableSorting = true,
-      this.showTextInTableScroll,
+      this.alwaysShowTextTableInScroll = false,
       this.enableLineFilter,
       this.showSizedBoxWhenEmpty = false,
       this.tableTooltip,

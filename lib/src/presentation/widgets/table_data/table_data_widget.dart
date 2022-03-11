@@ -285,11 +285,7 @@ class TableDataWidget extends StatelessWidget {
                                     alignment: Alignment.center,
                                     child: Text('Ações',
                                         style: controller.selectModel!.theme
-                                                .tableTheme.headerTextStyle ??
-                                            TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 16,
-                                                color: Colors.white)),
+                                            .tableTheme.headerActionsTextStyle),
                                   ),
                                 ],
                               );

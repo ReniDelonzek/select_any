@@ -5,7 +5,6 @@ class ButtonChip extends StatelessWidget {
   final String title;
   final bool isSelected;
   final GestureTapCallback? onTap;
-  final Color? textColor;
   final EdgeInsetsGeometry padding;
   final TextStyle? textStyle;
   final Function()? onLongPress;
@@ -13,7 +12,6 @@ class ButtonChip extends StatelessWidget {
   ButtonChip(this.title,
       {this.isSelected = false,
       this.onTap,
-      this.textColor,
       this.textStyle,
       this.padding =
           const EdgeInsets.only(top: 12, bottom: 12, left: 16, right: 16),

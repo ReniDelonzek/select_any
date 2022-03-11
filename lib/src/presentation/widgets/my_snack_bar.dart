@@ -165,6 +165,7 @@ class MySnackBar extends StatefulWidget implements SnackBar {
       duration: duration,
       animation: newAnimation,
       onVisible: onVisible,
+      placement: placement,
     );
   }
 

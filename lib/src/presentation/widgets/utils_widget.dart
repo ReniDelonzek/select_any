@@ -18,12 +18,12 @@ class UtilsWidget {
       {bool generateActions = true}) {
     List<DataCell> cells = [];
     for (MapEntry mapEntry in itemSelect.strings!.entries) {
-      cells.add(DataCell(getLinha(
+      cells.add(DataCell(getWidgetLine(
           selectModel,
           mapEntry,
           itemSelect.object is Map ? itemSelect.object : itemSelect.strings,
           typeScreen, () {
-        onSelected(itemSelect, !(itemSelect.isSelected), index);
+        onSelected(itemSelect, !itemSelect.isSelected, index);
       })));
     }
     if (generateActions && selectModel.actions?.isNotEmpty == true) {
@@ -59,29 +59,22 @@ class UtilsWidget {
             tooltip: e.tableTooltip,
             onSort: e.enableSorting ? onSort : null,
             label: Text(e.name ?? e.key.upperCaseFirstLower()!,
-                style: selectModel.theme.tableTheme.headerTextStyle ??
-                    TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white))))
+                style: selectModel.theme.tableTheme.headerTextStyle)))
         .toList()
       ..addAll(generateActions && selectModel.actions?.isNotEmpty == true
           ? [
               DataColumn(
                   label: Text('Ações',
-                      style: selectModel.theme.tableTheme.headerTextStyle ??
-                          TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white)))
+                      style:
+                          selectModel.theme.tableTheme.headerActionsTextStyle))
             ]
           : []);
   }
 
-  static Widget getLinha(SelectModel selectModel, MapEntry item, Map? map,
+  static Widget getWidgetLine(SelectModel selectModel, MapEntry item, Map? map,
       int typeScreen, void Function()? onTap) {
     Line? linha =
         selectModel.lines.firstWhereOrNull((linha) => linha.key == item.key);
-    ObjFormatData objFormatData = ObjFormatData(data: item.value, map: map);
     if (linha == null) {
       return SizedBox();
     }
@@ -89,6 +82,7 @@ class UtilsWidget {
       return linha
           .customLine!(CustomLineData(data: map, typeScreen: typeScreen));
     } else {
+      ObjFormatData objFormatData = ObjFormatData(data: item.value, map: map);
       if (linha.formatData != null) {
         return _getText(linha.formatData!.formatData(objFormatData), onTap,
             linha, selectModel, objFormatData);
@@ -113,14 +107,14 @@ class UtilsWidget {
 
   static Widget _getText(String? value, void Function()? onTap, Line linha,
       SelectModel selectModel, ObjFormatData objFormatData) {
-    if ((linha.maxLines) > 3 || linha.showTextInTableScroll == true) {
+    if (linha.alwaysShowTextTableInScroll || linha.maxLines > 3) {
       return SingleChildScrollView(
           child: Padding(
         padding: const EdgeInsets.only(top: 2, bottom: 2),
         child: _selectableText(value, onTap, linha, selectModel, objFormatData),
       ));
-    } else
-      return _selectableText(value, onTap, linha, selectModel, objFormatData);
+    }
+    return _selectableText(value, onTap, linha, selectModel, objFormatData);
   }
 
   static Widget _selectableText(String? value, void Function()? onTap,
@@ -208,7 +202,7 @@ class UtilsWidget {
     }
   }
 
-  static void exibirListaAcoes(
+  static void showListActions(
       BuildContext context,
       ItemSelect itemSelect,
       int index,
@@ -236,12 +230,12 @@ class UtilsWidget {
         });
   }
 
-  static cbOnTap(BuildContext context, ItemSelect itemSelect, int index,
+  static void cbOnTap(BuildContext context, ItemSelect itemSelect, int index,
       SelectAnyController controller) {
     if (controller.selectModel!.typeSelect == TypeSelect.ACTION &&
         controller.selectModel!.actions != null) {
       if (controller.selectModel!.actions!.length > 1) {
-        UtilsWidget.exibirListaAcoes(
+        UtilsWidget.showListActions(
             context,
             itemSelect,
             index,
@@ -273,7 +267,7 @@ class UtilsWidget {
       int index, SelectAnyController controller) {
     if (controller.selectModel!.actions != null) {
       if (controller.selectModel!.actions!.length > 1) {
-        UtilsWidget.exibirListaAcoes(
+        UtilsWidget.showListActions(
             context,
             itemSelect,
             index,

@@ -1,7 +1,7 @@
 import 'package:diacritic/diacritic.dart';
 import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
-import 'package:msk_utils/models/item_select.dart';
+import 'package:msk_utils/msk_utils.dart';
 import 'package:select_any/src/data/models/models.dart';
 import 'package:select_any/src/domain/repository/data_source.dart';
 
@@ -49,7 +49,7 @@ abstract class _SelectAnyExpandedBase with Store {
         List<ItemSelect> tempList = [];
         String text = removeDiacritics(searchText.toLowerCase());
         for (int i = 0; i < listaOriginal.length; i++) {
-          for (var value in listaOriginal[i].strings!.values) {
+          for (var value in listaOriginal[i].strings.values) {
             if (value != null) {
               if (removeDiacritics(value.toString())
                       .toLowerCase()

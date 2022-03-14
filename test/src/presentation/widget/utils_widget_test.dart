@@ -29,7 +29,7 @@ void main() {
       home: Material(child: Builder(builder: (context) {
         return Scaffold(
           body: DataTable(
-            columns: items.first.strings!.keys
+            columns: items.first.strings.keys
                 .map((e) => DataColumn(label: Text(e)))
                 .toList(),
             rows: [
@@ -59,7 +59,7 @@ void main() {
       home: Material(child: Builder(builder: (context) {
         return Scaffold(
           body: DataTable(
-            columns: items.first.strings!.keys
+            columns: items.first.strings.keys
                 .map((e) => DataColumn(label: Text(e)))
                 .toList()
               ..addAll((selectModel.actions
@@ -106,7 +106,7 @@ void main() {
       home: Material(child: Builder(builder: (context) {
         return Scaffold(
           body: DataTable(
-            columns: items.first.strings!.keys
+            columns: items.first.strings.keys
                 .map((e) => DataColumn(label: Text(e)))
                 .toList(),
             rows: [

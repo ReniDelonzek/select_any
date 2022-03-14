@@ -444,11 +444,11 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
                     value: itemSelect.isSelected)
                 : null,
             title: _getLinha(
-                    itemSelect.strings!.entries.first, itemSelect.object) ??
+                    itemSelect.strings.entries.first, itemSelect.object) ??
                 SizedBox(),
-            subtitle: (itemSelect.strings!.length > 1)
+            subtitle: (itemSelect.strings.length > 1)
                 ? _getLinha(
-                    itemSelect.strings!.entries.toList()[1], itemSelect.object)
+                    itemSelect.strings.entries.toList()[1], itemSelect.object)
                 : null,
             onTap: () async {
               UtilsWidget.cbOnTap(
@@ -488,13 +488,13 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
                           child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children:
-                            _getTexts(itemSelect.strings!, itemSelect.object),
+                            _getTexts(itemSelect.strings, itemSelect.object),
                       )),
                     ],
                   )
                 : Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: _getTexts(itemSelect.strings!, itemSelect.object),
+                    children: _getTexts(itemSelect.strings, itemSelect.object),
                   ),
           ),
         ),

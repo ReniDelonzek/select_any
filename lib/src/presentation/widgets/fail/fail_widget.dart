@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:msk_utils/utils/utils_platform.dart';
+import 'package:msk_utils/msk_utils.dart';
 
 class FailWidget extends StatelessWidget {
   final String message;

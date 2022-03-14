@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:msk_utils/utils/utils_platform.dart';
+import 'package:msk_utils/msk_utils.dart';
 import 'dart:io' as io;
 
 import 'package:path_provider/path_provider.dart';

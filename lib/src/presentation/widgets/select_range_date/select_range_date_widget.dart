@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_date_pickers/flutter_date_pickers.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:msk_utils/extensions/date.dart';
+import 'package:msk_utils/msk_utils.dart';
 
 import 'select_range_date_controller.dart';
 

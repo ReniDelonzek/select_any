@@ -1,11 +1,7 @@
 import 'package:diacritic/diacritic.dart';
 import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
-import 'package:msk_utils/models/item_select.dart';
-import 'package:msk_utils/utils/utils_hive.dart';
-import 'package:msk_utils/utils/utils_platform.dart';
-import 'package:msk_utils/utils/utils_sentry.dart';
-import 'package:msk_utils/extensions/list.dart';
+import 'package:msk_utils/msk_utils.dart';
 import 'package:select_any/select_any.dart';
 
 part 'select_any_controller.g.dart';
@@ -30,7 +26,7 @@ abstract class _SelectAnyBase with Store {
     ObservableList<ItemSelectTable> tempList = ObservableList();
     String text = removeDiacritics(searchText.toLowerCase());
     for (int i = 0; i < list.length; i++) {
-      for (var value in list[i].strings!.values) {
+      for (var value in list[i].strings.values) {
         if (value != null) {
           if (removeDiacritics(value.toString()).toLowerCase().contains(text) ==
               true) {
@@ -208,7 +204,7 @@ abstract class _SelectAnyBase with Store {
             } else {
               list.add(item);
             }
-            list = ObservableList.of(list.sortedBy((e) => e!.position!));
+            list = ObservableList.of(list.sortedBy((e) => e.position!));
           });
           loading = false;
           loadingMore = false;

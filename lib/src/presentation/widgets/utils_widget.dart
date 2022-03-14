@@ -17,7 +17,7 @@ class UtilsWidget {
       DataSource? dataSource,
       {bool generateActions = true}) {
     List<DataCell> cells = [];
-    for (MapEntry mapEntry in itemSelect.strings!.entries) {
+    for (MapEntry mapEntry in itemSelect.strings.entries) {
       cells.add(DataCell(getWidgetLine(
           selectModel,
           mapEntry,

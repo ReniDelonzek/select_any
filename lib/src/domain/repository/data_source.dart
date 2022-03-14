@@ -91,9 +91,9 @@ abstract class _DataSourceBase with Store {
               //remove a ultima virgula
               lineValue = lineValue.substring(0, lineValue.length - 2);
             }
-            itemSelect.strings![line.key] = lineValue;
+            itemSelect.strings[line.key] = lineValue;
           } else {
-            itemSelect.strings![line.key] = a.getLineValue(line.key);
+            itemSelect.strings[line.key] = a.getLineValue(line.key);
           }
         }
 

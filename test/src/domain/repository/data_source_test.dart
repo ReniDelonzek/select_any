@@ -51,7 +51,7 @@ void main() {
           SelectModel('title', 'id', [Line('intValue')], dataSourceAny,
               TypeSelect.SIMPLE));
       expect(list.length, data1.length);
-      expect(list.first.strings!.length, 1);
+      expect(list.first.strings.length, 1);
 
       /// Todos os objetos são iguais
       expect(
@@ -119,7 +119,7 @@ void main() {
           0,
           SelectModel('title', 'id', [Line('object/name')], dataSourceAny,
               TypeSelect.SIMPLE));
-      expect(list5.first.strings!.values.first, 'Test0');
+      expect(list5.first.strings.values.first, 'Test0');
     });
     test('Test extract list data', () {
       ///
@@ -152,9 +152,9 @@ void main() {
           ));
 
       /// Teste lista
-      expect(list5.first.strings!.values.first, 'Name0, Name1, Name2');
+      expect(list5.first.strings.values.first, 'Name0, Name1, Name2');
       // Teste lista com objeto
-      expect(list5.first.strings!['object2'],
+      expect(list5.first.strings['object2'],
           'PersonName0, PersonName1, PersonName2');
     });
   });

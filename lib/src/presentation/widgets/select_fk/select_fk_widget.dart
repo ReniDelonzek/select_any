@@ -302,7 +302,7 @@ class SelectFKWidget extends StatelessWidget {
                       );
                     }),
                     SizedBox(width: 8),
-                    Text(element.strings!.values.first ?? '',
+                    Text(element.strings.values.first ?? '',
                         style: theme.textTheme.subtitle1)
                   ],
                 ),
@@ -317,7 +317,7 @@ class SelectFKWidget extends StatelessWidget {
               padding: const EdgeInsets.only(top: 8),
               child: Observer(builder: (_) {
                 return ButtonChip(
-                  '${element.strings?.values.first ?? ''}',
+                  '${element.strings.values.firstOrNull ?? ''}',
                   isSelected: controller.obj == element.object,
                   onTap: () {
                     _validateSelectList(element.object);
@@ -347,7 +347,8 @@ class SelectFKWidget extends StatelessWidget {
               items: controller.list
                   .map((element) => DropdownMenuItem(
                       value: element.object,
-                      child: Text('${element.strings?.values.first ?? ''}')))
+                      child:
+                          Text('${element.strings.values.firstOrNull ?? ''}')))
                   .toList()),
         ),
       ),

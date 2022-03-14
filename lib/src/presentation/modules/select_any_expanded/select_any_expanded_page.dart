@@ -109,7 +109,7 @@ class _SelectAnyExpandedPageState extends State<SelectAnyExpandedPage> {
                         child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children:
-                          _getTexts(itemSelect.strings!, itemSelect.object),
+                          _getTexts(itemSelect.strings, itemSelect.object),
                     )),
                     if (itemSelect.items?.isNotEmpty == true)
                       IconButton(

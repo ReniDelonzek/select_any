@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:msk_utils/extensions/string.dart';
+import 'package:msk_utils/msk_utils.dart';
 import 'package:select_any/select_any.dart';
 
 void main() {

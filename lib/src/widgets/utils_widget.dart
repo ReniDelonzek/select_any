@@ -166,7 +166,7 @@ class UtilsWidget {
           if (itemSelect != null &&
               (itemSelect.object as Map).containsKey(dado.key)) {
             dados.addAll({dado.value: itemSelect.object[dado.key]});
-          } else if (data!.containsKey(dado.key)) {
+          } else if (data != null && data.containsKey(dado.key)) {
             dados.addAll({dado.value: data[dado.key]});
           }
         }

@@ -317,9 +317,8 @@ class ItemDataFilterRange extends ItemDataFilter {
 
 class ItemSelectTable extends ItemSelect {
   int? position;
-  ItemSelectTable({
-    this.position,
-  });
+  ItemSelectTable({this.position, Map<String, dynamic>? strings})
+      : super(strings: strings);
 }
 
 typedef BuildWidget = Widget Function(

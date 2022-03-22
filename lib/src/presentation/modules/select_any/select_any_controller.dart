@@ -160,25 +160,7 @@ abstract class _SelectAnyBase with Store {
           .listen((event) {
         error = null;
         if (filter.text.trim().isEmpty) {
-          /// Caso seja -1, não remove nada pois ela deve retornar todos os registros
-          if (offset! > -1) {
-            list.clear();
-            /* 
-            /// Remove todos os registros que o id não consta no range retornado
-            // list.removeWhere((element) {
-            //   return element.position! <= event.end &&
-            //       element.position! >= event.start &&
-            //       !event.data.any((e2) {
-            //         return e2.id == element.id;
-            //       });
-            // });
-            */
-          } else {
-            /// Caso retorne uma quantidade diferente do que já existe na lista, limpa a mesma
-            if (list.length != event.data.length) {
-              list.clear();
-            }
-          }
+          list.clear();
 
           /// Não aplica no debug/profile para captura de erros
           if (UtilsPlatform.isRelease) {
@@ -194,19 +176,9 @@ abstract class _SelectAnyBase with Store {
             } else {
               item.isSelected = present;
             }
-            int index = list.indexWhere((element) => element.id == item.id);
-            if (index > -1) {
-              if (item.position != null && index != item.position!) {
-                list.removeAt(index);
-                list.add(item);
-              } else {
-                list[index] = item;
-              }
-            } else {
-              list.add(item);
-            }
-            list = ObservableList.of(list.sortedBy((e) => e.position!));
+            list.add(item);
           });
+          list = ObservableList.of(list.sortedBy((e) => e.position!));
           loading = false;
           loadingMore = false;
           loaded = true;
@@ -246,14 +218,7 @@ abstract class _SelectAnyBase with Store {
         /// Só altera se o texto ainda for idêntico ao pesquisado
         if (removeDiacritics(filter.text.trim()).toLowerCase() == text &&
             text == event.filter) {
-          /// Remove todos os registros que o id não consta no range retornado
-          list.removeWhere((element) {
-            return element.position! <= event.end &&
-                element.position! >= event.start &&
-                !event.data.any((e2) {
-                  return e2.id == element.id;
-                });
-          });
+          list.clear();
 
           /// Não aplica no debug/profile para captura de erros
           if (UtilsPlatform.isRelease) {
@@ -269,14 +234,9 @@ abstract class _SelectAnyBase with Store {
             } else {
               item.isSelected = present;
             }
-
-            int index = list.indexWhere((element) => element.id == item.id);
-            if (index > -1) {
-              list[index] = item;
-            } else {
-              list.add(item);
-            }
+            list.add(item);
           });
+          list = ObservableList.of(list.sortedBy((e) => e.position!));
           total = event.total ?? 0;
           loading =
               !(removeDiacritics(filter.text.trim()).toLowerCase() == text);

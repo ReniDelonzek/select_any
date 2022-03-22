@@ -426,7 +426,7 @@ packages:
       name: msk_utils
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.2"
+    version: "1.0.3"
   package_config:
     dependency: transitive
     description:

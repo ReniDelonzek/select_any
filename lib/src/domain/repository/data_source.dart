@@ -76,7 +76,8 @@ abstract class _DataSourceBase with Store {
       }
       //caso nao seja pré-selecionado ou a regra é exibir os pre-selecionados
       if (preSelected == false || selectModel.showPreSelected == true) {
-        ItemSelectTable itemSelect = ItemSelectTable();
+        ItemSelectTable itemSelect =
+            ItemSelectTable(strings: Map<String, dynamic>());
         for (Line line in selectModel.lines) {
           // caso seja uma lista
           if (line.listKeys != null) {

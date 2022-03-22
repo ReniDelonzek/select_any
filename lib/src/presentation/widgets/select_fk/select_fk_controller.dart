@@ -50,6 +50,7 @@ abstract class _SelectFKBase with Store {
 
   /// Returns the value of the key, if the object is not null and the value is in the object
   dynamic getValueKey(String key) {
+    assert(key.isNotEmpty);
     if (_obj == null || !_obj!.containsKey(key)) {
       return null;
     }

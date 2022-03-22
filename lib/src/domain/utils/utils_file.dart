@@ -6,7 +6,7 @@ import 'dart:io' as io;
 import 'package:path_provider/path_provider.dart';
 import 'package:share_extend/share_extend.dart';
 
-class UtilsFile {
+class UtilsFileSelect {
   static Future<File> saveFileString(String s,
       {String? fileName,
       String? extensionFile,

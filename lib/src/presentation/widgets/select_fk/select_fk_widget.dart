@@ -397,7 +397,7 @@ class SelectFKWidget extends StatelessWidget {
     return BoxDecoration(
         color: customColor ??
             (controller.inFocus
-                ? UtilsColor.getAccentColor(context)
+                ? UtilsColorSelect.getAccentColor(context)
                 : Theme.of(context).brightness == Brightness.dark
                     ? Color(0xFF515151)
                     : Color(0xFFf5f5f5)),

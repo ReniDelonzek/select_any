@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class UtilsColor {
+class UtilsColorSelect {
   static Color getAccentColor(BuildContext context) {
     return Theme.of(context).colorScheme.secondary;
   }

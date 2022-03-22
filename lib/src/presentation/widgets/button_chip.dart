@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:select_any/select_any.dart';
+import 'package:select_any/src/domain/utils/utils_color.dart';
 
 class ButtonChip extends StatelessWidget {
   final String title;
@@ -22,12 +22,12 @@ class ButtonChip extends StatelessWidget {
     return Container(
         decoration: new BoxDecoration(
             color: isSelected == true
-                ? UtilsColor.getAccentColor(context)
+                ? UtilsColorSelect.getAccentColor(context)
                 : Colors.white,
             borderRadius: BorderRadius.all(Radius.circular(24.0)),
             border: new Border.all(
                 color: Theme.of(context).brightness == Brightness.light
-                    ? UtilsColor.getAccentColor(context)
+                    ? UtilsColorSelect.getAccentColor(context)
                     : Colors.transparent)),
         child: InkWell(
           onLongPress: onLongPress,
@@ -47,7 +47,7 @@ class ButtonChip extends StatelessWidget {
                       letterSpacing: 0.27,
                       color: (isSelected
                           ? Colors.white
-                          : UtilsColor.getAccentColor(context))),
+                          : UtilsColorSelect.getAccentColor(context))),
             ),
           ),
         ));

@@ -419,6 +419,9 @@ class SelectFKWidget extends StatelessWidget {
           value = defaultLine!.defaultValue != null
               ? defaultLine!.defaultValue!(controller.obj)
               : 'Linha vazia';
+        } else if (defaultLine!.formatData != null) {
+          value = defaultLine!.formatData!.formatData(ObjFormatData(
+              data: controller.obj![defaultLine!.key], map: controller.obj));
         } else {
           value = controller.obj.getLineValue(defaultLine!.key).toString();
         }

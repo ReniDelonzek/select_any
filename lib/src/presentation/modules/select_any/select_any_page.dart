@@ -75,7 +75,6 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
   @override
   Widget build(BuildContext context) {
     if (widget.controller!.dynamicScreen) {
-      //WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (MediaQuery.of(context).size.width > 800) {
         if (widget.controller!.typeDiplay != 2) {
           widget.controller!.typeDiplay = 2;
@@ -83,6 +82,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
         }
       } else {
         if (widget.controller!.typeDiplay != 1) {
+          widget.controller!.clearFilters(callDataSource: false);
           widget.controller!.typeDiplay = 1;
           if (!(widget.controller!.actualDataSource?.supportPaginate ??
                   false) &&

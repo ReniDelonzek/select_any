@@ -39,3 +39,7 @@
 
 * Fix small bugs
 
+## 0.0.7
+
+* Add some tests and re-write structure
+

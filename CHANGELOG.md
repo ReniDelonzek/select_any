@@ -47,3 +47,8 @@
 
 * Upd msk_utils
 
+
+## 0.0.9
+
+* fix: addFilterToSQL
+

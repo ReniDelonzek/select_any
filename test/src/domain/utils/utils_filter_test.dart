@@ -21,6 +21,11 @@ void main() {
                 FilterExpColumn(line: Line('key'), value: '2'),
               ])),
           throwsAssertionError);
+
+      expect(
+          () => UtilsFilter.addFilterToSQL('select 1 from table where 1 = 1',
+              GroupFilterExp(operatorEx: OperatorFilterEx.AND, filterExps: [])),
+          isNot(throwsAssertionError));
     });
     var res = UtilsFilter.addFilterToSQL(
         'select 1 from table where 1 = 1',

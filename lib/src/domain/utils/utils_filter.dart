@@ -20,7 +20,7 @@ class UtilsFilter {
 
   static SqlFilter _getSQLFromGroupFilter(
       GroupFilterExp groupFilterExp, bool isAgregate, List args) {
-    assert(groupFilterExp.filterExps.isEmpty ||
+    assert(groupFilterExp.filterExps.length < 2 ||
         !groupFilterExp.filterExps.every((element) =>
             element.line?.key == groupFilterExp.filterExps.first.line?.key));
     if (groupFilterExp.filterExps

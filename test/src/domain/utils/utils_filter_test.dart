@@ -22,9 +22,18 @@ void main() {
               ])),
           throwsAssertionError);
 
+      // Teste vazio
       expect(
           () => UtilsFilter.addFilterToSQL('select 1 from table where 1 = 1',
               GroupFilterExp(operatorEx: OperatorFilterEx.AND, filterExps: [])),
+          isNot(throwsAssertionError));
+      // Teste com 1 linha
+      expect(
+          () => UtilsFilter.addFilterToSQL(
+              'select 1 from table where 1 = 1',
+              GroupFilterExp(operatorEx: OperatorFilterEx.AND, filterExps: [
+                FilterExpColumn(line: Line('key'), value: '1'),
+              ])),
           isNot(throwsAssertionError));
     });
     var res = UtilsFilter.addFilterToSQL(

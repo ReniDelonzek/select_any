@@ -52,3 +52,6 @@
 
 * fix: addFilterToSQL
 
+## 0.1.0
+
+* fix: formatData listKeys

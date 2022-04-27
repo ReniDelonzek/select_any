@@ -1,6 +1,6 @@
 name: select_any
 description: A flexible library for listing data in lists/tables
-version: 0.0.9
+version: 0.1.0
 repository: https://github.com/ReniDelonzek/select_any
 
 environment:

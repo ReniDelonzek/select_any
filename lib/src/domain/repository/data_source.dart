@@ -85,6 +85,10 @@ abstract class _DataSourceBase with Store {
             for (Map map2 in a[line.key]) {
               for (Line linha2 in line.listKeys!) {
                 var ret = map2.getLineValue(linha2.key);
+                if (linha2.formatData != null) {
+                  ret = linha2.formatData!
+                      .formatData(ObjFormatData(data: ret, map: map2));
+                }
                 lineValue += '$ret, ';
               }
             }

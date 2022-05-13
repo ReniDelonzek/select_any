@@ -20,25 +20,7 @@ abstract class _SelectAnyBase with Store {
   String? title;
   Map? data;
   @computed
-  ObservableList<ItemSelectTable> get showList {
-    if (searchText.isEmpty) {
-      return list;
-    }
-    ObservableList<ItemSelectTable> tempList = ObservableList();
-    String text = removeDiacritics(searchText.toLowerCase());
-    for (int i = 0; i < list.length; i++) {
-      for (var value in list[i].strings.values) {
-        if (value != null) {
-          if (removeDiacritics(value.toString()).toLowerCase().contains(text) ==
-              true) {
-            tempList.add(list[i]);
-            break;
-          }
-        }
-      }
-    }
-    return tempList;
-  }
+  ObservableList<ItemSelectTable> get showList => list;
 
   @observable
   Icon searchIcon = Icon(Icons.search);

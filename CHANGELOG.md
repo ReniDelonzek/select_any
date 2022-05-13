@@ -55,3 +55,7 @@
 ## 0.1.0
 
 * fix: formatData listKeys
+
+## 0.1.1
+
+* fix: remove unnecessary filter

@@ -174,6 +174,9 @@ class MySnackBar extends StatefulWidget implements SnackBar {
 
   @override
   DismissDirection get dismissDirection => DismissDirection.down;
+
+  @override
+  Clip get clipBehavior => Clip.hardEdge;
 }
 
 class _MySnackBarState extends State<MySnackBar> {

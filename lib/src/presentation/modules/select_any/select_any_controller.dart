@@ -1,3 +1,5 @@
+// ignore_for_file: unused_element
+
 import 'package:diacritic/diacritic.dart';
 import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';

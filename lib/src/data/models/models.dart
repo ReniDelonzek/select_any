@@ -343,5 +343,6 @@ abstract class _ItemSelectExpandedBase extends ItemSelect with Store {
   @observable
   bool isExpanded = false;
 
+  // ignore: unused_element
   _ItemSelectExpandedBase({this.items, this.isExpanded = false});
 }

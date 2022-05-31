@@ -1,3 +1,5 @@
+// ignore_for_file: unused_element
+
 import 'package:mobx/mobx.dart';
 import 'package:select_any/select_any.dart';
 

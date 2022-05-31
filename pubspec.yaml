@@ -10,7 +10,7 @@ environment:
 dependencies:
   intl: ^0.17.0
   data_table_plus: ^0.0.1
-  flutter_date_pickers: ^0.2.4
+  flutter_date_pickers: ^0.4.0
   share_extend: ^2.0.0
   path_provider: ^2.0.2 
   diacritic: ^0.1.3

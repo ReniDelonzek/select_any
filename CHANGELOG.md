@@ -59,3 +59,7 @@
 ## 0.1.1
 
 * fix: remove unnecessary filter
+
+## 0.1.2
+
+* upd: Flutter 3.0

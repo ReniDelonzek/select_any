@@ -304,7 +304,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
         if (widget._selectModel!.alternativeDataSource != null &&
             widget.controller!.actualDataSource !=
                 widget._selectModel!.alternativeDataSource) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
+          WidgetsBinding.instance!.addPostFrameCallback((_) {
             //usa esse artefato para nao dar problema com o setstate
             widget.controller!.loaded = false;
 

@@ -322,7 +322,11 @@ abstract class DataSourceAny extends DataSource {
       if (itemSort.line!.defaultValue != null) {
         if (itemSort.typeSort == EnumTypeSort.ASC) {
           return temp.sortedBy((e) {
-            String? v = e[itemSort.line!.key]?.toString().toLowerCase().trim();
+            String? v = e
+                .getLineValue(itemSort.line!.key)
+                ?.toString()
+                .toLowerCase()
+                .trim();
             if (v.isNullOrEmpty) {
               return itemSort.line!.defaultValue!(e);
             } else
@@ -340,25 +344,33 @@ abstract class DataSourceAny extends DataSource {
       } else {
         if (itemSort.typeSort == EnumTypeSort.ASC) {
           return temp.sortedBy((e) =>
-              e[itemSort.line!.key]?.toString().toLowerCase().trim() ??
+              e
+                  .getLineValue(itemSort.line!.key)
+                  ?.toString()
+                  .toLowerCase()
+                  .trim() ??
               defaultValue) as List<Map<String, dynamic>>;
         } else {
           return temp.sortedByDesc((e) =>
-              e![itemSort.line!.key]?.toString().toLowerCase().trim() ??
+              e
+                  .getLineValue(itemSort.line!.key)
+                  ?.toString()
+                  .toLowerCase()
+                  .trim() ??
               defaultValue) as List<Map<String, dynamic>>;
         }
       }
     } else {
       if (typeData is TDBoolean) {
         if (itemSort.typeSort == EnumTypeSort.ASC) {
-          return temp.sortedBy((e) => (e[itemSort.line!.key] ??
+          return temp.sortedBy((e) => (e.getLineValue(itemSort.line!.key) ??
                       itemSort.line!.defaultValue?.call(e) ??
                       defaultValue) ==
                   true
               ? 1
               : 0) as List<Map<String, dynamic>>;
         } else {
-          return temp.sortedByDesc((e) => (e![itemSort.line!.key] ??
+          return temp.sortedByDesc((e) => (e.getLineValue(itemSort.line!.key) ??
                       itemSort.line!.defaultValue?.call(e) ??
                       defaultValue) ==
                   true
@@ -368,12 +380,12 @@ abstract class DataSourceAny extends DataSource {
       } else {
         if (itemSort.typeSort == EnumTypeSort.ASC) {
           return temp.sortedBy((e) =>
-              e[itemSort.line!.key] ??
+              e.getLineValue(itemSort.line!.key) ??
               itemSort.line!.defaultValue?.call(e) ??
               defaultValue) as List<Map<String, dynamic>>;
         } else {
           return temp.sortedByDesc((e) =>
-              e![itemSort.line!.key] ??
+              e.getLineValue(itemSort.line!.key) ??
               itemSort.line!.defaultValue?.call(e) ??
               defaultValue) as List<Map<String, dynamic>>;
         }

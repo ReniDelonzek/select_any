@@ -15,6 +15,11 @@ void main() {
       'dateStringValue': '2020-01-01 00:00:$valueD',
       'dateIntValue': DateTime.now().millisecondsSinceEpoch,
       'stringValue2': '${valueD}string2$valueD',
+      'obj': {
+        'name': 'stringObj$valueD',
+        'bool': index % 2 == 0,
+        'intValue': index,
+      }
     };
   });
   FontDataAny dataSourceAny = FontDataAny((_) async => data1);
@@ -217,6 +222,63 @@ void main() {
                   new List.from(data1))!
               .first['stringValue'],
           data1.last['stringValue']);
+
+      // Object String TODO
+      expect(
+          dataSourceAny
+              .applySort(
+                  ItemSort(
+                      typeSort: EnumTypeSort.DESC,
+                      line: Line('obj/name', typeData: TDString())),
+                  'stringValue',
+                  new List.from(data1))!
+              .first['obj']['name'],
+          data1.last['obj']['name']);
+      // Object number
+      expect(
+          dataSourceAny
+              .applySort(
+                  ItemSort(
+                      typeSort: EnumTypeSort.ASC,
+                      line: Line('obj/intValue', typeData: TDNumber())),
+                  'id',
+                  new List.from(data1))!
+              .first['obj']['intValue'],
+          0);
+      expect(
+          dataSourceAny
+              .applySort(
+                  ItemSort(
+                      typeSort: EnumTypeSort.DESC,
+                      line: Line('obj/intValue', typeData: TDNumber())),
+                  'id',
+                  new List.from(data1))!
+              .first['obj']['intValue'],
+          data1.last['obj']['intValue']);
+
+      // Object Bool
+      expect(
+          dataSourceAny
+              .applySort(
+                  ItemSort(
+                      typeSort: EnumTypeSort.ASC,
+                      line: Line('obj/bool', typeData: TDBoolean())),
+                  'boolValue',
+                  new List.from(data1))!
+              .first['obj']['bool'],
+          false);
+
+      expect(
+          dataSourceAny
+              .applySort(
+                  ItemSort(
+                      typeSort: EnumTypeSort.DESC,
+                      line: Line('obj/bool', typeData: TDBoolean())),
+                  'boolValue',
+                  new List.from(data1))!
+              .first['obj']['bool'],
+          true);
+
       // Bool
       expect(
           dataSourceAny

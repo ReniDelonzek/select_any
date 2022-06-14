@@ -303,7 +303,7 @@ abstract class _SelectAnyBase with Store {
   }
 
   /// Executa a pesquisa caso o texto seja diferente ou reload seja true
-  filtroPesquisaModificado({bool reload = false}) {
+  filterChanged({bool reload = false}) {
     if (filter.text.trim() != searchText || reload) {
       searchText = filter.text.trim();
       if (searchText.isEmpty) {
@@ -338,7 +338,7 @@ abstract class _SelectAnyBase with Store {
       page = 1;
       typeSearch = newType;
       if (filter.text.trim().isNotEmpty) {
-        filtroPesquisaModificado(reload: true);
+        filterChanged(reload: true);
       } else {
         setDataSource();
       }

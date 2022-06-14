@@ -94,7 +94,7 @@ class TableDataWidget extends StatelessWidget {
                                       InputDecoration(hintText: 'Pesquisar'),
                                   controller: controller.filter,
                                   onChanged: (text) {
-                                    controller.filtroPesquisaModificado();
+                                    controller.filterChanged();
                                   },
                                 )),
                             SizedBox(width: 8),

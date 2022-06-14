@@ -344,5 +344,31 @@ abstract class _ItemSelectExpandedBase extends ItemSelect with Store {
   bool isExpanded = false;
 
   // ignore: unused_element
-  _ItemSelectExpandedBase({this.items, this.isExpanded = false});
+  _ItemSelectExpandedBase(
+      {this.items,
+      this.isExpanded = false,
+      Map<String, dynamic>? strings,
+      int? id,
+      bool isDeleted = false,
+      bool isSelected = false,
+      dynamic object})
+      : super(
+            strings: strings,
+            id: id,
+            isDeleted: isDeleted,
+            isSelected: isSelected,
+            object: object);
+
+  ItemSelectExpanded clone() {
+    return ItemSelectExpanded(
+      items:
+          ObservableList.of(items!.map((element) => element.clone()).toList()),
+      isExpanded: isExpanded,
+      strings: strings,
+      id: id,
+      isDeleted: isDeleted,
+      isSelected: isSelected,
+      object: object,
+    );
+  }
 }

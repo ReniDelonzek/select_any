@@ -42,30 +42,15 @@ mixin _$SelectAnyExpandedController on _SelectAnyExpandedBase, Store {
   final _$listaExibidaAtom = Atom(name: '_SelectAnyExpandedBase.listaExibida');
 
   @override
-  ObservableList<ItemSelect<dynamic>> get listaExibida {
+  ObservableList<ItemSelectExpanded> get listaExibida {
     _$listaExibidaAtom.reportRead();
     return super.listaExibida;
   }
 
   @override
-  set listaExibida(ObservableList<ItemSelect<dynamic>> value) {
+  set listaExibida(ObservableList<ItemSelectExpanded> value) {
     _$listaExibidaAtom.reportWrite(value, super.listaExibida, () {
       super.listaExibida = value;
-    });
-  }
-
-  final _$streamAtom = Atom(name: '_SelectAnyExpandedBase.stream');
-
-  @override
-  Stream<dynamic>? get stream {
-    _$streamAtom.reportRead();
-    return super.stream;
-  }
-
-  @override
-  set stream(Stream<dynamic>? value) {
-    _$streamAtom.reportWrite(value, super.stream, () {
-      super.stream = value;
     });
   }
 
@@ -84,7 +69,7 @@ mixin _$SelectAnyExpandedController on _SelectAnyExpandedBase, Store {
   }
 
   @override
-  void setList(List<ItemSelect<dynamic>> list) {
+  void setList(List<ItemSelectExpanded> list) {
     final _$actionInfo = _$_SelectAnyExpandedBaseActionController.startAction(
         name: '_SelectAnyExpandedBase.setList');
     try {
@@ -99,8 +84,7 @@ mixin _$SelectAnyExpandedController on _SelectAnyExpandedBase, Store {
     return '''
 searchIcon: ${searchIcon},
 appBarTitle: ${appBarTitle},
-listaExibida: ${listaExibida},
-stream: ${stream}
+listaExibida: ${listaExibida}
     ''';
   }
 }

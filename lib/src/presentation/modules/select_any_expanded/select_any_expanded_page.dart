@@ -9,8 +9,13 @@ class SelectAnyExpandedPage extends StatefulWidget {
   final SelectModel _selectModel;
   final ObservableList<ItemSelectExpanded> itens;
   Map? data;
+  late SelectAnyExpandedController controller;
 
-  SelectAnyExpandedPage(this._selectModel, this.itens, {this.data});
+  SelectAnyExpandedPage(this._selectModel, this.itens,
+      {this.data, SelectAnyExpandedController? controller}) {
+    this.controller =
+        controller ?? SelectAnyExpandedController(_selectModel.title, itens);
+  }
 
   @override
   _SelectAnyExpandedPageState createState() {
@@ -19,7 +24,6 @@ class SelectAnyExpandedPage extends StatefulWidget {
 }
 
 class _SelectAnyExpandedPageState extends State<SelectAnyExpandedPage> {
-  late SelectAnyExpandedController controller;
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
       new GlobalKey<RefreshIndicatorState>();
   bool loaded = false;
@@ -29,9 +33,7 @@ class _SelectAnyExpandedPageState extends State<SelectAnyExpandedPage> {
   BuildContext? buildContext;
 
   _SelectAnyExpandedPageState(
-      String title, ObservableList<ItemSelectExpanded> itens) {
-    controller = SelectAnyExpandedController(title, itens);
-  }
+      String title, ObservableList<ItemSelectExpanded> itens);
 
   @override
   void initState() {
@@ -54,7 +56,14 @@ class _SelectAnyExpandedPageState extends State<SelectAnyExpandedPage> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Observer(builder: (_) => controller.appBarTitle!),
+        title: Observer(builder: (_) => widget.controller.appBarTitle!),
+        actions: [
+          IconButton(
+            splashRadius: 24,
+            icon: widget.controller.searchIcon,
+            onPressed: _searchPressed,
+          )
+        ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       floatingActionButton: Padding(
@@ -73,20 +82,22 @@ class _SelectAnyExpandedPageState extends State<SelectAnyExpandedPage> {
 
   /// Retorna o conteúdo principal da tela
   Widget _getBody() {
-    if (controller.listaExibida.isEmpty == true)
-      return Center(child: new Text('Nenhum registro encontrado'));
-    else
-      return RefreshIndicator(
-        onRefresh: () async {},
-        key: _refreshIndicatorKey,
-        child: new ListView.builder(
-            itemCount: controller.listaExibida.length,
-            itemBuilder: (context, index) {
-              return Observer(
-                  builder: (_) => _getItemList(
-                      controller.listaExibida[index] as ItemSelectExpanded));
-            }),
-      );
+    return Observer(builder: (_) {
+      if (widget.controller.listaExibida.isEmpty == true)
+        return Center(child: new Text('Nenhum registro encontrado'));
+      else
+        return RefreshIndicator(
+          onRefresh: () async {},
+          key: _refreshIndicatorKey,
+          child: new ListView.builder(
+              itemCount: widget.controller.listaExibida.length,
+              itemBuilder: (context, index) {
+                return Observer(
+                    builder: (_) =>
+                        _getItemList(widget.controller.listaExibida[index]));
+              }),
+        );
+    });
   }
 
   Widget _getItemList(ItemSelectExpanded itemSelect) {
@@ -241,7 +252,7 @@ class _SelectAnyExpandedPageState extends State<SelectAnyExpandedPage> {
       for (ActionSelectBase acao in widget._selectModel.buttons!) {
         widgets.add(acao.build(ButtonPosition.BOTTOM, () {
           UtilsWidget.onAction(context, null, null, acao as ActionSelect,
-              widget.data, () {}, controller.fonteDadoAtual);
+              widget.data, () {}, widget.controller.fonteDadoAtual);
         }));
       }
     }
@@ -283,6 +294,35 @@ class _SelectAnyExpandedPageState extends State<SelectAnyExpandedPage> {
       Navigator.pop(context, itemSelect.object);
     } else if (widget._selectModel.typeSelect == TypeSelect.MULTIPLE) {
       itemSelect.isSelected = !itemSelect.isSelected;
+    }
+  }
+
+  void _searchPressed() {
+    if (widget.controller.searchIcon.icon == Icons.search) {
+      widget.controller.searchIcon = Icon(Icons.close);
+      widget.controller.appBarTitle = Container(
+        alignment: Alignment.topRight,
+        constraints: BoxConstraints(maxWidth: 300),
+        child: TextField(
+          //focusNode: widget.controller.focusNodeSearch,
+          controller: widget.controller.filter,
+          autofocus: true,
+          decoration: new InputDecoration(
+              prefixIcon: new Icon(Icons.search), hintText: 'Pesquise...'),
+          onChanged: (text) {
+            //widget.controller.filterChanged();
+          },
+        ),
+      );
+    } else {
+      widget.controller.searchIcon = new Icon(Icons.search);
+      widget.controller.appBarTitle = new Text(widget._selectModel.title);
+      if (widget.controller.filter.text.isNotEmpty ||
+          widget.controller.searchText.isNotEmpty) {
+        widget.controller.searchText = '';
+        widget.controller.filter.clear();
+        //widget.controller.filterChanged(reload: true);
+      }
     }
   }
 }

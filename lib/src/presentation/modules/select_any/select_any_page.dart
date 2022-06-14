@@ -414,7 +414,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
           decoration: new InputDecoration(
               prefixIcon: new Icon(Icons.search), hintText: 'Pesquise...'),
           onChanged: (text) {
-            widget.controller!.filtroPesquisaModificado();
+            widget.controller!.filterChanged();
           },
         ),
       );
@@ -425,7 +425,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
           widget.controller!.searchText.isNotEmpty) {
         widget.controller!.searchText = '';
         widget.controller!.filter.clear();
-        widget.controller!.filtroPesquisaModificado(reload: true);
+        widget.controller!.filterChanged(reload: true);
       }
     }
   }

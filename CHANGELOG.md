@@ -67,3 +67,7 @@
 ## 0.1.3
 
 * fix: order by map column
+
+## 0.1.4
+
+* feat: search in select_any_expanded

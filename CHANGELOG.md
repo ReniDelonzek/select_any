@@ -71,3 +71,7 @@
 ## 0.1.4
 
 * feat: search in select_any_expanded
+
+## 0.1.5
+
+* feat: allowEdit on select_fk_widget

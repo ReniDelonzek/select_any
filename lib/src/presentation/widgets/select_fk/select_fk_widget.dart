@@ -33,10 +33,6 @@ class SelectFKWidget extends StatelessWidget {
   /// Calls every time a record is selected. If it returns false, the selection is canceled
   final SelectedFK? selectedFK;
 
-  /// Function to validate if the selection is allowed
-  /// it can be determined based on the state of other fields for example
-  final AllowSelect? allowSelect;
-
   /// List screen actions
   final List<ActionSelect>? actions;
 
@@ -91,30 +87,37 @@ class SelectFKWidget extends StatelessWidget {
   /// Custom message when field is cleared
   final String messageWhenValueCleared;
 
+  final Future<bool> Function()? allowEdit;
+
   SelectFKWidget(
-      this.title, this.id, this.lines, this.controller, this.dataSource,
-      {this.defaultLine,
-      this.selectedFK,
-      this.allowSelect,
-      this.actions,
-      this.buttons,
-      this.isRequired = false,
-      this.theme,
-      this.typeView = TypeView.selectable,
-      this.convertValue,
-      this.height = 45,
-      this.customColor,
-      this.defaultLabel = 'Toque para selecionar',
-      this.customTitle,
-      this.customListTitle,
-      this.dataToSelect,
-      this.cleanValue,
-      this.customEmptyList,
-      this.customChipPadding =
-          const EdgeInsets.only(top: 12, bottom: 12, left: 16, right: 16),
-      this.setDefaultSelectionList,
-      this.showInCards,
-      this.messageWhenValueCleared = 'Campo limpo com sucesso'}) {
+    this.title,
+    this.id,
+    this.lines,
+    this.controller,
+    this.dataSource, {
+    this.defaultLine,
+    this.selectedFK,
+    this.actions,
+    this.buttons,
+    this.isRequired = false,
+    this.theme,
+    this.typeView = TypeView.selectable,
+    this.convertValue,
+    this.height = 45,
+    this.customColor,
+    this.defaultLabel = 'Toque para selecionar',
+    this.customTitle,
+    this.customListTitle,
+    this.dataToSelect,
+    this.cleanValue,
+    this.customEmptyList,
+    this.customChipPadding =
+        const EdgeInsets.only(top: 12, bottom: 12, left: 16, right: 16),
+    this.setDefaultSelectionList,
+    this.showInCards,
+    this.messageWhenValueCleared = 'Campo limpo com sucesso',
+    this.allowEdit,
+  }) {
     if (this.defaultLine == null) {
       this.defaultLine = lines.first;
     }
@@ -355,10 +358,12 @@ class SelectFKWidget extends StatelessWidget {
     );
   }
 
-  void clearObj(BuildContext context) {
-    controller.clear();
-    showSnackMessage(context, 'Campo limpo com sucesso');
-    cleanValue?.call();
+  void clearObj(BuildContext context) async {
+    if (await _preValidate()) {
+      controller.clear();
+      showSnackMessage(context, 'Campo limpo com sucesso');
+      cleanValue?.call();
+    }
   }
 
   void _validateSelectList(obj) async {
@@ -383,7 +388,7 @@ class SelectFKWidget extends StatelessWidget {
   }
 
   Future<bool> _preValidate() async {
-    return (allowSelect == null || await allowSelect!() == true);
+    return (allowEdit == null || await allowEdit!() == true);
   }
 
   Future<void> _convertValue(res) async {

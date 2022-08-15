@@ -75,3 +75,8 @@
 ## 0.1.5
 
 * feat: allowEdit on select_fk_widget
+
+
+## 0.1.6
+
+* fix: Utilsfile.saveFileBytes

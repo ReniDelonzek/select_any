@@ -12,7 +12,8 @@ class UtilsFileSelect {
       String? extensionFile,
       String? dirComplementar,
       String? contentExport,
-      bool openExplorer = true}) async {
+      bool openExplorer = true,
+      bool openFileInDesktop = true}) async {
     String directory;
     String separator = "/";
     if (UtilsPlatform.isWindows) {
@@ -44,9 +45,10 @@ class UtilsFileSelect {
     if ((await file.exists()) == false) {
       file = await file.create(recursive: true);
     }
-    await file.writeAsString(s);
+    await file.writeAsBytes(s.codeUnits);
     if (openExplorer) {
-      await openFileOrDirectory(file.path, dir.path,
+      await openFileOrDirectory(
+          file.path, openFileInDesktop ? file.path : dir.path,
           contentExport: contentExport);
     }
     return file;
@@ -57,7 +59,8 @@ class UtilsFileSelect {
       String? extensionFile,
       String? dirExtra,
       String? contentExport,
-      bool openExplorer = true}) async {
+      bool openExplorer = true,
+      bool openFileInDesktop = true}) async {
     String directory;
     String separator = "/";
     if (UtilsPlatform.isWindows) {
@@ -91,12 +94,10 @@ class UtilsFileSelect {
     if ((await file.exists()) == false) {
       file = await file.create(recursive: true);
     }
-    // ignore: close_sinks
-    var open = file.openWrite();
-    open.add(bytes);
-    await open.flush();
+    await file.writeAsBytes(bytes);
     if (openExplorer) {
-      await openFileOrDirectory(file.path, dir.path,
+      await openFileOrDirectory(
+          file.path, openFileInDesktop ? file.path : dir.path,
           contentExport: contentExport);
     }
     return file;

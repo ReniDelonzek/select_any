@@ -247,7 +247,7 @@ void main() {
             ctlSelect,
             dataSource,
             typeView: TypeView.radioList,
-            allowSelect: () async => false,
+            allowEdit: () async => false,
           ),
         ),
       ),

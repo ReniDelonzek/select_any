@@ -82,7 +82,6 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
         }
       } else {
         if (widget.controller!.typeDiplay != 1) {
-          widget.controller!.clearFilters(callDataSource: false);
           widget.controller!.typeDiplay = 1;
           if (!(widget.controller!.actualDataSource?.supportPaginate ??
                   false) &&
@@ -169,7 +168,9 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
                     centerTitle:
                         widget.controller!.selectModel!.theme.centerTitle,
                     title: Observer(
-                        builder: (_) => widget.controller!.appBarTitle!),
+                        builder: (_) => widget.controller!.showSearch
+                            ? widget.controller!.appBarTitle!
+                            : Text(widget._selectModel!.title)),
                     actions: [
                       Observer(builder: (_) {
                         if (widget.controller!.typeDiplay == 1) {
@@ -180,14 +181,21 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
                               IconButton(
                                   splashRadius: 24,
                                   onPressed: () {
+                                    showDialogFilters();
+                                  },
+                                  icon: Icon(Icons.filter_list)),
+                              IconButton(
+                                  splashRadius: 24,
+                                  onPressed: () {
                                     showDialogSorts(context);
                                   },
                                   icon: Icon(Icons.sort)),
-                              IconButton(
-                                splashRadius: 24,
-                                icon: widget.controller!.searchIcon,
-                                onPressed: _searchPressed,
-                              )
+                              if (widget.controller!.showSearch)
+                                IconButton(
+                                  splashRadius: 24,
+                                  icon: widget.controller!.searchIcon,
+                                  onPressed: _searchPressed,
+                                )
                             ]),
                           );
                         } else {
@@ -660,6 +668,56 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
                             ))
                         .toList()),
               ),
+            ));
+  }
+
+  void showDialogFilters() {
+    UtilsWidget.getFilters(widget.controller!);
+    double minWidth = MediaQuery.of(context).size.width * .75;
+    showDialog(
+        context: context,
+        builder: (alertContext) => AlertDialog(
+              title: Text('Filtros'),
+              content: SingleChildScrollView(
+                child: Container(
+                  constraints: BoxConstraints(
+                      maxWidth: 820, minWidth: minWidth < 820 ? minWidth : 820),
+                  child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: widget.controller!.filterWidgets
+                          .map((key, value) {
+                            return MapEntry(
+                                key.name,
+                                Container(
+                                  height: 90,
+                                  padding: const EdgeInsets.only(top: 8),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(key.name ?? key.key),
+                                      value
+                                    ],
+                                  ),
+                                ));
+                          })
+                          .values
+                          .toList()),
+                ),
+              ),
+              actions: [
+                TextButton(
+                    onPressed: () {
+                      Navigator.pop(alertContext);
+                      widget.controller!.clearFilters();
+                    },
+                    child: Text('Limpar filtros')),
+                TextButton(
+                    onPressed: () {
+                      Navigator.pop(alertContext);
+                    },
+                    child: Text('Fechar'))
+              ],
             ));
   }
 }

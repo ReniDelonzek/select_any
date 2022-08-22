@@ -72,7 +72,7 @@ abstract class _SelectAnyBase with Store {
 
   TypeSearch typeSearch = TypeSearch.CONTAINS;
 
-  Map<String, Widget> filterControllers = Map();
+  Map<Line, Widget> filterWidgets = Map();
 
   /// Indica se o input de pesquisa geral deve ser exibido ou não
   @observable
@@ -126,7 +126,7 @@ abstract class _SelectAnyBase with Store {
     actualDataSource?.clear();
     loaded = false;
     clearFilters(callDataSource: false);
-    filterControllers.clear();
+    filterWidgets.clear();
   }
 
   void setDataSource({int? offset, bool refresh = false}) async {
@@ -398,7 +398,7 @@ abstract class _SelectAnyBase with Store {
   }
 
   clearFilters({bool callDataSource = true}) {
-    filterControllers.forEach((key, value) {
+    filterWidgets.forEach((key, value) {
       if (value is SelectRangeDateWidget) {
         value.controller.clear();
       } else if (value is Padding) {

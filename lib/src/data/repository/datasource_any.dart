@@ -3,6 +3,7 @@ import 'package:msk_utils/msk_utils.dart';
 import 'package:select_any/select_any.dart';
 
 abstract class DataSourceAny extends DataSource {
+  static String decimalSeparatorInCSV = '.';
   List<Map<String, dynamic>>? listAll;
   ItemSort? _currentSort;
 
@@ -162,6 +163,9 @@ abstract class DataSourceAny extends DataSource {
         if (line != null && line.formatData != null) {
           value = line.formatData!
               .formatData(ObjFormatData(data: value, map: item));
+        }
+        if (decimalSeparatorInCSV != '.' && value is double) {
+          value = '$value'.replaceAll('.', decimalSeparatorInCSV);
         }
         stringBuffer
           ..write(value)

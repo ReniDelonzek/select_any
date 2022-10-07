@@ -80,3 +80,6 @@
 ## 0.1.6
 
 * fix: Utilsfile.saveFileBytes
+
+## 0.1.7
+* feat: custom decimal separator in CSV

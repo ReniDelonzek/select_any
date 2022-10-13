@@ -339,13 +339,13 @@ class ItemSelectExpanded = _ItemSelectExpandedBase with _$ItemSelectExpanded;
 
 abstract class _ItemSelectExpandedBase extends ItemSelect with Store {
   @observable
-  ObservableList<ItemSelectExpanded>? items = ObservableList();
+  ObservableList<ItemSelectExpanded>? items;
   @observable
-  bool isExpanded = false;
+  bool isExpanded;
 
-  // ignore: unused_element
   _ItemSelectExpandedBase(
-      {this.items,
+      {required this.items,
+      // ignore: unused_element
       this.isExpanded = false,
       Map<String, dynamic>? strings,
       int? id,

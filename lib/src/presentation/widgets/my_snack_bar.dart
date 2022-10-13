@@ -318,7 +318,7 @@ class _MySnackBarState extends State<MySnackBar> {
               child: TextButtonTheme(
                 data: TextButtonThemeData(
                   style: TextButton.styleFrom(
-                    primary: buttonColor,
+                    foregroundColor: buttonColor,
                     padding:
                         EdgeInsets.symmetric(horizontal: horizontalPadding),
                   ),
@@ -409,8 +409,7 @@ class _MySnackBarState extends State<MySnackBar> {
       container: true,
       liveRegion: true,
       onDismiss: () {
-        Scaffold.of(context)
-            // ignore: deprecated_member_use
+        ScaffoldMessenger.of(context)
             .removeCurrentSnackBar(reason: SnackBarClosedReason.dismiss);
       },
       child: Dismissible(
@@ -418,8 +417,7 @@ class _MySnackBarState extends State<MySnackBar> {
         direction: DismissDirection.down,
         resizeDuration: null,
         onDismissed: (DismissDirection direction) {
-          Scaffold.of(context)
-              // ignore: deprecated_member_use
+          ScaffoldMessenger.of(context)
               .removeCurrentSnackBar(reason: SnackBarClosedReason.swipe);
         },
         child: snackBar,

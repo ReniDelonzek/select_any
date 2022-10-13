@@ -83,3 +83,6 @@
 
 ## 0.1.7
 * feat: custom decimal separator in CSV
+
+## 0.2.0
+* feat: update code to flutter 3.0

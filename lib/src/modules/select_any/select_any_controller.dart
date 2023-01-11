@@ -31,6 +31,13 @@ abstract class _SelectAnyBase with Store {
     }
     ObservableList<ItemSelectTable> tempList = ObservableList();
     String text = removeDiacritics(searchText.toLowerCase());
+
+    if (removePhoneCharactersInSearchText) {
+      if (_mayContainPhoneNumber(text)) {
+        text = _parsePhone(text);
+      }
+    }
+
     for (int i = 0; i < list.length; i++) {
       for (var value in list[i].strings!.values) {
         if (value != null) {
@@ -58,6 +65,7 @@ abstract class _SelectAnyBase with Store {
 
   /// Indica se a o tipo de tela deve ser trocado de acordo com o tamanho de tela ou não
   final bool dynamicScreen;
+  final bool removePhoneCharactersInSearchText;
 
   SelectModel? selectModel;
   @observable
@@ -107,7 +115,9 @@ abstract class _SelectAnyBase with Store {
   @observable
   GroupFilterExp? actualFilters;
 
-  _SelectAnyBase({this.dynamicScreen = true});
+  _SelectAnyBase(
+      {this.dynamicScreen = true,
+      this.removePhoneCharactersInSearchText = false});
 
   init(String title, SelectModel selectModel, Map? data) async {
     this.selectModel = selectModel;
@@ -531,5 +541,19 @@ abstract class _SelectAnyBase with Store {
         element.isSelected = newValue;
       }
     });
+  }
+
+  String _parsePhone(String text) {
+    return text.trim().replaceAll(RegExp(r'\D'), '');
+  }
+
+  bool _mayContainPhoneNumber(String text) {
+    return int.tryParse(text
+            .replaceAll(' ', '')
+            .replaceAll(')', '')
+            .replaceAll('(', '')
+            .replaceAll('-', '')
+            .replaceAll('+', '')) !=
+        null;
   }
 }

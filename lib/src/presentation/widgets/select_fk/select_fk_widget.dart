@@ -306,7 +306,7 @@ class SelectFKWidget extends StatelessWidget {
                     }),
                     SizedBox(width: 8),
                     Text(element.strings.values.first ?? '',
-                        style: theme.textTheme.subtitle1)
+                        style: theme.textTheme.titleMedium)
                   ],
                 ),
               ),

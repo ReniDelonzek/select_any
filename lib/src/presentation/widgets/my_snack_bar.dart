@@ -177,6 +177,12 @@ class MySnackBar extends StatefulWidget implements SnackBar {
 
   @override
   Clip get clipBehavior => Clip.hardEdge;
+
+  @override
+  Color? get closeIconColor => Colors.black;
+
+  @override
+  bool? get showCloseIcon => false;
 }
 
 class _MySnackBarState extends State<MySnackBar> {
@@ -258,7 +264,7 @@ class _MySnackBarState extends State<MySnackBar> {
     );
 
     final TextStyle? contentTextStyle = snackBarTheme.contentTextStyle ??
-        ThemeData(brightness: brightness).textTheme.subtitle1;
+        ThemeData(brightness: brightness).textTheme.titleMedium;
     final SnackBarBehavior snackBarBehavior =
         widget.behavior ?? snackBarTheme.behavior ?? SnackBarBehavior.fixed;
     final bool isFloatingSnackBar =

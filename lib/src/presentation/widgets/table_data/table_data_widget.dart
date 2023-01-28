@@ -584,7 +584,7 @@ class TableDataWidget extends StatelessWidget {
                                                   fontSize: 14,
                                                   color: Theme.of(context)
                                                       .textTheme
-                                                      .bodyText1!
+                                                      .bodyLarge!
                                                       .color),
                                           value: controller.page,
                                           onChanged: (item) {

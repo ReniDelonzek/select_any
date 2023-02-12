@@ -90,3 +90,7 @@
 ## 0.2.1
 * Update package msk_utils 
 
+
+## 0.2.2
+* Update colors from theme 
+

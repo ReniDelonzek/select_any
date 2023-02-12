@@ -179,10 +179,10 @@ class MySnackBar extends StatefulWidget implements SnackBar {
   Clip get clipBehavior => Clip.hardEdge;
 
   @override
-  Color? get closeIconColor => Colors.black;
+  Color? get closeIconColor => null;
 
   @override
-  bool? get showCloseIcon => false;
+  bool? get showCloseIcon => null;
 }
 
 class _MySnackBarState extends State<MySnackBar> {

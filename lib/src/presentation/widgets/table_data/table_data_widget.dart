@@ -206,48 +206,47 @@ class TableDataWidget extends StatelessWidget {
                     child: SingleChildScrollView(
                         controller: scrollController,
                         scrollDirection: Axis.horizontal,
-                        child: Padding(
-                          padding: const EdgeInsets.only(bottom: 16),
-                          child: Container(
-                            constraints:
-                                BoxConstraints(minWidth: constraint.maxWidth),
-                            child: DataTablePlus(
-                                showCheckboxColumn:
-                                    controller.selectModel!.typeSelect ==
-                                        TypeSelect.MULTIPLE,
-                                tableColumnsWidth: controller.selectModel!.theme
-                                    .tableTheme.widthTableColumns,
-                                headingRowColor: controller.selectModel!.theme
-                                            .tableTheme.headerColor !=
-                                        null
-                                    ? MaterialStateColor.resolveWith((states) {
-                                        return controller.selectModel!.theme
-                                            .tableTheme.headerColor!;
-                                      })
-                                    : null,
-                                sortColumnIndex: controller.itemSort?.indexLine,
-                                customRows: getCustomRows(rows),
-                                decoration: BoxDecoration(),
-                                sortAscending: controller.itemSort?.typeSort !=
-                                    EnumTypeSort.DESC,
-                                columns: UtilsWidget.generateDataColumn(
-                                    controller.selectModel!,
-                                    generateActions: false,
-                                    onSort: (int index, bool sort) {
-                                  if (controller
-                                      .selectModel!.lines[index].enableSorting) {
-                                    controller.itemSort = ItemSort(
-                                        typeSort: sort
-                                            ? EnumTypeSort.ASC
-                                            : EnumTypeSort.DESC,
-                                        line:
-                                            controller.selectModel!.lines[index],
-                                        indexLine: index);
-                                    controller.updateSortCollumn();
-                                  }
-                                }),
-                                rows: rows),
-                          ),
+                        child: Container(
+                          margin: controller.selectModel!.theme.tableTheme
+                              .tableContentPadding,
+                          constraints:
+                              BoxConstraints(minWidth: constraint.maxWidth),
+                          child: DataTablePlus(
+                              showCheckboxColumn:
+                                  controller.selectModel!.typeSelect ==
+                                      TypeSelect.MULTIPLE,
+                              tableColumnsWidth: controller.selectModel!.theme
+                                  .tableTheme.widthTableColumns,
+                              headingRowColor: controller.selectModel!.theme
+                                          .tableTheme.headerColor !=
+                                      null
+                                  ? MaterialStateColor.resolveWith((states) {
+                                      return controller.selectModel!.theme
+                                          .tableTheme.headerColor!;
+                                    })
+                                  : null,
+                              sortColumnIndex: controller.itemSort?.indexLine,
+                              customRows: getCustomRows(rows),
+                              decoration: BoxDecoration(),
+                              sortAscending: controller.itemSort?.typeSort !=
+                                  EnumTypeSort.DESC,
+                              columns: UtilsWidget.generateDataColumn(
+                                  controller.selectModel!,
+                                  generateActions: false,
+                                  onSort: (int index, bool sort) {
+                                if (controller
+                                    .selectModel!.lines[index].enableSorting) {
+                                  controller.itemSort = ItemSort(
+                                      typeSort: sort
+                                          ? EnumTypeSort.ASC
+                                          : EnumTypeSort.DESC,
+                                      line:
+                                          controller.selectModel!.lines[index],
+                                      indexLine: index);
+                                  controller.updateSortCollumn();
+                                }
+                              }),
+                              rows: rows),
                         )),
                   );
                 })),

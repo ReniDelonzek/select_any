@@ -66,6 +66,8 @@ class TableDataWidget extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
+        if (controller.selectModel!.filterTopBuilder != null)
+          controller.selectModel!.filterTopBuilder!(context),
         Container(
           height: 54,
           padding: const EdgeInsets.only(left: 16, right: 16),

@@ -79,6 +79,9 @@ class SelectModel {
   /// Custom theme
   SelectModelTheme theme;
 
+  /// Builds a Widget between AppBar and the filter Widgets
+  Widget Function(BuildContext)? filterTopBuilder;
+
   /// Widget to fill the bottom left corner of the table
   CustomBottomBuilder? tableBottomBuilder;
 
@@ -107,7 +110,8 @@ class SelectModel {
       this.tableBottomBuilder,
       this.initialFilter,
       this.listBottomBuilder,
-      this.showInCards}) {
+      this.showInCards,
+      this.filterTopBuilder}) {
     if (openSearchAutomatically == null) {
       openSearchAutomatically = !UtilsPlatform.isMobile;
     }

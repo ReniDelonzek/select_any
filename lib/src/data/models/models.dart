@@ -182,6 +182,9 @@ class SelectModelThemeTable {
   /// Table padding
   final EdgeInsetsGeometry tablePadding;
 
+  /// Padding of table content (header and the lines with data below)
+  final EdgeInsetsGeometry? tableContentPadding;
+
   final TextStyle headerActionsTextStyle;
 
   const SelectModelThemeTable(
@@ -193,7 +196,8 @@ class SelectModelThemeTable {
           fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
       this.bottomIconsColor,
       this.headerActionsTextStyle =
-          const TextStyle(fontWeight: FontWeight.bold, color: Colors.white)});
+          const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+      this.tableContentPadding});
 }
 
 class Line {

@@ -207,6 +207,8 @@ class TableDataWidget extends StatelessWidget {
                         controller: scrollController,
                         scrollDirection: Axis.horizontal,
                         child: Container(
+                          margin: controller.selectModel!.theme.tableTheme
+                              .tableContentPadding,
                           constraints:
                               BoxConstraints(minWidth: constraint.maxWidth),
                           child: DataTablePlus(

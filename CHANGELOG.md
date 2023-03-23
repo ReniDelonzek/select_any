@@ -1,3 +1,6 @@
+## 0.2.4
+* feat: table content padding to SelectModelThemeTable
+* feat: filter top builder to SelectModel
 ## 0.2.3
 * Create an option to override back button visibility 
 ## 0.2.2

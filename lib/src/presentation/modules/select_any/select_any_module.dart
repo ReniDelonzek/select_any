@@ -5,20 +5,19 @@ import 'package:select_any/src/data/models/models.dart';
 import 'select_any_controller.dart';
 import 'select_any_page.dart';
 
-/// [overrideDefaultBackButtonVisibility] if not null overrides [showBackButton] value
 class SelectAnyModule extends ModuleWidget {
   final Map? data;
   final SelectModel? model;
   final SelectAnyController? controller;
-  final bool showBackButton;
-  final bool? overrideDefaultBackButtonVisibility;
+
+  /// Default is true when running device is Android
+  final bool? showBackButton;
 
   SelectAnyModule(
     this.model, {
     this.data,
     this.controller,
-    this.showBackButton = true,
-    this.overrideDefaultBackButtonVisibility,
+    this.showBackButton,
   });
 
   @override
@@ -33,7 +32,5 @@ class SelectAnyModule extends ModuleWidget {
         data: this.data,
         controller: controller,
         showBackButton: showBackButton,
-        overrideDefaultBackButtonVisibility:
-            overrideDefaultBackButtonVisibility,
       );
 }

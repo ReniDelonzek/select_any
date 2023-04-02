@@ -25,14 +25,13 @@ class SelectAnyPage extends StatefulWidget {
   final SelectModel? _selectModel;
   Map? data;
   SelectAnyController? controller;
-  bool showBackButton;
+  late bool _showBackButton;
 
   SelectAnyPage(
     this._selectModel, {
     this.data,
     this.controller,
-    this.showBackButton = true,
-    bool? overrideDefaultBackButtonVisibility,
+    bool? showBackButton,
   }) {
     if (controller == null) {
       controller = SelectAnyController();
@@ -40,8 +39,7 @@ class SelectAnyPage extends StatefulWidget {
     controller!.typeDiplay = UtilsPlatform.isMobile ? 1 : 2;
     controller!.confirmToLoadData = _selectModel!.confirmToLoadData;
     controller!.init(_selectModel!.title, _selectModel!, data);
-    showBackButton =
-        overrideDefaultBackButtonVisibility ?? !UtilsPlatform.isAndroid;
+    _showBackButton = showBackButton ?? !UtilsPlatform.isAndroid;
   }
 
   @override
@@ -563,7 +561,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
   }
 
   Widget? _getMenuButton() {
-    if (widget.showBackButton) {
+    if (widget._showBackButton) {
       return IconButton(
         icon: UtilsPlatform.isIOS || UtilsPlatform.isMacos
             ? Icon(Icons.arrow_back_ios)

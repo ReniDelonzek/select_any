@@ -98,6 +98,12 @@ class TableDataWidget extends StatelessWidget {
                                   onChanged: (text) {
                                     controller.filterChanged();
                                   },
+                                  onSubmitted: controller.selectModel!
+                                          .dataSource.allowOnSubmittSearch
+                                      ? (_) {
+                                          controller.onSubmittedSearch();
+                                        }
+                                      : null,
                                 )),
                             SizedBox(width: 8),
                             IconButton(

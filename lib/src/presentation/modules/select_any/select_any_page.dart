@@ -421,6 +421,12 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
           onChanged: (text) {
             widget.controller!.filterChanged();
           },
+          onSubmitted:
+              widget.controller!.selectModel!.dataSource.allowOnSubmittSearch
+                  ? (_) {
+                      widget.controller!.onSubmittedSearch();
+                    }
+                  : null,
         ),
       );
     } else {

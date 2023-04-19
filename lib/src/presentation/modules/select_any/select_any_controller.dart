@@ -86,6 +86,8 @@ abstract class _SelectAnyBase with Store {
   @observable
   GroupFilterExp? actualFilters;
 
+  bool _hasSearchedAlready = false;
+
   _SelectAnyBase({this.dynamicScreen = true});
 
   init(String title, SelectModel selectModel, Map? data) async {
@@ -315,10 +317,12 @@ abstract class _SelectAnyBase with Store {
       } else {
         /// Usa para guardar o valor original
         String tempSearchText = searchText;
+        // Altera valor para false porque se o [onSubmittedSearch] não for chamado antes do delay a pesquisa por esta função será efetuada.
+        _hasSearchedAlready = false;
         Future.delayed(
             Duration(milliseconds: selectModel!.dataSource.searchDelay), () {
-          /// Só executa a pesquisa se o input não tiver mudado
-          if (tempSearchText == filter.text.trim()) {
+          /// Só executa a pesquisa se o input não tiver mudado e já não tenha sido executada
+          if (tempSearchText == filter.text.trim() && !_hasSearchedAlready) {
             list.clear();
             page = 1;
             setDataSourceSearch(
@@ -327,9 +331,31 @@ abstract class _SelectAnyBase with Store {
                     : typeDiplay == 1
                         ? -1
                         : 0);
+            // Altera para true após fazer a pesquisa evitando que seja feita novamente caso o [onSubmittedSearch] seja chamado e
+            //não tenha sido mudado o input [filter.text].
+            _hasSearchedAlready = true;
           }
         });
       }
+    }
+  }
+
+  /// Executa a pesquisa caso não tenha sido feita na chamada de [filterChanged]
+  void onSubmittedSearch() {
+    // Verifica se a pesquisa já não foi feita, como quando [filterChanged] é chamado.
+    if (!_hasSearchedAlready) {
+      searchText = filter.text.trim();
+      list.clear();
+      page = 1;
+      setDataSourceSearch(
+          offset: selectModel!.dataSource.supportPaginate
+              ? null
+              : typeDiplay == 1
+                  ? -1
+                  : 0);
+      // Altera para true após fazer a pesquisa evitando que seja feita novamente caso o [filterChanged]
+      //tente fazer a pesquisa após o delay.
+      _hasSearchedAlready = true;
     }
   }
 

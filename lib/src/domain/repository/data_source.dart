@@ -26,6 +26,9 @@ abstract class _DataSourceBase with Store {
   /// Indica suporte a filtros por coluna
   bool supportSingleLineFilter;
 
+  /// Indica se a pesquisa pode ser efetuada após alguma confirmação, como após apertar enter (desktop).
+  bool allowOnSubmittSearch;
+
   @observable
   ObservableList<ItemSelectTable> listData = ObservableList();
 
@@ -34,7 +37,8 @@ abstract class _DataSourceBase with Store {
       this.searchDelay = 300,
       this.allowExport = false,
       this.supportPaginate = false,
-      this.supportSingleLineFilter = false});
+      this.supportSingleLineFilter = false,
+      this.allowOnSubmittSearch = false});
 
   Future<Stream<ResponseDataDataSource>> getList(
       int limit, int offset, SelectModel? selectModel,

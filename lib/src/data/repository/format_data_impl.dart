@@ -48,7 +48,7 @@ class FormatDataTimestamp extends FormatData {
 }
 
 class FormatDataAny extends FormatData {
-  Function(ObjFormatData) format;
+  String Function(ObjFormatData) format;
   FormatDataAny(this.format);
 
   @override

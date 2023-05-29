@@ -52,6 +52,9 @@ class SelectFKWidget extends StatelessWidget {
   /// Height the selector widget
   final double height;
 
+  /// Width the selector dropdown widget
+  final double? dropdownWidth;
+
   /// Custom color the selector widget
   final Color? customColor;
 
@@ -104,6 +107,7 @@ class SelectFKWidget extends StatelessWidget {
     this.typeView = TypeView.selectable,
     this.convertValue,
     this.height = 45,
+    this.dropdownWidth,
     this.customColor,
     this.defaultLabel = 'Toque para selecionar',
     this.customTitle,
@@ -338,6 +342,7 @@ class SelectFKWidget extends StatelessWidget {
   Widget _dropdownButton(BuildContext context) {
     return Container(
       height: height,
+      width: dropdownWidth,
       decoration: _getBoxDecoration(context),
       child: Padding(
         padding: EdgeInsets.only(left: 15, right: 15),

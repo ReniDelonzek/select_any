@@ -1,5 +1,7 @@
+## 0.2.7
+* feat: add dropdownWidth as an attribute for SelectFKWidget. Set this to change the width when typeView is TypeView.dropdown. 
 ## 0.2.6
-* feat: allowOnSubmittSearch as an atribute in DataSource. Set this to true to allow onSubmitted in SelectAnyPageState and TableDataWidget.
+* feat: allowOnSubmittSearch as an attribute in DataSource. Set this to true to allow onSubmitted in SelectAnyPageState and TableDataWidget.
 ## 0.2.5
 * Fix revert override back button visibility
 ## 0.2.4

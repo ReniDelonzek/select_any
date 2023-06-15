@@ -1,3 +1,5 @@
+## 1.0.0
+* Migrate dart 3.0
 ## 0.2.7
 * feat: add dropdownWidth as an attribute for SelectFKWidget. Set this to change the width when typeView is TypeView.dropdown. 
 ## 0.2.6

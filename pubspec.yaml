@@ -1,9 +1,7 @@
 name: select_any
 description: A flexible library for listing data in lists/tables
-version: 0.2.8
+version: 1.0.0
 repository: https://github.com/ReniDelonzek/select_any
-
-publish_to: none
 
 environment:
   sdk: ">=3.0.3 <4.0.0"
@@ -18,9 +16,7 @@ dependencies:
   bloc_pattern: ^3.0.1
   mobx: ^2.2.0
   flutter_mobx: ^2.0.6+5
-  # msk_utils: ">=1.0.5"
-  msk_utils:
-    path: ../msk_utils
+  msk_utils: ">=2.0.0"
   flutter:
     sdk: flutter
   collection:

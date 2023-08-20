@@ -82,6 +82,9 @@ class SelectModel {
   /// Builds a Widget between AppBar and the filter Widgets
   Widget Function(BuildContext)? filterTopBuilder;
 
+  /// Builds a Widget in the top left of table search widgets
+  CustomBottomBuilder? tableTopLeftBuilder;
+
   /// Widget to fill the bottom left corner of the table
   CustomBottomBuilder? tableBottomBuilder;
 
@@ -111,6 +114,7 @@ class SelectModel {
       this.showFiltersInput = true,
       this.theme = const SelectModelTheme(tableTheme: SelectModelThemeTable()),
       this.tableBottomBuilder,
+      this.tableTopLeftBuilder,
       this.initialFilter,
       this.listBottomBuilder,
       this.showInCards,

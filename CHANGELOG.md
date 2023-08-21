@@ -1,3 +1,6 @@
+## 1.0.1
+* feat: add tableTopLeftBuilder to build a Widget in the top left of table search widgets.
+* feat: add bottomActionForTypeSelectMULTIPLE to display or not bottomAction in TableDataWidget when TypeSelect.MULTIPLE.
 ## 1.0.0
 * Migrate dart 3.0
 ## 0.2.7

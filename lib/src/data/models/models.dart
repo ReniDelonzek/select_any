@@ -82,6 +82,9 @@ class SelectModel {
   /// Builds a Widget between AppBar and the filter Widgets
   Widget Function(BuildContext)? filterTopBuilder;
 
+  /// Builds a Widget in the top left of table search widgets
+  CustomBottomBuilder? tableTopLeftBuilder;
+
   /// Widget to fill the bottom left corner of the table
   CustomBottomBuilder? tableBottomBuilder;
 
@@ -93,6 +96,9 @@ class SelectModel {
 
   /// Indicates that the content in the listing must always be presented on cards
   bool? showInCards;
+
+  /// Indicates if bottom action must be showed when TypeSelect.MULTIPLE.
+  bool bottomActionForTypeSelectMULTIPLE;
 
   SelectModel(this.title, this.id, this.lines, this.dataSource, this.typeSelect,
       {this.filters,
@@ -108,10 +114,12 @@ class SelectModel {
       this.showFiltersInput = true,
       this.theme = const SelectModelTheme(tableTheme: SelectModelThemeTable()),
       this.tableBottomBuilder,
+      this.tableTopLeftBuilder,
       this.initialFilter,
       this.listBottomBuilder,
       this.showInCards,
-      this.filterTopBuilder}) {
+      this.filterTopBuilder,
+      this.bottomActionForTypeSelectMULTIPLE = true}) {
     if (openSearchAutomatically == null) {
       openSearchAutomatically = !UtilsPlatform.isMobile;
     }

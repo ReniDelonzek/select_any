@@ -75,6 +75,16 @@ class TableDataWidget extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Row(children: buttons),
+              if (controller.selectModel!.tableTopLeftBuilder != null)
+                Expanded(
+                    child: controller.selectModel!.tableTopLeftBuilder!(
+                        CustomBottomBuilderArgs(
+                            context,
+                            controller.actualFilters ??
+                                controller.buildFilterExpression(),
+                            controller.loaded,
+                            controller.actualDataSource,
+                            controller.list))),
               Align(
                 alignment: Alignment.centerRight,
                 child: Container(

@@ -207,7 +207,8 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
                     leading: _getMenuButton(),
                   ),
                   bottomNavigationBar: widget._selectModel!.typeSelect ==
-                          TypeSelect.MULTIPLE
+                              TypeSelect.MULTIPLE &&
+                          widget._selectModel!.bottomActionForTypeSelectMULTIPLE
                       ? BottomNavigationBar(
                           selectedItemColor:
                               Theme.of(context).brightness == Brightness.dark

@@ -1,3 +1,7 @@
+## 1.0.3
+Upgrade data_table_plus
+## 1.0.2
+Upgrade intl
 ## 1.0.1
 * feat: add tableTopLeftBuilder to build a Widget in the top left of table search widgets.
 * feat: add bottomActionForTypeSelectMULTIPLE to display or not bottomAction in TableDataWidget when TypeSelect.MULTIPLE.

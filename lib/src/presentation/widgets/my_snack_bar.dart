@@ -185,8 +185,10 @@ class MySnackBar extends StatefulWidget implements SnackBar {
   bool? get showCloseIcon => null;
 
   @override
-  // TODO: implement actionOverflowThreshold
-  double? get actionOverflowThreshold => throw UnimplementedError();
+  double? get actionOverflowThreshold => 0.25;
+
+  @override
+  HitTestBehavior? get hitTestBehavior => null;
 }
 
 class _MySnackBarState extends State<MySnackBar> {

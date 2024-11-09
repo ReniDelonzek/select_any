@@ -129,6 +129,7 @@ abstract class _SelectAnyBase with Store {
     loaded = false;
     clearFilters(callDataSource: false);
     filterControllers.clear();
+    page = 1;
   }
 
   void setDataSource(
@@ -216,7 +217,9 @@ abstract class _SelectAnyBase with Store {
         /// Só altera se o texto ainda for idêntico ao pesquisado
         if (removeDiacritics(filter.text.trim()).toLowerCase() == text &&
             text == event.filter) {
-          list.clear();
+          if (!loadMore) {
+            list.clear();
+          }
 
           /// Não aplica no debug/profile para captura de erros
           if (UtilsPlatform.isRelease) {

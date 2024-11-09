@@ -1,3 +1,5 @@
+## 1.0.4
+Fix load more in list
 ## 1.0.3
 Upgrade data_table_plus
 ## 1.0.2

@@ -131,12 +131,17 @@ abstract class _SelectAnyBase with Store {
     filterControllers.clear();
   }
 
-  void setDataSource({int? offset, bool refresh = false}) async {
+  void setDataSource(
+      {int? offset, bool refresh = false, bool loadMore = false}) async {
     try {
       initializeDataSource();
       GroupFilterExp groupFilterExp = buildFilterExpression();
       showSearch = groupFilterExp.filterExps.isEmpty;
-      loading = true;
+      if (loadMore) {
+        loadingMore = true;
+      } else {
+        loading = true;
+      }
       offset ??= (page - 1) * quantityItensPage;
       (await actualDataSource!.getList(quantityItensPage, offset, selectModel,
               data: data,
@@ -146,7 +151,9 @@ abstract class _SelectAnyBase with Store {
           .listen((event) {
         error = null;
         if (filter.text.trim().isEmpty) {
-          list.clear();
+          if (!loadMore) {
+            list.clear();
+          }
 
           /// Não aplica no debug/profile para captura de erros
           if (UtilsPlatform.isRelease) {
@@ -186,11 +193,16 @@ abstract class _SelectAnyBase with Store {
     }
   }
 
-  setDataSourceSearch({int? offset, bool refresh = false}) async {
+  setDataSourceSearch(
+      {int? offset, bool refresh = false, bool loadMore = false}) async {
     showSearch = true;
     try {
       initializeDataSourceAndConfirmData();
-      loading = true;
+      if (loadMore) {
+        loadingMore = true;
+      } else {
+        loading = true;
+      }
       String text = removeDiacritics(filter.text.trim()).toLowerCase();
       (await actualDataSource!.getListSearch(text, quantityItensPage,
               offset ?? (page - 1) * quantityItensPage, selectModel,

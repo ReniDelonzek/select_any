@@ -354,13 +354,13 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
                                         widget.controller!.quantityItensPage <=
                                     widget.controller!.total) {
                               if (widget.controller!.searchText.isEmpty) {
-                                widget.controller!.loadingMore = true;
                                 widget.controller!.page++;
-                                widget.controller!.setDataSource();
+                                widget.controller!
+                                    .setDataSource(loadMore: true);
                               } else {
-                                widget.controller!.loadingMore = true;
                                 widget.controller!.page++;
-                                widget.controller!.setDataSourceSearch();
+                                widget.controller!
+                                    .setDataSourceSearch(loadMore: true);
                               }
                               debugPrint('Carregar mais dados');
                             } else {

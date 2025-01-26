@@ -1,3 +1,6 @@
+## 1.1.0
+Fix: Search in web 
+Add example code
 ## 1.0.4
 Fix load more in list
 ## 1.0.3

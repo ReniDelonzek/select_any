@@ -59,6 +59,11 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (widget._selectModel!.openSearchAutomatically == true) {
+        _searchPressed();
+      }
+    });
   }
 
   @override
@@ -617,9 +622,6 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
       widget.controller!
           .setDataSource(offset: widget.controller!.typeDiplay == 1 ? -1 : 0);
       widget.controller!.loaded = true;
-    }
-    if (widget._selectModel!.openSearchAutomatically == true) {
-      _searchPressed();
     }
   }
 

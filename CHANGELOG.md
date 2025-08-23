@@ -1,3 +1,5 @@
+## 1.1.2
+chore: change share_extend to share_plus
 ## 1.1.1
 chore: change share_extend to share_extend_plus
 ## 1.1.0

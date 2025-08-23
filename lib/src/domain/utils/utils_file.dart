@@ -4,7 +4,7 @@ import 'package:msk_utils/msk_utils.dart';
 import 'dart:io' as io;
 
 import 'package:path_provider/path_provider.dart';
-import 'package:share_extend/share_extend.dart';
+import 'package:share_extend_plus/share_extend.dart';
 
 class UtilsFileSelect {
   static Future<File> saveFileString(String s,

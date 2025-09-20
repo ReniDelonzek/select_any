@@ -1,6 +1,6 @@
 name: select_any
 description: A flexible library for listing data in lists/tables
-version: 1.1.2
+version: 1.2.0
 repository: https://github.com/ReniDelonzek/select_any
 
 environment:
@@ -9,7 +9,7 @@ environment:
 dependencies:
   intl: ^0.19.0
   data_table_plus: ^0.0.2
-  flutter_date_pickers: ^0.4.2 
+  flutter_date_pickers: ^0.4.3
   share_plus: ^11.1.0
   path_provider: ^2.0.15
   diacritic: ^0.1.3

@@ -238,7 +238,7 @@ class TableDataWidget extends StatelessWidget {
                               headingRowColor: controller.selectModel!.theme
                                           .tableTheme.headerColor !=
                                       null
-                                  ? MaterialStateColor.resolveWith((states) {
+                                  ? WidgetStateColor.resolveWith((states) {
                                       return controller.selectModel!.theme
                                           .tableTheme.headerColor!;
                                     })

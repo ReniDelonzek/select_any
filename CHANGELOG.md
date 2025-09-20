@@ -1,3 +1,5 @@
+## 1.2.0
+chore: update deps
 ## 1.1.2
 chore: change share_extend to share_plus
 ## 1.1.1

@@ -578,50 +578,56 @@ class TableDataWidget extends StatelessWidget {
                               ],
                             )
                           : SizedBox(),
-                      SizedBox(width: 24),
+                      SizedBox(width: 16),
                       Flexible(
                         fit: FlexFit.loose,
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             total > 0
                                 ? SizedBox(
+                                    height: 38,
+
                                     /// TODO Implementar abordagem com Flexiveis
-                                    width: 30 +
+                                    width: 40 +
                                         ((controller.total.toString().length) *
                                                 12)
                                             .toDouble(),
-                                    child: Observer(builder: (_) {
-                                      return DropdownButtonFormField<int>(
-                                          decoration: const InputDecoration(
-                                              border: InputBorder.none,
-                                              contentPadding:
-                                                  const EdgeInsets.all(0)),
-                                          icon: SizedBox(),
-                                          style: controller.selectModel!.theme
-                                                  .defaultTextStyle ??
-                                              TextStyle(
-                                                  fontSize: 14,
-                                                  color: Theme.of(context)
-                                                      .textTheme
-                                                      .bodyLarge!
-                                                      .color),
-                                          value: controller.page,
-                                          onChanged: (item) {
-                                            controller.page = item ?? 1;
-                                            controller.setCorretDataSource();
-                                          },
-                                          items: List<DropdownMenuItem<int>>.generate(
-                                              total,
-                                              (index) => DropdownMenuItem(
-                                                  value: index + 1,
-                                                  child: Text(
-                                                      '${(controller.quantityItensPage * index) + 1}-${controller.quantityItensPage * (index + 1)}',
-                                                      style: controller
-                                                          .selectModel!
-                                                          .theme
-                                                          .defaultTextStyle))));
-                                    }),
+                                    child: Center(
+                                      child: Observer(builder: (_) {
+                                        return DropdownButtonFormField<int>(
+                                            padding: const EdgeInsets.only(),
+                                            decoration: const InputDecoration(
+                                                border: InputBorder.none,
+                                                contentPadding:
+                                                    const EdgeInsets.all(0)),
+                                            icon: SizedBox(),
+                                            style: controller.selectModel!.theme
+                                                    .defaultTextStyle ??
+                                                TextStyle(
+                                                    fontSize: 14,
+                                                    color: Theme.of(context)
+                                                        .textTheme
+                                                        .bodyLarge!
+                                                        .color),
+                                            value: controller.page,
+                                            onChanged: (item) {
+                                              controller.page = item ?? 1;
+                                              controller.setCorretDataSource();
+                                            },
+                                            items: List<DropdownMenuItem<int>>.generate(
+                                                total,
+                                                (index) => DropdownMenuItem(
+                                                    value: index + 1,
+                                                    child: Text(
+                                                        '${(controller.quantityItensPage * index) + 1}-${controller.quantityItensPage * (index + 1)}',
+                                                        style: controller
+                                                            .selectModel!
+                                                            .theme
+                                                            .defaultTextStyle))));
+                                      }),
+                                    ),
                                   )
                                 : SizedBox(),
                             Text('de ${(controller.total)}',

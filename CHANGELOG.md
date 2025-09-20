@@ -1,3 +1,5 @@
+## 1.2.1
+fix: more space table bottom
 ## 1.2.0
 chore: update deps
 ## 1.1.2

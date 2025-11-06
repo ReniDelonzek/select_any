@@ -283,26 +283,33 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
   /// Retorna o conteúdo principal da tela
   Widget _getBody() {
     return Observer(builder: (_) {
-      if (widget.controller!.typeDiplay == 2) {
-        return TableDataWidget(widget._selectModel!,
-            controller: widget.controller!, loadData: false);
-      } else {
-        if (!widget.controller!.confirmToLoadData == true) {
-          return _getListBuilder();
+      Widget content() {
+        if (widget.controller!.typeDiplay == 2) {
+          return TableDataWidget(widget._selectModel!,
+              controller: widget.controller!, loadData: false);
         } else {
-          return Center(
-              child: TextButton.icon(
-                  icon: Icon(Icons.sync),
-                  label: Text('Carregar dados'),
-                  onPressed: () {
-                    /// Aqui é vantagem usar o setState, pois toda a tela precisa ser recarregada
-                    setState(() {
-                      widget.controller!.confirmToLoadData = false;
-                      carregarDados();
-                    });
-                  }));
+          if (!widget.controller!.confirmToLoadData == true) {
+            return Expanded(child: _getListBuilder());
+          } else {
+            return Center(
+                child: TextButton.icon(
+                    icon: Icon(Icons.sync),
+                    label: Text('Carregar dados'),
+                    onPressed: () {
+                      /// Aqui é vantagem usar o setState, pois toda a tela precisa ser recarregada
+                      setState(() {
+                        widget.controller!.confirmToLoadData = false;
+                        carregarDados();
+                      });
+                    }));
+          }
         }
       }
+
+      return Column(children: [
+        widget._selectModel?.buildTopWidget?.call() ?? SizedBox(),
+        content()
+      ]);
     });
   }
 
@@ -337,7 +344,8 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
       //_gerarLista((snapshot.data as ResponseData).data);
       return Observer(builder: (_) {
         if (widget.controller!.showList.isEmpty == true)
-          return Center(child: new Text('Nenhum registro encontrado'));
+          return widget.controller?.selectModel?.buildEmptyList?.call() ??
+              Center(child: new Text('Nenhum registro encontrado'));
         else {
           return Column(
             children: [
@@ -446,7 +454,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
   Widget _getItemList(ItemSelect itemSelect, int index) {
     if (widget._selectModel!.showInCards != true) {
       return new Padding(
-          padding: EdgeInsets.only(left: 5, right: 5),
+          padding: EdgeInsets.only(left: 4, right: 4),
           child: ListTile(
             leading: widget._selectModel!.typeSelect == TypeSelect.MULTIPLE
                 ? Checkbox(
@@ -475,6 +483,7 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
     } else {
       return Card(
         child: InkWell(
+          borderRadius: BorderRadius.circular(12),
           onTap: () {
             UtilsWidget.cbOnTap(context, itemSelect, index, widget.controller!);
           },

@@ -1,3 +1,5 @@
+## 1.3.0
+feat: buildTopWidget and buildEmpWidget
 ## 1.2.1
 fix: more space table bottom
 ## 1.2.0

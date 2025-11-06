@@ -343,14 +343,16 @@ class TableDataWidget extends StatelessWidget {
               ]),
               if (controller.loading) LinearProgressIndicator(),
               if (!controller.loading && subList.isEmpty)
-                Center(
-                    child: Padding(
-                  padding: const EdgeInsets.all(25),
-                  child: Text(
-                    'Nenhum item encontrado',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                  ),
-                ))
+                controller.selectModel?.buildEmptyTable?.call() ??
+                    Center(
+                        child: Padding(
+                      padding: const EdgeInsets.all(25),
+                      child: Text(
+                        'Nenhum item encontrado',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 15),
+                      ),
+                    ))
             ],
           );
         }),

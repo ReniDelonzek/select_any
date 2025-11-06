@@ -100,26 +100,42 @@ class SelectModel {
   /// Indicates if bottom action must be showed when TypeSelect.MULTIPLE.
   bool bottomActionForTypeSelectMULTIPLE;
 
-  SelectModel(this.title, this.id, this.lines, this.dataSource, this.typeSelect,
-      {this.filters,
-      this.actions,
-      this.buttons,
-      this.selectedItens,
-      this.showPreSelected = false,
-      this.alternativeDataSource,
-      this.openSearchAutomatically,
-      this.preSelected,
-      this.confirmToLoadData = false,
-      this.allowSelectAll,
-      this.showFiltersInput = true,
-      this.theme = const SelectModelTheme(tableTheme: SelectModelThemeTable()),
-      this.tableBottomBuilder,
-      this.tableTopLeftBuilder,
-      this.initialFilter,
-      this.listBottomBuilder,
-      this.showInCards,
-      this.filterTopBuilder,
-      this.bottomActionForTypeSelectMULTIPLE = true}) {
+  /// Widget between appbar and content
+  final Widget Function()? buildTopWidget;
+
+  final Widget Function()? buildEmptyTable;
+
+  final Widget Function()? buildEmptyList;
+
+  SelectModel(
+    this.title,
+    this.id,
+    this.lines,
+    this.dataSource,
+    this.typeSelect, {
+    this.filters,
+    this.actions,
+    this.buttons,
+    this.selectedItens,
+    this.showPreSelected = false,
+    this.alternativeDataSource,
+    this.openSearchAutomatically,
+    this.preSelected,
+    this.confirmToLoadData = false,
+    this.allowSelectAll,
+    this.showFiltersInput = true,
+    this.theme = const SelectModelTheme(tableTheme: SelectModelThemeTable()),
+    this.tableBottomBuilder,
+    this.tableTopLeftBuilder,
+    this.initialFilter,
+    this.listBottomBuilder,
+    this.showInCards,
+    this.filterTopBuilder,
+    this.bottomActionForTypeSelectMULTIPLE = true,
+    this.buildTopWidget,
+    this.buildEmptyList,
+    this.buildEmptyTable,
+  }) {
     if (openSearchAutomatically == null) {
       openSearchAutomatically = !UtilsPlatform.isMobile;
     }

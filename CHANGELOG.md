@@ -1,3 +1,5 @@
+## 1.3.1
+fix: add expaded to table
 ## 1.3.0
 feat: buildTopWidget and buildEmpWidget
 ## 1.2.1

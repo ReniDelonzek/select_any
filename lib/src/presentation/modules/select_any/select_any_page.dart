@@ -285,8 +285,9 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
     return Observer(builder: (_) {
       Widget content() {
         if (widget.controller!.typeDiplay == 2) {
-          return TableDataWidget(widget._selectModel!,
-              controller: widget.controller!, loadData: false);
+          return Expanded(
+              child: TableDataWidget(widget._selectModel!,
+                  controller: widget.controller!, loadData: false));
         } else {
           if (!widget.controller!.confirmToLoadData == true) {
             return Expanded(child: _getListBuilder());
@@ -306,10 +307,12 @@ class _SelectAnyPageState extends State<SelectAnyPage> {
         }
       }
 
-      return Column(children: [
-        widget._selectModel?.buildTopWidget?.call() ?? SizedBox(),
-        content()
-      ]);
+      return Column(
+        children: [
+          widget._selectModel?.buildTopWidget?.call() ?? SizedBox(),
+          content()
+        ],
+      );
     });
   }
 

@@ -225,7 +225,7 @@ class SelectFKWidget extends StatelessWidget {
                                         padding: EdgeInsets.only(
                                             left: 15, right: 15),
                                         alignment: Alignment.centerLeft,
-                                        child: getWidgetContent()),
+                                        child: getWidgetContent(context)),
                                   ),
                                 ),
                                 AnimatedCrossFade(
@@ -414,7 +414,7 @@ class SelectFKWidget extends StatelessWidget {
         borderRadius: BorderRadius.circular(20));
   }
 
-  Widget getWidgetContent() {
+  Widget getWidgetContent(BuildContext context) {
     return Observer(
       builder: (_) {
         if (defaultLine!.customLine != null) {
@@ -442,7 +442,9 @@ class SelectFKWidget extends StatelessWidget {
           value,
           maxLines: 2,
           style: controller.inFocus
-              ? TextStyle(color: Colors.white)
+              ? TextStyle(color: Theme.of(context).brightness == Brightness.dark
+                      ? Color(0xFFFDFDFD)
+                      : Color(0xFF323232))
               : defaultLine!.textStyle
                   ?.call(ObjFormatData(data: value, map: controller.obj)),
         );

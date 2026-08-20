@@ -1,3 +1,5 @@
+## 1.4.0
+fix: snackbar implementation
 ## 1.3.1
 fix: add expaded to table
 ## 1.3.0

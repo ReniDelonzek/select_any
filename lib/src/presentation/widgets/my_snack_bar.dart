@@ -189,6 +189,9 @@ class MySnackBar extends StatefulWidget implements SnackBar {
 
   @override
   HitTestBehavior? get hitTestBehavior => null;
+
+  @override
+  bool? get persist => false;
 }
 
 class _MySnackBarState extends State<MySnackBar> {
